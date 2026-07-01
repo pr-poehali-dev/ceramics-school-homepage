@@ -65,7 +65,7 @@ const Workshop = () => {
           <nav className="hidden items-center gap-8 md:flex">
             <Link to="/workshops" className="text-sm font-medium text-primary">Мастер-классы</Link>
             <Link to="/formats" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Форматы</Link>
-            <a href="/#certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Сертификаты</a>
+            <Link to="/certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Подарочные сертификаты</Link>
             <a href="/#contacts" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Контакты</a>
           </nav>
           <Button className="rounded-full">Записаться</Button>

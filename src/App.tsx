@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Workshops from "./pages/Workshops";
 import Workshop from "./pages/Workshop";
 import Formats from "./pages/Formats";
+import Certificates from "./pages/Certificates";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/workshops" element={<Workshops />} />
           <Route path="/workshops/lepka" element={<Workshop />} />
           <Route path="/formats" element={<Formats />} />
+          <Route path="/certificates" element={<Certificates />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

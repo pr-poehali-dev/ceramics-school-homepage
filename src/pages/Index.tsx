@@ -8,7 +8,7 @@ const HERO_IMG =
 const NAV = [
   { label: 'Мастер-классы', href: '/workshops', isRoute: true },
   { label: 'Форматы', href: '/formats', isRoute: true },
-  { label: 'Сертификаты', href: '#certificates', isRoute: false },
+  { label: 'Подарочные сертификаты', href: '/certificates', isRoute: true },
   { label: 'Контакты', href: '#contacts', isRoute: false },
 ];
 

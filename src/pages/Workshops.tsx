@@ -71,8 +71,8 @@ const Workshops = () => {
             <Link to="/formats" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Форматы
             </Link>
-            <Link to="/#certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Сертификаты
+            <Link to="/certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+              Подарочные сертификаты
             </Link>
             <Link to="/#contacts" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Контакты
