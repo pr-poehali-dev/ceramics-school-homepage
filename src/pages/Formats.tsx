@@ -123,7 +123,7 @@ const NAV_LINKS = [
   { label: 'Мастер-классы', to: '/workshops' },
   { label: 'Форматы', to: '/formats' },
   { label: 'Подарочные сертификаты', to: '/certificates' },
-  { label: 'Контакты', to: '/#contacts' },
+  { label: 'Контакты', to: '/contacts' },
 ];
 
 const Formats = () => {

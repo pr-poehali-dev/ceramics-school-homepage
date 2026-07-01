@@ -74,7 +74,7 @@ const Workshops = () => {
             <Link to="/certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Подарочные сертификаты
             </Link>
-            <Link to="/#contacts" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            <Link to="/contacts" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Контакты
             </Link>
           </nav>

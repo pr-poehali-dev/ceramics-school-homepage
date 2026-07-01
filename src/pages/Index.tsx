@@ -9,7 +9,7 @@ const NAV = [
   { label: 'Мастер-классы', href: '/workshops', isRoute: true },
   { label: 'Форматы', href: '/formats', isRoute: true },
   { label: 'Подарочные сертификаты', href: '/certificates', isRoute: true },
-  { label: 'Контакты', href: '#contacts', isRoute: false },
+  { label: 'Контакты', href: '/contacts', isRoute: true },
 ];
 
 const SERVICES = [
