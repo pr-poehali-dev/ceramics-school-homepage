@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Workshops from "./pages/Workshops";
 import Workshop from "./pages/Workshop";
+import Formats from "./pages/Formats";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/workshops" element={<Workshops />} />
           <Route path="/workshops/lepka" element={<Workshop />} />
+          <Route path="/formats" element={<Formats />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -6,10 +6,10 @@ const HERO_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/files/e883a661-1e93-47b3-b785-1c8dd183d013.jpg';
 
 const NAV = [
-  { label: 'Мастер-классы', href: '#services' },
-  { label: 'Форматы', href: '#formats' },
-  { label: 'Сертификаты', href: '#certificates' },
-  { label: 'Контакты', href: '#contacts' },
+  { label: 'Мастер-классы', href: '/workshops', isRoute: true },
+  { label: 'Форматы', href: '/formats', isRoute: true },
+  { label: 'Сертификаты', href: '#certificates', isRoute: false },
+  { label: 'Контакты', href: '#contacts', isRoute: false },
 ];
 
 const SERVICES = [
@@ -42,21 +42,25 @@ const Index = () => {
             </span>
           </a>
           <nav className="hidden items-center gap-8 md:flex">
-            <Link
-              to="/workshops"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Мастер-классы
-            </Link>
-            {NAV.slice(1).map((n) => (
-              <a
-                key={n.label}
-                href={n.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                {n.label}
-              </a>
-            ))}
+            {NAV.map((n) =>
+              n.isRoute ? (
+                <Link
+                  key={n.label}
+                  to={n.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  {n.label}
+                </Link>
+              ) : (
+                <a
+                  key={n.label}
+                  href={n.href}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  {n.label}
+                </a>
+              )
+            )}
           </nav>
           <Button className="rounded-full">Записаться</Button>
         </div>

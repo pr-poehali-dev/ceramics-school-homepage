@@ -68,7 +68,7 @@ const Workshops = () => {
             <Link to="/workshops" className="text-sm font-medium text-primary">
               Мастер-классы
             </Link>
-            <Link to="/#formats" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            <Link to="/formats" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Форматы
             </Link>
             <Link to="/#certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
