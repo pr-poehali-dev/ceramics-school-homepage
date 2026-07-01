@@ -11,6 +11,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 1 900 ₽',
     age: '3+',
+    href: '/workshops/lepka',
     note: null as null | { icon: string; text: string; tone: 'warn' | 'fast' },
   },
   {
@@ -21,6 +22,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 2 900 ₽',
     age: '7+',
+    href: null as null | string,
     note: { icon: 'TriangleAlert', text: 'Нет кругов вт / ср / чт', tone: 'warn' as const },
   },
   {
@@ -31,6 +33,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 1 900 ₽',
     age: '3+',
+    href: null as null | string,
     note: null,
   },
   {
@@ -41,6 +44,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 1 500 ₽',
     age: '3+',
+    href: null as null | string,
     note: { icon: 'Zap', text: 'Забрать сразу', tone: 'fast' as const },
   },
 ];
@@ -113,10 +117,19 @@ const Workshops = () => {
                       <h2 className="font-display text-3xl font-semibold">{w.title}</h2>
                       <p className="mt-1 text-muted-foreground">{w.desc}</p>
                     </div>
-                    <Button variant="outline" className="rounded-full">
-                      Подробнее
-                      <Icon name="ArrowRight" size={16} className="ml-2" />
-                    </Button>
+                    {w.href ? (
+                      <Link to={w.href}>
+                        <Button variant="outline" className="rounded-full">
+                          Подробнее
+                          <Icon name="ArrowRight" size={16} className="ml-2" />
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button variant="outline" className="rounded-full">
+                        Подробнее
+                        <Icon name="ArrowRight" size={16} className="ml-2" />
+                      </Button>
+                    )}
                   </div>
 
                   <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
