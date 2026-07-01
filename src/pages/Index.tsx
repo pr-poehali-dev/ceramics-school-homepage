@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 
@@ -41,7 +42,13 @@ const Index = () => {
             </span>
           </a>
           <nav className="hidden items-center gap-8 md:flex">
-            {NAV.map((n) => (
+            <Link
+              to="/workshops"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Мастер-классы
+            </Link>
+            {NAV.slice(1).map((n) => (
               <a
                 key={n.label}
                 href={n.href}
@@ -96,8 +103,9 @@ const Index = () => {
         <SectionTitle eyebrow="Наши услуги" title="Мастер-классы" />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {SERVICES.map((s) => (
-            <div
+            <Link
               key={s.title}
+              to="/workshops"
               className="group rounded-2xl border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl"
             >
               <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
@@ -106,7 +114,7 @@ const Index = () => {
               <h3 className="mt-5 font-display text-2xl font-semibold">{s.title}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
               <p className="mt-4 text-lg font-semibold text-primary">{s.price}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
