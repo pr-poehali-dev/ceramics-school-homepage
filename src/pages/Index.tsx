@@ -120,9 +120,11 @@ const Index = () => {
               <Button size="lg" className="rounded-full px-8 text-base">
                 <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
               </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
-                <Icon name="Gift" size={18} className="mr-2" /> Подарить сертификат
-              </Button>
+              <Link to="/certificates">
+                <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
+                  <Icon name="Gift" size={18} className="mr-2" /> Подарить сертификат
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="animate-scale-in">
