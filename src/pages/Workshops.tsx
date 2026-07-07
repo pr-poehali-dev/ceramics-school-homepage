@@ -58,7 +58,7 @@ const Workshops = () => {
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="container flex h-20 items-center justify-between">
           <Link to="/moscow" className="flex items-center">
-            <Logo />
+            <Logo scale={false} />
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
             <Link to="/workshops" className="text-sm font-medium text-primary">
