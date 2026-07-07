@@ -18,10 +18,30 @@ const NAV = [
 ];
 
 const SERVICES = [
-  { icon: 'Hand', title: 'Лепка', desc: 'Ручная работа с глиной', price: 'от 1900₽' },
-  { icon: 'Disc3', title: 'Гончарный круг', desc: 'Создание на круге', price: 'от 2900₽' },
-  { icon: 'Palette', title: 'Ангобы', desc: 'Роспись цветной глиной', price: 'от 1900₽' },
-  { icon: 'Brush', title: 'Акрил', desc: 'Роспись готовых изделий', price: 'от 1500₽' },
+  {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
+    title: 'Лепка',
+    desc: 'Ручная работа с глиной',
+    price: 'от 1900₽',
+  },
+  {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/ab36a67f-4ea0-4d3a-8ebe-21e8a9dfb891.png',
+    title: 'Гончарный круг',
+    desc: 'Создание на круге',
+    price: 'от 2900₽',
+  },
+  {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
+    title: 'Ангобы',
+    desc: 'Роспись цветной глиной',
+    price: 'от 1900₽',
+  },
+  {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
+    title: 'Акрил',
+    desc: 'Роспись готовых изделий',
+    price: 'от 1500₽',
+  },
 ];
 
 const FORMATS = [
@@ -110,14 +130,20 @@ const Index = () => {
             <Link
               key={s.title}
               to="/workshops"
-              className="group rounded-2xl border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl"
+              className="group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                <Icon name={s.icon} size={26} />
-              </span>
-              <h3 className="mt-5 font-display text-2xl font-semibold">{s.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
-              <p className="mt-4 text-lg font-semibold text-primary">{s.price}</p>
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={s.img}
+                  alt={s.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="font-display text-2xl font-semibold">{s.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
+                <p className="mt-4 text-lg font-semibold text-primary">{s.price}</p>
+              </div>
             </Link>
           ))}
         </div>

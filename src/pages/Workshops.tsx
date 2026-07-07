@@ -6,7 +6,7 @@ import Logo from '@/components/Logo';
 
 const WORKSHOPS = [
   {
-    icon: 'Hand',
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
     title: 'Лепка',
     desc: 'Создание изделий руками из глины. От фигурки до посуды.',
     people: '1–20',
@@ -17,7 +17,7 @@ const WORKSHOPS = [
     note: null as null | { icon: string; text: string; tone: 'warn' | 'fast' },
   },
   {
-    icon: 'Disc3',
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/ab36a67f-4ea0-4d3a-8ebe-21e8a9dfb891.png',
     title: 'Гончарный круг',
     desc: 'Работа за гончарным кругом. Создайте посуду своими руками.',
     people: '1–12',
@@ -28,7 +28,7 @@ const WORKSHOPS = [
     note: { icon: 'TriangleAlert', text: 'Нет кругов вт / ср / чт', tone: 'warn' as const },
   },
   {
-    icon: 'Palette',
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
     title: 'Роспись ангобами',
     desc: 'Роспись изделий специальными керамическими красками.',
     people: '1–20',
@@ -39,7 +39,7 @@ const WORKSHOPS = [
     note: null,
   },
   {
-    icon: 'Brush',
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
     title: 'Роспись акрилом',
     desc: 'Яркая роспись акрилом. Забираете изделие сразу!',
     people: '1–50',
@@ -105,9 +105,13 @@ const Workshops = () => {
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  <Icon name={w.icon} size={30} />
-                </span>
+                <div className="h-40 w-full shrink-0 overflow-hidden rounded-2xl md:h-32 md:w-44">
+                  <img
+                    src={w.img}
+                    alt={w.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
                 <div className="flex-1">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
