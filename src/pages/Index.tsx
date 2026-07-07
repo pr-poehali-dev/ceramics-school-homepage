@@ -5,7 +5,10 @@ import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 
 const HERO_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/files/e883a661-1e93-47b3-b785-1c8dd183d013.jpg';
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d3a4daab-e21d-4fcc-bb95-63ee64ddd0b4.png';
+
+const CERTIFICATE_IMG =
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
 
 const NAV = [
   { label: 'Мастер-классы', href: '/workshops', isRoute: true },
@@ -151,25 +154,38 @@ const Index = () => {
             size={220}
             className="pointer-events-none absolute -right-10 -top-10 opacity-10"
           />
-          <div className="relative max-w-xl">
-            <span className="text-sm font-medium uppercase tracking-[0.2em] text-primary-foreground/70">
-              Подарочные сертификаты
-            </span>
-            <h2 className="mt-4 font-display text-4xl font-semibold md:text-5xl">
-              Подарите творчество на любую сумму
-            </h2>
-            <p className="mt-4 text-primary-foreground/80">
-              Отличный подарок близким — незабываемый вечер в мастерской и
-              изделие, созданное своими руками.
-            </p>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="mt-8 rounded-full px-8 text-base"
-            >
-              Оформить сертификат
-              <Icon name="ArrowRight" size={18} className="ml-2" />
-            </Button>
+          <div className="relative grid items-center gap-10 md:grid-cols-2">
+            <div className="max-w-xl">
+              <span className="text-sm font-medium uppercase tracking-[0.2em] text-primary-foreground/70">
+                Подарочные сертификаты
+              </span>
+              <h2 className="mt-4 font-display text-4xl font-semibold md:text-5xl">
+                Подарите творчество на любую сумму
+              </h2>
+              <p className="mt-4 text-primary-foreground/80">
+                Отличный подарок близким — незабываемый вечер в мастерской и
+                изделие, созданное своими руками.
+              </p>
+              <Link to="/certificates">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="mt-8 rounded-full px-8 text-base"
+                >
+                  Оформить сертификат
+                  <Icon name="ArrowRight" size={18} className="ml-2" />
+                </Button>
+              </Link>
+            </div>
+
+            <div className="relative flex justify-center md:justify-end">
+              <div className="absolute inset-0 -rotate-6 rounded-2xl bg-white/10" />
+              <img
+                src={CERTIFICATE_IMG}
+                alt="Подарочный сертификат Дымов Керамика"
+                className="relative w-full max-w-xs rotate-3 rounded-2xl shadow-2xl ring-1 ring-white/20 transition-transform duration-500 hover:rotate-0 md:max-w-sm"
+              />
+            </div>
           </div>
         </div>
       </section>
