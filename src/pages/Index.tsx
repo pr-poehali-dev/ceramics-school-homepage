@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
+import SocialLinks from '@/components/SocialLinks';
 
 const HERO_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d3a4daab-e21d-4fcc-bb95-63ee64ddd0b4.png';
@@ -97,7 +98,10 @@ const Index = () => {
               )
             )}
           </nav>
-          <Button className="hidden rounded-full md:inline-flex">Записаться</Button>
+          <div className="hidden items-center gap-4 md:flex">
+            <SocialLinks size={18} variant="solid" />
+            <Button className="rounded-full">Записаться</Button>
+          </div>
           <MobileMenu />
         </div>
       </header>
@@ -259,17 +263,7 @@ const Index = () => {
               <Icon name="Clock" size={18} className="text-primary" /> Ежедневно 10:00–21:00
             </p>
           </div>
-          <div className="flex items-start gap-4 md:justify-end">
-            {['Instagram', 'Send', 'Youtube'].map((s) => (
-              <a
-                key={s}
-                href="#"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-border transition-colors hover:bg-primary hover:text-primary-foreground"
-              >
-                <Icon name={s} size={20} />
-              </a>
-            ))}
-          </div>
+          <SocialLinks className="md:justify-end" />
         </div>
         <div className="border-t border-border/60 py-5 text-center text-sm text-muted-foreground">
           © 2026 Дымов Керамика. Все права защищены.

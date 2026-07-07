@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/Logo';
+import SocialLinks from '@/components/SocialLinks';
 
 const NAV = [
   { label: 'Мастер-классы', to: '/workshops' },
@@ -121,6 +122,14 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
                 );
               })}
             </div>
+          </div>
+
+          {/* SOCIALS */}
+          <div className="mt-8">
+            <p className="mb-4 px-1 text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">
+              Мы в соцсетях
+            </p>
+            <SocialLinks variant="solid" />
           </div>
         </div>
 

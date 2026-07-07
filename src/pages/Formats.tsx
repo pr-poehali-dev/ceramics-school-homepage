@@ -4,6 +4,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
+import SocialLinks from '@/components/SocialLinks';
 
 const ALL_FORMATS = [
   {
@@ -179,7 +180,10 @@ const Formats = () => {
               </Link>
             ))}
           </nav>
-          <Button className="hidden rounded-full md:inline-flex">Записаться</Button>
+          <div className="hidden items-center gap-4 md:flex">
+            <SocialLinks size={18} variant="solid" />
+            <Button className="rounded-full">Записаться</Button>
+          </div>
           <MobileMenu active="/formats" />
         </div>
       </header>
@@ -377,6 +381,7 @@ const Formats = () => {
           <span className="flex items-center gap-2">
             <Icon name="MapPin" size={16} className="text-primary" /> ВДНХ, Москва
           </span>
+          <SocialLinks size={18} variant="solid" />
           <span>© 2026 Все права защищены</span>
         </div>
       </footer>

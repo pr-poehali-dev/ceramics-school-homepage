@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
+import SocialLinks from '@/components/SocialLinks';
 
 const FORMATS = [
   {
@@ -64,7 +65,10 @@ const Workshop = () => {
             <Link to="/certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Подарочные сертификаты</Link>
             <Link to="/contacts" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Контакты</Link>
           </nav>
-          <Button className="hidden rounded-full md:inline-flex">Записаться</Button>
+          <div className="hidden items-center gap-4 md:flex">
+            <SocialLinks size={18} variant="solid" />
+            <Button className="rounded-full">Записаться</Button>
+          </div>
           <MobileMenu active="/workshops" />
         </div>
       </header>
@@ -214,6 +218,7 @@ const Workshop = () => {
           <span className="flex items-center gap-2">
             <Icon name="MapPin" size={16} className="text-primary" /> ВДНХ, Москва
           </span>
+          <SocialLinks size={18} variant="solid" />
           <span>© 2026 Все права защищены</span>
         </div>
       </footer>

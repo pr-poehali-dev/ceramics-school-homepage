@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
+import SocialLinks from '@/components/SocialLinks';
 
 const NAV = [
   { label: 'Мастер-классы', to: '/workshops' },
@@ -33,7 +34,10 @@ const Contacts = () => {
               </Link>
             ))}
           </nav>
-          <Button className="hidden rounded-full md:inline-flex">Записаться</Button>
+          <div className="hidden items-center gap-4 md:flex">
+            <SocialLinks size={18} variant="solid" />
+            <Button className="rounded-full">Записаться</Button>
+          </div>
           <MobileMenu active="/contacts" />
         </div>
       </header>
@@ -168,7 +172,7 @@ const Contacts = () => {
         {/* SOCIALS */}
         <div className="mx-auto mt-8 max-w-4xl flex flex-wrap gap-4">
           <a
-            href="https://vk.com/dymovceramic"
+            href="https://vk.com/dymovceramicschool"
             target="_blank"
             rel="noreferrer"
             className="flex flex-1 items-center justify-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 font-medium transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5"
@@ -177,7 +181,7 @@ const Contacts = () => {
             ВКонтакте
           </a>
           <a
-            href="https://t.me/dymovceramic"
+            href="https://t.me/dymovceramicschool"
             target="_blank"
             rel="noreferrer"
             className="flex flex-1 items-center justify-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 font-medium transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5"
