@@ -6,7 +6,11 @@ interface LogoProps {
 }
 
 const Logo = ({ className = 'h-9 md:h-10' }: LogoProps) => (
-  <img src={LOGO_URL} alt="Дымов Керамика" className={`w-auto object-contain ${className}`} />
+  <img
+    src={LOGO_URL}
+    alt="Дымов Керамика"
+    className={`w-auto scale-[0.7] object-contain ${className.includes('origin-') ? '' : 'origin-left'} ${className}`}
+  />
 );
 
 export default Logo;

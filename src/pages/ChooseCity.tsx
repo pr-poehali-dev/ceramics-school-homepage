@@ -14,7 +14,7 @@ const ChooseCity = () => {
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* LOGO */}
       <div className="flex flex-col items-center pt-12 pb-8 md:pt-16">
-        <Logo className="h-14 md:h-16" />
+        <Logo className="h-14 origin-center md:h-16" />
         <p className="mt-5 text-center text-base text-muted-foreground md:text-lg">Одна из старейших гончарных школ — выберите город</p>
       </div>
 
