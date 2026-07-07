@@ -45,10 +45,26 @@ const SERVICES = [
 ];
 
 const FORMATS = [
-  { icon: 'Baby', title: 'Детские', desc: 'Занятия по сб и вс' },
-  { icon: 'Truck', title: 'Выездные', desc: 'Мастер-класс у вас' },
-  { icon: 'Cake', title: 'Дни рождения', desc: 'Праздник с глиной' },
-  { icon: 'Building2', title: 'Корпоративы', desc: 'Тимбилдинг в студии' },
+  {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/cd92a426-9a1e-4eba-81fa-09e5b75b623d.jpg',
+    title: 'Детские',
+    desc: 'Занятия по сб и вс',
+  },
+  {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
+    title: 'Выездные',
+    desc: 'Мастер-класс у вас',
+  },
+  {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7898283f-b258-43b1-ae5e-b5d2e1c4b1f7.jpg',
+    title: 'Дни рождения',
+    desc: 'Праздник с глиной',
+  },
+  {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d38779de-6df5-4423-8740-68cce4b10ff0.jpg',
+    title: 'Корпоративы',
+    desc: 'Тимбилдинг в студии',
+  },
 ];
 
 const Index = () => {
@@ -157,12 +173,16 @@ const Index = () => {
             {FORMATS.map((f) => (
               <div
                 key={f.title}
-                className="flex items-start gap-4 rounded-2xl bg-background p-6 shadow-sm transition-shadow hover:shadow-md"
+                className="group overflow-hidden rounded-2xl bg-background shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
               >
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent/20 text-primary">
-                  <Icon name={f.icon} size={22} />
-                </span>
-                <div>
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={f.img}
+                    alt={f.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="p-6">
                   <h3 className="font-display text-xl font-semibold">{f.title}</h3>
                   <p className="text-sm text-muted-foreground">{f.desc}</p>
                 </div>

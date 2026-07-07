@@ -7,6 +7,7 @@ import Logo from '@/components/Logo';
 
 const ALL_FORMATS = [
   {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
     icon: 'Landmark',
     title: 'Классический МК',
     place: 'В студии',
@@ -23,6 +24,7 @@ const ALL_FORMATS = [
     cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
   },
   {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/cd92a426-9a1e-4eba-81fa-09e5b75b623d.jpg',
     icon: 'Baby',
     title: 'Детская группа (сб/вс)',
     place: 'В студии',
@@ -39,6 +41,7 @@ const ALL_FORMATS = [
     cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
   },
   {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
     icon: 'Rocket',
     title: 'Промо-группа (пн–пт)',
     place: 'В студии',
@@ -55,6 +58,7 @@ const ALL_FORMATS = [
     cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
   },
   {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
     icon: 'Truck',
     title: 'Выездной МК',
     place: 'Выезд к вам',
@@ -71,6 +75,7 @@ const ALL_FORMATS = [
     cta: { label: 'Рассчитать', variant: 'outline' as const, icon: 'Calculator' },
   },
   {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
     icon: 'UtensilsCrossed',
     title: 'Курс «Блюдо» (2 занятия)',
     place: 'В студии',
@@ -87,6 +92,7 @@ const ALL_FORMATS = [
     cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
   },
   {
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7898283f-b258-43b1-ae5e-b5d2e1c4b1f7.jpg',
     icon: 'PartyPopper',
     title: 'Мероприятия (ДР, корп, девичник)',
     place: 'В студии или выезд',
@@ -316,9 +322,13 @@ const Formats = () => {
                 style={{ animationDelay: `${i * 60}ms` }}
               >
                 <div className="flex flex-col gap-5 md:flex-row md:items-center">
-                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                    <Icon name={f.icon} size={26} />
-                  </span>
+                  <div className="h-36 w-full shrink-0 overflow-hidden rounded-xl md:h-24 md:w-32">
+                    <img
+                      src={f.img}
+                      alt={f.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
 
                   <div className="flex-1">
                     <h3 className="font-display text-2xl font-semibold">{f.title}</h3>
