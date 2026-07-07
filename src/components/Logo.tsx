@@ -3,13 +3,14 @@ const LOGO_URL =
 
 interface LogoProps {
   className?: string;
+  scale?: boolean;
 }
 
-const Logo = ({ className = 'h-9 md:h-10' }: LogoProps) => (
+const Logo = ({ className = 'h-9 md:h-10', scale = true }: LogoProps) => (
   <img
     src={LOGO_URL}
     alt="Дымов Керамика"
-    className={`w-auto scale-[0.7] object-contain ${className.includes('origin-') ? '' : 'origin-left'} ${className}`}
+    className={`w-auto object-contain ${scale ? 'scale-[0.7]' : ''} ${className.includes('origin-') ? '' : 'origin-left'} ${className}`}
   />
 );
 

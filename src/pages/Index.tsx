@@ -35,7 +35,7 @@ const Index = () => {
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="container flex h-20 items-center justify-between">
           <Link to="/moscow" className="flex items-center">
-            <Logo />
+            <Logo scale={false} />
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
             {NAV.map((n) =>
@@ -178,7 +178,7 @@ const Index = () => {
       <footer id="contacts" className="border-t border-border bg-secondary/40">
         <div className="container grid gap-8 py-14 md:grid-cols-3">
           <div>
-            <Logo className="h-10" />
+            <Logo className="h-10" scale={false} />
             <p className="mt-3 text-sm text-muted-foreground">
               Студия керамики в тёплой атмосфере мастерской. Творим из глины
               вместе с 2015 года.

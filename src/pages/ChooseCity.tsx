@@ -3,9 +3,9 @@ import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
 
 const MOSCOW_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0e9903bd-b9bd-4836-873c-fc3dab4623f7.jpg';
-const SUZDAL_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/260e7e60-766b-4577-b0ce-5dd058cede6b.jpg';
+const SUZDAL_IMG =
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0e9903bd-b9bd-4836-873c-fc3dab4623f7.jpg';
 
 const SUZDAL_URL = 'https://preview--ceramics-school-homepage.poehali.dev/';
 
