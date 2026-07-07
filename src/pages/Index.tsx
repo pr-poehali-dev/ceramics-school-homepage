@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
+import Logo from '@/components/Logo';
 
 const HERO_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/files/e883a661-1e93-47b3-b785-1c8dd183d013.jpg';
@@ -33,14 +34,8 @@ const Index = () => {
       {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="container flex h-20 items-center justify-between">
-          <Link to="/moscow" className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Icon name="Flame" size={22} />
-            </span>
-            <span className="font-display text-2xl font-semibold leading-none tracking-wide">
-              Дымов<br />
-              <span className="text-primary text-lg">Керамика</span>
-            </span>
+          <Link to="/moscow" className="flex items-center">
+            <Logo />
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
             {NAV.map((n) =>
@@ -183,7 +178,7 @@ const Index = () => {
       <footer id="contacts" className="border-t border-border bg-secondary/40">
         <div className="container grid gap-8 py-14 md:grid-cols-3">
           <div>
-            <span className="font-display text-2xl font-semibold">Дымов Керамика</span>
+            <Logo className="h-10" />
             <p className="mt-3 text-sm text-muted-foreground">
               Студия керамики в тёплой атмосфере мастерской. Творим из глины
               вместе с 2015 года.

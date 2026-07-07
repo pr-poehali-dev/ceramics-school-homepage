@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
+import Logo from '@/components/Logo';
 
 const MOSCOW_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0e9903bd-b9bd-4836-873c-fc3dab4623f7.jpg';
@@ -13,13 +14,8 @@ const ChooseCity = () => {
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* LOGO */}
       <div className="flex flex-col items-center pt-12 pb-8 md:pt-16">
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg">
-          <Icon name="Flame" size={30} />
-        </span>
-        <h1 className="mt-5 text-center font-display text-4xl font-semibold tracking-wide md:text-5xl">
-          Дымов <span className="text-primary italic">Керамика</span>
-        </h1>
-        <p className="mt-3 text-center text-base text-muted-foreground md:text-lg">
+        <Logo className="h-14 md:h-16" />
+        <p className="mt-5 text-center text-base text-muted-foreground md:text-lg">
           Гончарная школа — выберите город
         </p>
       </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import Logo from '@/components/Logo';
 
 const NAV = [
   { label: 'Мастер-классы', to: '/workshops' },
@@ -50,14 +51,8 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
         }`}
       >
         <div className="flex items-center justify-between border-b border-border px-6 py-5">
-          <Link to="/moscow" onClick={() => setOpen(false)} className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Icon name="Flame" size={20} />
-            </span>
-            <span className="font-display text-xl font-semibold leading-none">
-              Дымов<br />
-              <span className="text-primary text-sm">Керамика</span>
-            </span>
+          <Link to="/moscow" onClick={() => setOpen(false)} className="flex items-center">
+            <Logo className="h-8" />
           </Link>
           <button
             onClick={() => setOpen(false)}

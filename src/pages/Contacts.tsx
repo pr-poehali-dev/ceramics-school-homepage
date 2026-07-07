@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
+import Logo from '@/components/Logo';
 
 const NAV = [
   { label: 'Мастер-классы', to: '/workshops' },
@@ -16,14 +17,8 @@ const Contacts = () => {
       {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="container flex h-20 items-center justify-between">
-          <Link to="/moscow" className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Icon name="Flame" size={22} />
-            </span>
-            <span className="font-display text-2xl font-semibold leading-none tracking-wide">
-              Дымов<br />
-              <span className="text-primary text-lg">Керамика</span>
-            </span>
+          <Link to="/moscow" className="flex items-center">
+            <Logo />
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
             {NAV.map((n) => (
@@ -215,7 +210,7 @@ const Contacts = () => {
       {/* FOOTER */}
       <footer className="mt-16 border-t border-border bg-secondary/40">
         <div className="container flex flex-col items-center justify-between gap-4 py-8 text-sm text-muted-foreground md:flex-row">
-          <span className="font-display text-xl font-semibold text-foreground">Дымов Керамика</span>
+          <Logo className="h-9" />
           <span className="flex items-center gap-2">
             <Icon name="MapPin" size={16} className="text-primary" /> ВДНХ, Москва
           </span>
