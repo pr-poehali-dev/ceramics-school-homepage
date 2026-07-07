@@ -8,7 +8,6 @@ import ScrollToTop from "./components/ScrollToTop";
 import ChooseCity from "./pages/ChooseCity";
 import Index from "./pages/Index";
 import Workshops from "./pages/Workshops";
-import Workshop from "./pages/Workshop";
 import WorkshopDetail from "./pages/WorkshopDetail";
 import Formats from "./pages/Formats";
 import Certificates from "./pages/Certificates";
@@ -28,7 +27,6 @@ const App = () => (
           <Route path="/" element={<ChooseCity />} />
           <Route path="/moscow" element={<Index />} />
           <Route path="/workshops" element={<Workshops />} />
-          <Route path="/workshops/lepka" element={<Workshop />} />
           <Route path="/workshops/:slug" element={<WorkshopDetail />} />
           <Route path="/formats" element={<Formats />} />
           <Route path="/certificates" element={<Certificates />} />
