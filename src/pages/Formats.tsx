@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import DesktopNav from '@/components/DesktopNav';
 
 const ALL_FORMATS = [
   {
@@ -128,13 +129,6 @@ const LOCATION_OPTIONS = [
   { label: 'Любой', value: 'any' },
 ];
 
-const NAV_LINKS = [
-  { label: 'Мастер-классы', to: '/workshops' },
-  { label: 'Форматы', to: '/formats' },
-  { label: 'Подарочные сертификаты', to: '/certificates' },
-  { label: 'Контакты', to: '/contacts' },
-];
-
 const Formats = () => {
   const [ageFilter, setAgeFilter] = useState<string | null>(null);
   const [dayFilter, setDayFilter] = useState<string>('any');
@@ -169,17 +163,7 @@ const Formats = () => {
           <Link to="/moscow" className="flex items-center">
             <Logo scale={false} />
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
-            {NAV_LINKS.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                className={`text-sm font-medium transition-colors hover:text-primary ${n.to === '/formats' ? 'text-primary' : 'text-muted-foreground'}`}
-              >
-                {n.label}
-              </Link>
-            ))}
-          </nav>
+          <DesktopNav active="/formats" />
           <a
             href="tel:+79854198903"
             className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"

@@ -1,0 +1,227 @@
+import { Link, useParams, Navigate } from 'react-router-dom';
+import Icon from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
+import MobileMenu from '@/components/MobileMenu';
+import Logo from '@/components/Logo';
+import SocialLinks from '@/components/SocialLinks';
+
+interface WorkshopData {
+  slug: string;
+  badgeIcon: string;
+  title: string;
+  subtitle: string;
+  img: string;
+  stats: { icon: string; text: string }[];
+  paragraphs: string[];
+  benefit?: string | null;
+}
+
+export const WORKSHOP_DETAILS: Record<string, WorkshopData> = {
+  krug: {
+    slug: 'krug',
+    badgeIcon: 'Disc3',
+    title: 'Гончарный круг',
+    subtitle: 'Освойте азы гончарного ремесла и создайте изделие своими руками за 1 час.',
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/ab36a67f-4ea0-4d3a-8ebe-21e8a9dfb891.png',
+    stats: [
+      { icon: 'Tag', text: '2 900 ₽' },
+      { icon: 'Clock', text: '1 час' },
+      { icon: 'Star', text: 'Возраст 7+' },
+      { icon: 'Percent', text: 'Льготникам скидка' },
+    ],
+    paragraphs: [
+      'Во время мастер-класса вы освоите азы гончарного ремесла. Узнаете, как правильно подготовить глину к работе, как центровать её на гончарном круге для создания симметричной формы, и овладеете секретами создания готовых изделий с помощью одного из древнейших ремёсел.',
+      'Вместе с мастером-гончаром вы выполните изделие, используя красную глину. Также занятие включает в себя лепку декоративных элементов: ручек или рельефных украшений.',
+      'После завершения мастер-класса все изделия остаются в мастерской на просушку и последующий обжиг. Через 2 недели, по желанию, можно будет приступить к росписи вашего изделия в рамках соответствующего мастер-класса.',
+    ],
+    benefit: 'Дети до 7 лет на мастер-классах присутствуют в сопровождении взрослых.',
+  },
+  angoby: {
+    slug: 'angoby',
+    badgeIcon: 'Palette',
+    title: 'Роспись ангобами',
+    subtitle: 'Красочно и сочно распишите керамику экологичной подглазурной краской.',
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
+    stats: [
+      { icon: 'Tag', text: '2 100 ₽' },
+      { icon: 'Clock', text: '1 час' },
+      { icon: 'Star', text: 'Возраст 3+' },
+      { icon: 'Percent', text: 'Льготникам скидка' },
+    ],
+    paragraphs: [
+      'На занятиях по росписи мы предлагаем для декорирования готовые изделия малого размера на выбор или предметы, которые вы создали ранее в нашей мастерской на занятиях по гончарному ремеслу или лепке.',
+      'На мастер-классе по росписи ангобами вы сможете красочно и сочно расписать изделие по своему вкусу. Ангоб — это специальная подглазурная краска по керамике, которая состоит из глины и цветных пигментов. Эта краска очень экологичная, ею могут пользоваться даже дети.',
+      'Можно использовать традиционную роспись кистями или разнообразить узор при помощи дополнительных материалов и принтов (губки, природные фактуры, кружево и т.д.). Вы можете озвучить мастеру свои идеи, и он поможет выбрать наилучший вариант их воплощения в керамике.',
+      'После завершения мастер-класса изделие остаётся в мастерской на просушку и последующий обжиг, после чего вы сможете его забрать.',
+      'Мастер-классы по росписи ангобами в детской группе (от 4 до 7 лет) проходят по выходным и праздничным дням. Длительность 1 час. Стоимость 1 900 руб. По предварительной записи по телефону, возможна оплата на сайте или в школе картой или наличными.',
+    ],
+    benefit: 'Дети до 7 лет на мастер-классах присутствуют в сопровождении взрослых.',
+  },
+  akril: {
+    slug: 'akril',
+    badgeIcon: 'Brush',
+    title: 'Роспись акрилом',
+    subtitle: 'Попробуйте себя в роли художника — забирайте готовое изделие с собой сразу.',
+    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
+    stats: [
+      { icon: 'Tag', text: '1 500 ₽' },
+      { icon: 'Clock', text: '1 час' },
+      { icon: 'Users', text: 'Группы от 10' },
+      { icon: 'PackageCheck', text: 'Забрать через 10 мин' },
+    ],
+    paragraphs: [
+      'Хотите попробовать себя в роли маленького художника и творца прекрасного? Даже если вы никогда не брали в руки кисть и вам кажется, что это очень сложно, мы на практике покажем, что можно с первого занятия получать удовольствие как от процесса, так и от результата.',
+      'Расписанная вручную керамика станет не только отличным подарком для родных и близких, но и памятным сувениром о незабываемом мероприятии, которое вы посетили. На занятиях по росписи акрилом мы предлагаем для декорирования на выбор керамическую тарелку малой формы, декоративный гриб или изразец.',
+      'Изделия уникальны. Их выпускает наш завод в Суздале по нашим эскизам специально для нашей школы.',
+      'Стоимость мастер-класса по росписи акрилом составляет 1 500 рублей с участника с учётом изделия под роспись. Продолжительность мастер-класса — 1 час. Изделие можно забрать с собой уже через 10 минут после изготовления.',
+    ],
+    benefit: 'Группы от 10 участников. Изделие можно забрать с собой через 10 минут.',
+  },
+};
+
+const WorkshopDetail = () => {
+  const { slug } = useParams();
+  const data = slug ? WORKSHOP_DETAILS[slug] : undefined;
+
+  if (!data) {
+    return <Navigate to="/workshops" replace />;
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground clay-texture">
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
+        <div className="container flex h-20 items-center justify-between">
+          <Link to="/moscow" className="flex items-center">
+            <Logo scale={false} />
+          </Link>
+          <nav className="hidden items-center gap-8 md:flex">
+            <Link to="/workshops" className="text-sm font-medium text-primary">Мастер-классы</Link>
+            <Link to="/formats" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Форматы</Link>
+            <Link to="/certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Подарочные сертификаты</Link>
+            <Link to="/contacts" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Контакты</Link>
+          </nav>
+          <a
+            href="tel:+79854198903"
+            className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
+          >
+            <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
+          </a>
+          <MobileMenu active="/workshops" />
+        </div>
+      </header>
+
+      <div className="container py-10 md:py-14">
+        {/* BACK */}
+        <Link
+          to="/workshops"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+        >
+          <Icon name="ArrowLeft" size={16} /> Назад к услугам
+        </Link>
+
+        {/* HERO */}
+        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div className="animate-fade-in">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+              <Icon name={data.badgeIcon} size={16} /> Мастер-класс
+            </span>
+            <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
+              {data.title}
+            </h1>
+            <p className="mt-4 max-w-xl text-xl text-muted-foreground">{data.subtitle}</p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              {data.stats.map((s) => (
+                <span
+                  key={s.text}
+                  className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium"
+                >
+                  <Icon name={s.icon} size={16} className="text-primary" />
+                  {s.text}
+                </span>
+              ))}
+            </div>
+
+            <Button size="lg" className="mt-7 rounded-full px-10 text-base">
+              <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
+            </Button>
+          </div>
+
+          <div className="animate-scale-in overflow-hidden rounded-[2rem] shadow-xl">
+            <img src={data.img} alt={data.title} className="h-full w-full object-cover" />
+          </div>
+        </div>
+
+        {/* DESCRIPTION */}
+        <div className="mt-14 max-w-3xl rounded-2xl border border-border bg-card p-7 md:p-9">
+          <h2 className="font-display text-2xl font-semibold">О мастер-классе</h2>
+          {data.paragraphs.map((p, i) => (
+            <p key={i} className="mt-3 leading-relaxed text-muted-foreground">
+              {p}
+            </p>
+          ))}
+
+          {data.benefit && (
+            <div className="mt-6 flex items-start gap-3 rounded-xl bg-accent/20 px-4 py-3 text-sm font-medium text-primary">
+              <Icon name="Info" size={18} className="mt-0.5 shrink-0" />
+              {data.benefit}
+            </div>
+          )}
+
+          <div className="mt-6 rounded-xl border border-border/60 bg-secondary/40 px-4 py-3 text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">Льготникам — скидка.</span>{' '}
+            Действует социальная скидка для пенсионеров, студентов, именинников в день рождения,
+            членов многодетных семей и инвалидов всех групп. Не распространяется на мастер-класс
+            «Детская группа». Скидки не суммируются и действуют при предъявлении соответствующего
+            документа.
+          </div>
+        </div>
+
+        {/* CTA BANNER */}
+        <div className="relative mt-14 overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">
+          <Icon
+            name={data.badgeIcon}
+            size={200}
+            className="pointer-events-none absolute -left-8 -top-8 opacity-10"
+          />
+          <div className="relative">
+            <h3 className="font-display text-3xl font-semibold md:text-4xl">Остались вопросы?</h3>
+            <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
+              Поможем выбрать удобное время, уточним расписание и ответим на любые вопросы.
+            </p>
+            <div className="mt-7 flex flex-wrap justify-center gap-4">
+              <a href="tel:+79854198903">
+                <Button size="lg" variant="secondary" className="rounded-full px-8">
+                  <Icon name="Phone" size={18} className="mr-2" /> Позвонить
+                </Button>
+              </a>
+              <a href="https://t.me/dymovceramicschool" target="_blank" rel="noreferrer">
+                <Button size="lg" variant="secondary" className="rounded-full px-8">
+                  <Icon name="Send" size={18} className="mr-2" /> Написать
+                </Button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <footer className="mt-16 border-t border-border bg-secondary/40">
+        <div className="container flex flex-col items-center justify-between gap-4 py-8 text-sm text-muted-foreground md:flex-row">
+          <Logo className="h-9" />
+          <span className="flex items-center gap-2">
+            <Icon name="MapPin" size={16} className="text-primary" /> ВДНХ, Москва
+          </span>
+          <a href="tel:+79854198903" className="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary">
+            <Icon name="Phone" size={16} className="text-primary" /> +7 (985) 419-89-03
+          </a>
+          <SocialLinks size={18} variant="solid" />
+          <span>© 2026 Все права защищены</span>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default WorkshopDetail;

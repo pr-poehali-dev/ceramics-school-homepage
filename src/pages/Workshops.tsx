@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import DesktopNav from '@/components/DesktopNav';
 
 const WORKSHOPS = [
   {
@@ -25,7 +26,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 2 900 ₽',
     age: '7+',
-    href: null as null | string,
+    href: '/workshops/krug' as null | string,
     note: { icon: 'TriangleAlert', text: 'Нет кругов вт / ср / чт', tone: 'warn' as const },
   },
   {
@@ -34,9 +35,9 @@ const WORKSHOPS = [
     desc: 'Роспись изделий специальными керамическими красками.',
     people: '1–20',
     duration: '1 час',
-    price: 'от 1 900 ₽',
+    price: 'от 2 100 ₽',
     age: '3+',
-    href: null as null | string,
+    href: '/workshops/angoby' as null | string,
     note: null,
   },
   {
@@ -47,7 +48,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 1 500 ₽',
     age: '3+',
-    href: null as null | string,
+    href: '/workshops/akril' as null | string,
     note: { icon: 'Zap', text: 'Забрать сразу', tone: 'fast' as const },
   },
 ];
@@ -61,20 +62,7 @@ const Workshops = () => {
           <Link to="/moscow" className="flex items-center">
             <Logo scale={false} />
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
-            <Link to="/workshops" className="text-sm font-medium text-primary">
-              Мастер-классы
-            </Link>
-            <Link to="/formats" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Форматы
-            </Link>
-            <Link to="/certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Подарочные сертификаты
-            </Link>
-            <Link to="/contacts" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Контакты
-            </Link>
-          </nav>
+          <DesktopNav active="/workshops" />
           <a
             href="tel:+79854198903"
             className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"

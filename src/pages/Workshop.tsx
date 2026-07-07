@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import DesktopNav from '@/components/DesktopNav';
 
 const FORMATS = [
   {
@@ -59,12 +60,7 @@ const Workshop = () => {
           <Link to="/moscow" className="flex items-center">
             <Logo scale={false} />
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
-            <Link to="/workshops" className="text-sm font-medium text-primary">Мастер-классы</Link>
-            <Link to="/formats" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Форматы</Link>
-            <Link to="/certificates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Подарочные сертификаты</Link>
-            <Link to="/contacts" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Контакты</Link>
-          </nav>
+          <DesktopNav active="/workshops" />
           <a
             href="tel:+79854198903"
             className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"

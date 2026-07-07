@@ -7,10 +7,16 @@ import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 
 const NAV = [
-  { label: 'Мастер-классы', to: '/workshops' },
   { label: 'Форматы', to: '/formats' },
   { label: 'Подарочные сертификаты', to: '/certificates' },
   { label: 'Контакты', to: '/contacts' },
+];
+
+const WORKSHOP_LINKS = [
+  { label: 'Лепка из глины', to: '/workshops/lepka' },
+  { label: 'Гончарный круг', to: '/workshops/krug' },
+  { label: 'Роспись ангобами', to: '/workshops/angoby' },
+  { label: 'Роспись акрилом', to: '/workshops/akril' },
 ];
 
 const CONTACTS = [
@@ -27,6 +33,7 @@ interface MobileMenuProps {
 
 const MobileMenu = ({ active }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
+  const [wsOpen, setWsOpen] = useState(false);
 
   return (
     <>
@@ -70,6 +77,42 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {/* NAV */}
           <nav className="flex flex-col gap-1">
+            {/* Мастер-классы с подпунктами */}
+            <button
+              onClick={() => setWsOpen((v) => !v)}
+              className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium transition-colors ${
+                active === '/workshops' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+              }`}
+            >
+              Мастер-классы
+              <Icon
+                name="ChevronDown"
+                size={18}
+                className={`text-muted-foreground transition-transform ${wsOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+            {wsOpen && (
+              <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
+                <Link
+                  to="/workshops"
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-muted"
+                >
+                  Все мастер-классы
+                </Link>
+                {WORKSHOP_LINKS.map((w) => (
+                  <Link
+                    key={w.to}
+                    to={w.to}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-3 py-2.5 text-base text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                  >
+                    {w.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+
             {NAV.map((n) => (
               <Link
                 key={n.label}

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import DesktopNav from '@/components/DesktopNav';
 
 const PRESETS = [
   { value: 2000, label: '2 000 ₽', popular: false },
@@ -14,12 +15,6 @@ const PRESETS = [
   { value: 50000, label: '50 000 ₽', popular: false },
 ];
 
-const NAV = [
-  { label: 'Мастер-классы', to: '/workshops' },
-  { label: 'Форматы', to: '/formats' },
-  { label: 'Подарочные сертификаты', to: '/certificates' },
-  { label: 'Контакты', to: '/contacts' },
-];
 
 const Certificates = () => {
   const [selected, setSelected] = useState<number | null>(null);
@@ -61,19 +56,7 @@ const Certificates = () => {
           <Link to="/moscow" className="flex items-center">
             <Logo scale={false} />
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
-            {NAV.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  n.to === '/certificates' ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                {n.label}
-              </Link>
-            ))}
-          </nav>
+          <DesktopNav active="/certificates" />
           <a
             href="tel:+79854198903"
             className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"

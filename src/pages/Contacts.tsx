@@ -2,13 +2,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
-
-const NAV = [
-  { label: 'Мастер-классы', to: '/workshops' },
-  { label: 'Форматы', to: '/formats' },
-  { label: 'Подарочные сертификаты', to: '/certificates' },
-  { label: 'Контакты', to: '/contacts' },
-];
+import DesktopNav from '@/components/DesktopNav';
 
 const Contacts = () => {
   return (
@@ -19,19 +13,7 @@ const Contacts = () => {
           <Link to="/moscow" className="flex items-center">
             <Logo scale={false} />
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
-            {NAV.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  n.to === '/contacts' ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                {n.label}
-              </Link>
-            ))}
-          </nav>
+          <DesktopNav active="/contacts" />
           <a
             href="tel:+79854198903"
             className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"

@@ -4,19 +4,13 @@ import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import DesktopNav from '@/components/DesktopNav';
 
 const HERO_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d3a4daab-e21d-4fcc-bb95-63ee64ddd0b4.png';
 
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
-
-const NAV = [
-  { label: 'Мастер-классы', href: '/workshops', isRoute: true },
-  { label: 'Форматы', href: '/formats', isRoute: true },
-  { label: 'Подарочные сертификаты', href: '/certificates', isRoute: true },
-  { label: 'Контакты', href: '/contacts', isRoute: true },
-];
 
 const SERVICES = [
   {
@@ -77,27 +71,7 @@ const Index = () => {
           <Link to="/moscow" className="flex items-center">
             <Logo scale={false} />
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
-            {NAV.map((n) =>
-              n.isRoute ? (
-                <Link
-                  key={n.label}
-                  to={n.href}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  {n.label}
-                </Link>
-              ) : (
-                <a
-                  key={n.label}
-                  href={n.href}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  {n.label}
-                </a>
-              )
-            )}
-          </nav>
+          <DesktopNav />
           <a
             href="tel:+79854198903"
             className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
