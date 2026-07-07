@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
@@ -36,20 +37,22 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
         <Icon name="Menu" size={22} />
       </button>
 
-      {/* OVERLAY */}
-      <div
-        onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm transition-opacity md:hidden ${
-          open ? 'opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-      />
+      {createPortal(
+        <div className="md:hidden">
+          {/* OVERLAY */}
+          <div
+            onClick={() => setOpen(false)}
+            className={`fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm transition-opacity ${
+              open ? 'opacity-100' : 'pointer-events-none opacity-0'
+            }`}
+          />
 
-      {/* PANEL */}
-      <aside
-        className={`fixed right-0 top-0 z-[70] flex h-full w-[86%] max-w-sm flex-col bg-background shadow-2xl transition-transform duration-300 md:hidden ${
-          open ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
+          {/* PANEL */}
+          <aside
+            className={`fixed right-0 top-0 z-[110] flex h-full w-[86%] max-w-sm flex-col bg-background shadow-2xl transition-transform duration-300 ${
+              open ? 'translate-x-0' : 'translate-x-full'
+            }`}
+          >
         <div className="flex items-center justify-between border-b border-border px-6 py-5">
           <Link to="/moscow" onClick={() => setOpen(false)} className="flex items-center">
             <Logo className="h-8" />
@@ -121,10 +124,13 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
           </div>
         </div>
 
-        <div className="border-t border-border p-6">
-          <Button className="w-full rounded-full py-6 text-base">Записаться</Button>
-        </div>
-      </aside>
+            <div className="border-t border-border p-6">
+              <Button className="w-full rounded-full py-6 text-base">Записаться</Button>
+            </div>
+          </aside>
+        </div>,
+        document.body
+      )}
     </>
   );
 };
