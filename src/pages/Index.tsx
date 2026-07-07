@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import MobileMenu from '@/components/MobileMenu';
 
 const HERO_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/files/e883a661-1e93-47b3-b785-1c8dd183d013.jpg';
@@ -32,7 +33,7 @@ const Index = () => {
       {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="container flex h-20 items-center justify-between">
-          <a href="#" className="flex items-center gap-3">
+          <Link to="/moscow" className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Icon name="Flame" size={22} />
             </span>
@@ -40,7 +41,7 @@ const Index = () => {
               Дымов<br />
               <span className="text-primary text-lg">Керамика</span>
             </span>
-          </a>
+          </Link>
           <nav className="hidden items-center gap-8 md:flex">
             {NAV.map((n) =>
               n.isRoute ? (
@@ -62,7 +63,8 @@ const Index = () => {
               )
             )}
           </nav>
-          <Button className="rounded-full">Записаться</Button>
+          <Button className="hidden rounded-full md:inline-flex">Записаться</Button>
+          <MobileMenu />
         </div>
       </header>
 

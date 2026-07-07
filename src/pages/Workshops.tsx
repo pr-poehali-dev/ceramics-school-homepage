@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import MobileMenu from '@/components/MobileMenu';
 
 const WORKSHOPS = [
   {
@@ -55,7 +56,7 @@ const Workshops = () => {
       {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="container flex h-20 items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/moscow" className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Icon name="Flame" size={22} />
             </span>
@@ -78,7 +79,8 @@ const Workshops = () => {
               Контакты
             </Link>
           </nav>
-          <Button className="rounded-full">Записаться</Button>
+          <Button className="hidden rounded-full md:inline-flex">Записаться</Button>
+          <MobileMenu active="/workshops" />
         </div>
       </header>
 
