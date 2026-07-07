@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
-import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
-import SocialLinks from '@/components/SocialLinks';
 
 const NAV = [
   { label: 'Мастер-классы', to: '/workshops' },
@@ -34,10 +32,12 @@ const Contacts = () => {
               </Link>
             ))}
           </nav>
-          <div className="hidden items-center gap-4 md:flex">
-            <SocialLinks size={18} variant="solid" />
-            <Button className="rounded-full">Записаться</Button>
-          </div>
+          <a
+            href="tel:+79854198903"
+            className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
+          >
+            <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
+          </a>
           <MobileMenu active="/contacts" />
         </div>
       </header>

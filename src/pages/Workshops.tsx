@@ -75,10 +75,12 @@ const Workshops = () => {
               Контакты
             </Link>
           </nav>
-          <div className="hidden items-center gap-4 md:flex">
-            <SocialLinks size={18} variant="solid" />
-            <Button className="rounded-full">Записаться</Button>
-          </div>
+          <a
+            href="tel:+79854198903"
+            className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
+          >
+            <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
+          </a>
           <MobileMenu active="/workshops" />
         </div>
       </header>
@@ -186,6 +188,9 @@ const Workshops = () => {
           <span className="flex items-center gap-2">
             <Icon name="MapPin" size={16} className="text-primary" /> ВДНХ, Москва
           </span>
+          <a href="tel:+79854198903" className="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary">
+            <Icon name="Phone" size={16} className="text-primary" /> +7 (985) 419-89-03
+          </a>
           <SocialLinks size={18} variant="solid" />
           <span>© 2026 Все права защищены</span>
         </div>

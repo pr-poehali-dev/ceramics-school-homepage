@@ -98,10 +98,12 @@ const Index = () => {
               )
             )}
           </nav>
-          <div className="hidden items-center gap-4 md:flex">
-            <SocialLinks size={18} variant="solid" />
-            <Button className="rounded-full">Записаться</Button>
-          </div>
+          <a
+            href="tel:+79854198903"
+            className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
+          >
+            <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
+          </a>
           <MobileMenu />
         </div>
       </header>
@@ -256,9 +258,9 @@ const Index = () => {
             <p className="flex items-center gap-2">
               <Icon name="MapPin" size={18} className="text-primary" /> ВДНХ, Москва
             </p>
-            <p className="flex items-center gap-2">
-              <Icon name="Phone" size={18} className="text-primary" /> +7 (495) 000-00-00
-            </p>
+            <a href="tel:+79854198903" className="flex items-center gap-2 transition-colors hover:text-primary">
+              <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
+            </a>
             <p className="flex items-center gap-2">
               <Icon name="Clock" size={18} className="text-primary" /> Ежедневно 10:00–21:00
             </p>
