@@ -137,7 +137,7 @@ export const ALL_FORMATS = [
     location: 'both',
     durationKey: 'negotiable',
     desc: 'Мероприятия — это организация праздников любого формата: дни рождения, свидания в мастерской, корпоративы, девичники и аренда зала на ВДНХ. Опытные мастера обучают гончарному ремеслу, ручной лепке и росписи, помогая создать авторское изделие. Подходит для детей от 3 лет и взрослых.',
-    cta: { label: 'Подробнее', variant: 'outline' as const, icon: 'ArrowRight' },
+    cta: { label: 'Отправить заявку', variant: 'outline' as const, icon: 'Send', action: 'events' },
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
