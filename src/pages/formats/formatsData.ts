@@ -77,7 +77,7 @@ export const ALL_FORMATS = [
     location: 'studio',
     durationKey: '6h',
     desc: 'Тематические мастер-классы — это занятия по созданию конкретного изделия (блюдо, маслёнка, гномы, грибы, изразцы, пуровер и др.) с использованием лепки, гончарного круга или росписи. Всё включено, готовое изделие после обжига.',
-    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
+    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight', action: 'thematic' },
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0691624f-cc62-4d3b-8069-e5ab1d935b18.png',

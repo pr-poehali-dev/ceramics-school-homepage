@@ -5,6 +5,7 @@ import type { FormatItem } from './formatsData';
 import KidsDialog from './dialogs/KidsDialog';
 import PromoDialog from './dialogs/PromoDialog';
 import OffsiteDialog from './dialogs/OffsiteDialog';
+import ThematicDialog from './dialogs/ThematicDialog';
 
 const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
   const button = (
@@ -32,6 +33,7 @@ const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
   if (action === 'kids') return <KidsDialog>{button}</KidsDialog>;
   if (action === 'promo') return <PromoDialog>{button}</PromoDialog>;
   if (action === 'offsite') return <OffsiteDialog>{button}</OffsiteDialog>;
+  if (action === 'thematic') return <ThematicDialog>{button}</ThematicDialog>;
 
   return button;
 };
