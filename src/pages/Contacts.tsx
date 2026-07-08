@@ -57,7 +57,7 @@ const Contacts = () => {
               icon: 'MapPin',
               label: 'Адрес',
               lines: ['г. Москва, проспект Мира,', 'д. 119, стр. 186'],
-              href: 'https://yandex.ru/maps/?text=55.836,37.630',
+              href: 'https://yandex.ru/maps/?text=Москва, проспект Мира, 119с186',
             },
             {
               icon: 'Clock',
@@ -88,12 +88,12 @@ const Contacts = () => {
         <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl border border-border">
           {/* Yandex map embed */}
           <iframe
-            src="https://yandex.ru/map-widget/v1/?ll=37.630491%2C55.836021&z=16&pt=37.630491,55.836021,pm2rdm&size=large"
+            src="https://yandex.ru/map-widget/v1/?mode=search&text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%2C%20%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82%20%D0%9C%D0%B8%D1%80%D0%B0%2C%20119%D1%81186&z=17"
             width="100%"
             height="380"
             frameBorder="0"
             allowFullScreen
-            title="Карта — Дымов Керамика"
+            title="Карта — Дымов Керамика, проспект Мира 119 стр 186"
             className="block w-full"
           />
         </div>
