@@ -35,8 +35,8 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
   return (
     <nav className="hidden items-center gap-8 md:flex">
       <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
-        <button
-          onClick={() => setOpen((v) => !v)}
+        <Link
+          to="/workshops"
           className={`flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary ${
             active === '/workshops' ? 'text-primary' : 'text-muted-foreground'
           }`}
@@ -47,7 +47,7 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
             size={15}
             className={`transition-transform ${open ? 'rotate-180' : ''}`}
           />
-        </button>
+        </Link>
 
         <div
           className={`absolute left-0 top-full z-50 pt-3 transition-all ${
@@ -55,14 +55,6 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
           }`}
         >
           <div className="w-60 overflow-hidden rounded-2xl border border-border bg-background shadow-xl">
-            <Link
-              to="/workshops"
-              className="flex items-center justify-between px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
-            >
-              Все мастер-классы
-              <Icon name="ArrowRight" size={15} className="text-primary" />
-            </Link>
-            <div className="h-px bg-border" />
             {WORKSHOP_LINKS.map((w) => (
               <Link
                 key={w.to}

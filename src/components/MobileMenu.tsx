@@ -79,28 +79,32 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
           {/* NAV */}
           <nav className="flex flex-col gap-1">
             {/* Мастер-классы с подпунктами */}
-            <button
-              onClick={() => setWsOpen((v) => !v)}
-              className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium transition-colors ${
-                active === '/workshops' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+            <div
+              className={`flex items-center rounded-xl text-lg font-medium transition-colors ${
+                active === '/workshops' ? 'bg-primary/10 text-primary' : 'text-foreground'
               }`}
             >
-              Мастер-классы
-              <Icon
-                name="ChevronDown"
-                size={18}
-                className={`text-muted-foreground transition-transform ${wsOpen ? 'rotate-180' : ''}`}
-              />
-            </button>
+              <Link
+                to="/workshops"
+                onClick={() => setOpen(false)}
+                className="flex-1 rounded-l-xl px-4 py-3.5 hover:bg-muted"
+              >
+                Мастер-классы
+              </Link>
+              <button
+                onClick={() => setWsOpen((v) => !v)}
+                aria-label="Показать мастер-классы"
+                className="flex h-full items-center rounded-r-xl px-4 py-3.5 hover:bg-muted"
+              >
+                <Icon
+                  name="ChevronDown"
+                  size={18}
+                  className={`text-muted-foreground transition-transform ${wsOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+            </div>
             {wsOpen && (
               <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
-                <Link
-                  to="/workshops"
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-muted"
-                >
-                  Все мастер-классы
-                </Link>
                 {WORKSHOP_LINKS.map((w) => (
                   <Link
                     key={w.to}
