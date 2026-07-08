@@ -350,6 +350,10 @@ const Index = () => {
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-t border-border/60 py-5 text-center text-sm text-muted-foreground">
           <span>© 2003–2026 Дымов Керамика. Все права защищены.</span>
           <span className="text-muted-foreground/50">·</span>
+          <Link to="/info" className="transition-colors hover:text-primary">
+            Информация
+          </Link>
+          <span className="text-muted-foreground/50">·</span>
           <Link to="/offer" className="transition-colors hover:text-primary">
             Публичная оферта
           </Link>
