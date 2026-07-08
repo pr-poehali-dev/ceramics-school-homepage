@@ -5,6 +5,7 @@ import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import ReviewLinks from '@/components/ReviewLinks';
+import FooterLegal from '@/components/FooterLegal';
 import DesktopNav from '@/components/DesktopNav';
 import CartButton from '@/components/CartButton';
 import { ALL_FORMATS, PEOPLE_OPTIONS } from './formats/formatsData';
@@ -121,7 +122,7 @@ const Formats = () => {
           </a>
           <ReviewLinks />
           <SocialLinks size={18} variant="solid" />
-          <span>© 2026 Все права защищены</span>
+          <FooterLegal />
         </div>
       </footer>
     </div>

@@ -5,6 +5,7 @@ import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import ReviewLinks from '@/components/ReviewLinks';
+import FooterLegal from '@/components/FooterLegal';
 
 interface WorkshopData {
   slug: string;
@@ -241,7 +242,7 @@ const WorkshopDetail = () => {
           </a>
           <ReviewLinks />
           <SocialLinks size={18} variant="solid" />
-          <span>© 2026 Все права защищены</span>
+          <FooterLegal />
         </div>
       </footer>
     </div>

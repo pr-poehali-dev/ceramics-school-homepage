@@ -5,6 +5,7 @@ import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import ReviewLinks from '@/components/ReviewLinks';
+import FooterLegal from '@/components/FooterLegal';
 import DesktopNav from '@/components/DesktopNav';
 import { useCart } from '@/context/CartContext';
 
@@ -134,7 +135,7 @@ const Cart = () => {
           </a>
           <ReviewLinks />
           <SocialLinks size={18} variant="solid" />
-          <span>© 2026 Все права защищены</span>
+          <FooterLegal />
         </div>
       </footer>
     </div>

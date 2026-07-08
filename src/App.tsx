@@ -14,6 +14,7 @@ import Certificates from "./pages/Certificates";
 import Contacts from "./pages/Contacts";
 import Cart from "./pages/Cart";
 import Reviews from "./pages/Reviews";
+import Offer from "./pages/Offer";
 import NotFound from "./pages/NotFound";
 import { CartProvider } from "./context/CartContext";
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/reviews" element={<Reviews />} />
+            <Route path="/offer" element={<Offer />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
