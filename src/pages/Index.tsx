@@ -5,6 +5,7 @@ import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import DesktopNav from '@/components/DesktopNav';
+import { ALL_FORMATS } from './formats/formatsData';
 
 const HERO_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d3a4daab-e21d-4fcc-bb95-63ee64ddd0b4.png';
@@ -36,29 +37,6 @@ const SERVICES = [
     title: 'Акрил',
     desc: 'Роспись готовых изделий',
     price: 'от 1500₽',
-  },
-];
-
-const FORMATS = [
-  {
-    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/cd92a426-9a1e-4eba-81fa-09e5b75b623d.jpg',
-    title: 'Детские',
-    desc: 'Занятия по сб и вс',
-  },
-  {
-    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
-    title: 'Выездные',
-    desc: 'Мастер-класс у вас',
-  },
-  {
-    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7898283f-b258-43b1-ae5e-b5d2e1c4b1f7.jpg',
-    title: 'Дни рождения',
-    desc: 'Праздник с глиной',
-  },
-  {
-    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d38779de-6df5-4423-8740-68cce4b10ff0.jpg',
-    title: 'Корпоративы',
-    desc: 'Тимбилдинг в студии',
   },
 ];
 
@@ -150,26 +128,50 @@ const Index = () => {
       {/* FORMATS */}
       <section id="formats" className="bg-secondary/50 py-16 md:py-24">
         <div className="container">
-          <SectionTitle eyebrow="Форматы" title="Популярные форматы" />
+          <SectionTitle eyebrow="Форматы" title="Выберите свой формат" />
+          <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">
+            От разовых занятий до праздников и выездных мастер-классов — подберите
+            подходящий вариант для себя, ребёнка или компании.
+          </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {FORMATS.map((f) => (
-              <div
+            {ALL_FORMATS.map((f) => (
+              <Link
                 key={f.title}
-                className="group overflow-hidden rounded-2xl bg-background shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+                to="/formats"
+                className="group flex flex-col overflow-hidden rounded-2xl bg-background shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
               >
-                <div className="aspect-[4/3] overflow-hidden">
+                <div className="relative aspect-[4/3] overflow-hidden">
                   <img
                     src={f.img}
                     alt={f.title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
+                  <span className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-primary shadow-sm backdrop-blur">
+                    <Icon name={f.icon} size={20} />
+                  </span>
                 </div>
-                <div className="p-6">
-                  <h3 className="font-display text-xl font-semibold">{f.title}</h3>
-                  <p className="text-sm text-muted-foreground">{f.desc}</p>
+                <div className="flex flex-1 flex-col p-5">
+                  <h3 className="font-display text-lg font-semibold leading-tight">{f.title}</h3>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Icon name="MapPin" size={13} className="text-primary/60" /> {f.place}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Icon name="Calendar" size={13} className="text-primary/60" /> {f.days}
+                    </span>
+                  </div>
+                  <p className="mt-auto pt-4 text-base font-semibold text-primary">{f.price}</p>
                 </div>
-              </div>
+              </Link>
             ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Link to="/formats">
+              <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
+                Все форматы и цены
+                <Icon name="ArrowRight" size={18} className="ml-2" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
