@@ -250,7 +250,16 @@ const Index = () => {
           ))}
         </div>
 
-        <div className="mt-10 text-center">
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <a
+            href="https://yandex.ru/profile/8182762882?lang=ru&utm_source=copy_link&utm_medium=social&utm_campaign=share"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Button size="lg" className="rounded-full px-8 text-base">
+              <Icon name="Star" size={18} className="mr-2" /> Оставить отзыв
+            </Button>
+          </a>
           <Link to="/reviews">
             <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
               Все отзывы и работы

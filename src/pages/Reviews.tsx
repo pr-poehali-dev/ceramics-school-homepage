@@ -71,6 +71,18 @@ const Reviews = () => {
               <p className="text-xs text-muted-foreground">отзывов о студии</p>
             </div>
           </div>
+
+          <div className="mt-6">
+            <a
+              href="https://yandex.ru/profile/8182762882?lang=ru&utm_source=copy_link&utm_medium=social&utm_campaign=share"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Button size="lg" className="rounded-full px-8">
+                <Icon name="Star" size={18} className="mr-2" /> Оставить отзыв
+              </Button>
+            </a>
+          </div>
         </div>
 
         {/* GALLERY */}
