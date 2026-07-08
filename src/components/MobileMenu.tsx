@@ -8,6 +8,7 @@ import SocialLinks from '@/components/SocialLinks';
 
 const NAV = [
   { label: 'Форматы', to: '/formats' },
+  { label: 'Отзывы', to: '/reviews' },
   { label: 'Подарочные сертификаты', to: '/certificates' },
   { label: 'Контакты', to: '/contacts' },
 ];

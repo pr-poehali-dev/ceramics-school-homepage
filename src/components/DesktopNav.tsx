@@ -11,6 +11,7 @@ const WORKSHOP_LINKS = [
 
 const LINKS = [
   { label: 'Форматы', to: '/formats' },
+  { label: 'Отзывы', to: '/reviews' },
   { label: 'Подарочные сертификаты', to: '/certificates' },
   { label: 'Контакты', to: '/contacts' },
 ];
