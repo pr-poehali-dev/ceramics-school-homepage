@@ -6,6 +6,7 @@ import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import DesktopNav from '@/components/DesktopNav';
 import { ALL_FORMATS } from './formats/formatsData';
+import { REVIEWS, GALLERY } from './reviews/reviewsData';
 
 const HERO_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d3a4daab-e21d-4fcc-bb95-63ee64ddd0b4.png';
@@ -39,6 +40,18 @@ const SERVICES = [
     price: 'от 1500₽',
   },
 ];
+
+const REVIEW_AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
+const HOME_REVIEWS = REVIEWS.slice(0, 3);
+const HOME_GALLERY = GALLERY.slice(0, 6);
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join('');
 
 const Index = () => {
   return (
@@ -173,6 +186,77 @@ const Index = () => {
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* REVIEWS */}
+      <section id="reviews" className="container py-16 md:py-24">
+        <SectionTitle eyebrow="Отзывы" title="Нам доверяют" />
+
+        <div className="mx-auto mt-6 flex w-fit items-center gap-3 rounded-2xl border border-border bg-card px-6 py-3">
+          <span className="font-display text-3xl font-semibold text-primary">{REVIEW_AVG}</span>
+          <div className="flex gap-0.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Icon key={i} name="Star" size={16} className="fill-amber-400 text-amber-400" />
+            ))}
+          </div>
+          <span className="text-sm text-muted-foreground">{REVIEWS.length}+ отзывов</span>
+        </div>
+
+        {/* mini gallery */}
+        <div className="mt-10 grid grid-cols-3 gap-3 sm:grid-cols-6">
+          {HOME_GALLERY.map((src, i) => (
+            <Link
+              key={src}
+              to="/reviews"
+              className="group relative aspect-square overflow-hidden rounded-2xl"
+            >
+              <img
+                src={src}
+                alt={`Работа участников ${i + 1}`}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+            </Link>
+          ))}
+        </div>
+
+        {/* review cards */}
+        <div className="mt-6 grid gap-6 md:grid-cols-3">
+          {HOME_REVIEWS.map((r) => (
+            <div key={r.name} className="rounded-2xl border border-border bg-card p-6">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
+                  {initials(r.name)}
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate font-medium leading-tight">{r.name}</p>
+                  <div className="mt-0.5 flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Icon
+                        key={i}
+                        name="Star"
+                        size={13}
+                        className={i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <p className="mt-4 line-clamp-5 text-sm leading-relaxed text-muted-foreground">
+                {r.text}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link to="/reviews">
+            <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
+              Все отзывы и работы
+              <Icon name="ArrowRight" size={18} className="ml-2" />
+            </Button>
+          </Link>
         </div>
       </section>
 
