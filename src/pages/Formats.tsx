@@ -4,6 +4,7 @@ import Icon from '@/components/ui/icon';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import ReviewLinks from '@/components/ReviewLinks';
 import DesktopNav from '@/components/DesktopNav';
 import CartButton from '@/components/CartButton';
 import { ALL_FORMATS, PEOPLE_OPTIONS } from './formats/formatsData';
@@ -118,6 +119,7 @@ const Formats = () => {
           <a href="tel:+79854198903" className="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary">
             <Icon name="Phone" size={16} className="text-primary" /> +7 (985) 419-89-03
           </a>
+          <ReviewLinks />
           <SocialLinks size={18} variant="solid" />
           <span>© 2026 Все права защищены</span>
         </div>

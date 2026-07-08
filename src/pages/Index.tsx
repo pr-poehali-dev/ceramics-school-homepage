@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import ReviewLinks from '@/components/ReviewLinks';
 import DesktopNav from '@/components/DesktopNav';
 import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
@@ -342,6 +343,7 @@ const Index = () => {
             <p className="flex items-center gap-2">
               <Icon name="Clock" size={18} className="text-primary" /> Ежедневно 10:00–21:00
             </p>
+            <ReviewLinks />
           </div>
           <SocialLinks className="md:justify-end" />
         </div>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import ReviewLinks from '@/components/ReviewLinks';
 import DesktopNav from '@/components/DesktopNav';
 
 const WORKSHOPS = [
@@ -179,6 +180,7 @@ const Workshops = () => {
           <a href="tel:+79854198903" className="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary">
             <Icon name="Phone" size={16} className="text-primary" /> +7 (985) 419-89-03
           </a>
+          <ReviewLinks />
           <SocialLinks size={18} variant="solid" />
           <span>© 2026 Все права защищены</span>
         </div>
