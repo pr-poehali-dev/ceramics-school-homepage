@@ -175,9 +175,9 @@ export const DURATION_OPTIONS = [
   { label: 'Договорная', value: 'negotiable' },
 ];
 export const LOCATION_OPTIONS = [
+  { label: 'Любой', value: 'any' },
   { label: 'В студии', value: 'studio' },
   { label: 'Выезд', value: 'offsite' },
-  { label: 'Любой', value: 'any' },
 ];
 export const PEOPLE_OPTIONS = [
   { label: 'До 10', value: 'lt10', min: 1, max: 9 },
