@@ -39,7 +39,7 @@ const Contacts = () => {
         </div>
 
         {/* CONTACT CARDS */}
-        <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2">
           {[
             {
               icon: 'Phone',
@@ -71,20 +71,22 @@ const Contacts = () => {
               href={c.href ?? undefined}
               target={c.href?.startsWith('http') ? '_blank' : undefined}
               rel="noreferrer"
-              className={`group block rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg sm:p-6 ${c.href ? 'cursor-pointer' : 'cursor-default'}`}
+              className={`group flex items-center gap-4 rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg ${c.href ? 'cursor-pointer' : 'cursor-default'}`}
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                 <Icon name={c.icon} size={22} />
               </span>
-              <p className="mt-4 text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">{c.label}</p>
-              {c.lines.map((l) => (
-                <p
-                  key={l}
-                  className="mt-1 break-words hyphens-auto text-[15px] font-medium leading-snug sm:text-base"
-                >
-                  {l}
-                </p>
-              ))}
+              <div className="min-w-0">
+                <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">{c.label}</p>
+                {c.lines.map((l) => (
+                  <p
+                    key={l}
+                    className="mt-0.5 text-[13px] font-medium leading-snug sm:text-[15px]"
+                  >
+                    {l}
+                  </p>
+                ))}
+              </div>
             </a>
           ))}
         </div>
