@@ -8,6 +8,7 @@ import OffsiteDialog from './dialogs/OffsiteDialog';
 import ThematicDialog from './dialogs/ThematicDialog';
 import EventsDialog from './dialogs/EventsDialog';
 import CoworkingDialog from './dialogs/CoworkingDialog';
+import DateDialog from './dialogs/DateDialog';
 
 const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
   const button = (
@@ -38,6 +39,7 @@ const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
   if (action === 'thematic') return <ThematicDialog>{button}</ThematicDialog>;
   if (action === 'events') return <EventsDialog>{button}</EventsDialog>;
   if (action === 'coworking') return <CoworkingDialog>{button}</CoworkingDialog>;
+  if (action === 'date') return <DateDialog>{button}</DateDialog>;
 
   return button;
 };

@@ -97,7 +97,7 @@ export const ALL_FORMATS = [
     location: 'studio',
     durationKey: 'negotiable',
     desc: '«Свидание в мастерской» — это романтический мастер-класс для двоих за одним гончарным кругом. За 1,5 часа вы создаёте и сразу расписываете уникальное изделие под руководством мастера. Всё включено, готовую работу забираете через 3 недели.',
-    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
+    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight', action: 'date' },
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/42ebb68f-5d36-4a32-b4bd-b871307db9bc.jpg',
