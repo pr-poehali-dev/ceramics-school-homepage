@@ -15,6 +15,8 @@ const ALL_FORMATS = [
     place: 'В студии',
     duration: '1 час',
     people: '1–20',
+    peopleMin: 1,
+    peopleMax: 20,
     age: '3+',
     ageMin: 3,
     days: 'Любой день',
@@ -33,6 +35,8 @@ const ALL_FORMATS = [
     place: 'В студии',
     duration: '1 час',
     people: '1–20',
+    peopleMin: 1,
+    peopleMax: 20,
     age: '3–10 лет',
     ageMin: 3,
     days: 'Сб / Вс',
@@ -51,6 +55,8 @@ const ALL_FORMATS = [
     place: 'В студии',
     duration: '1 час',
     people: '10–12',
+    peopleMin: 10,
+    peopleMax: 12,
     age: '7+',
     ageMin: 7,
     days: 'Пн – Пт',
@@ -69,6 +75,8 @@ const ALL_FORMATS = [
     place: 'В студии',
     duration: '6,5 ч',
     people: '1–3',
+    peopleMin: 1,
+    peopleMax: 3,
     age: '12+',
     ageMin: 12,
     days: 'Любой день',
@@ -87,6 +95,8 @@ const ALL_FORMATS = [
     place: 'В студии',
     duration: '1,5 часа',
     people: '2',
+    peopleMin: 2,
+    peopleMax: 2,
     age: '3+',
     ageMin: 3,
     days: 'Любой день',
@@ -105,6 +115,8 @@ const ALL_FORMATS = [
     place: 'В студии',
     duration: 'от 1 часа',
     people: 'от 1',
+    peopleMin: 1,
+    peopleMax: 100,
     age: '3+',
     ageMin: 3,
     days: 'Любой день',
@@ -123,6 +135,8 @@ const ALL_FORMATS = [
     place: 'В студии или выезд',
     duration: 'Индивидуально',
     people: 'Любое',
+    peopleMin: 1,
+    peopleMax: 100,
     age: '3+',
     ageMin: 3,
     days: 'Любой день',
@@ -141,6 +155,8 @@ const ALL_FORMATS = [
     place: 'Выезд к вам',
     duration: 'от 30 мин',
     people: '1–100',
+    peopleMin: 1,
+    peopleMax: 100,
     age: '3+',
     ageMin: 3,
     days: 'Любой день',
@@ -170,12 +186,18 @@ const LOCATION_OPTIONS = [
   { label: 'Выезд', value: 'offsite' },
   { label: 'Любой', value: 'any' },
 ];
+const PEOPLE_OPTIONS = [
+  { label: 'До 10', value: 'lt10', min: 1, max: 9 },
+  { label: 'От 10 до 20', value: '10-20', min: 10, max: 20 },
+  { label: 'От 20 до 30', value: '20-30', min: 20, max: 30 },
+];
 
 const Formats = () => {
   const [ageFilter, setAgeFilter] = useState<string | null>(null);
   const [dayFilter, setDayFilter] = useState<string>('any');
   const [durationFilter, setDurationFilter] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string>('any');
+  const [peopleFilter, setPeopleFilter] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const reset = () => {
@@ -183,6 +205,7 @@ const Formats = () => {
     setDayFilter('any');
     setDurationFilter(null);
     setLocationFilter('any');
+    setPeopleFilter(null);
   };
 
   const results = useMemo(() => {
@@ -194,9 +217,13 @@ const Formats = () => {
       if (dayFilter !== 'any' && f.daysKey !== dayFilter && f.daysKey !== 'any') return false;
       if (durationFilter && f.durationKey !== durationFilter) return false;
       if (locationFilter !== 'any' && f.location !== locationFilter && f.location !== 'both') return false;
+      if (peopleFilter) {
+        const opt = PEOPLE_OPTIONS.find((o) => o.value === peopleFilter);
+        if (opt && (f.peopleMax < opt.min || f.peopleMin > opt.max)) return false;
+      }
       return true;
     });
-  }, [ageFilter, dayFilter, durationFilter, locationFilter]);
+  }, [ageFilter, dayFilter, durationFilter, locationFilter, peopleFilter]);
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
@@ -317,6 +344,28 @@ const Formats = () => {
                     }`}
                   >
                     {l.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* PEOPLE */}
+            <div>
+              <p className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Icon name="Users" size={15} /> Количество человек
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {PEOPLE_OPTIONS.map((p) => (
+                  <button
+                    key={p.value}
+                    onClick={() => setPeopleFilter(peopleFilter === p.value ? null : p.value)}
+                    className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
+                      peopleFilter === p.value
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-background hover:border-primary/50'
+                    }`}
+                  >
+                    {p.label}
                   </button>
                 ))}
               </div>
