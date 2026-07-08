@@ -9,7 +9,7 @@ import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
 
 const HERO_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d3a4daab-e21d-4fcc-bb95-63ee64ddd0b4.png';
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/15712126-3d2f-4720-9917-7fe580f849d4.jpg';
 
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
@@ -60,15 +60,24 @@ const Index = () => {
 
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div className="container grid items-center gap-10 py-16 md:grid-cols-2 md:py-24">
-          <div className="animate-fade-in">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+        {/* Background image */}
+        <img
+          src={HERO_IMG}
+          alt="Мастерская керамики"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/20" />
+
+        <div className="container relative flex min-h-[75vh] items-center py-20 md:min-h-[85vh]">
+          <div className="max-w-2xl animate-fade-in text-white">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur">
               <Icon name="MapPin" size={16} /> Студия керамики на ВДНХ
             </span>
             <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] md:text-7xl">
-              Создайте изделие из&nbsp;глины <span className="text-primary italic">своими руками</span>
+              Создайте изделие из&nbsp;глины <span className="text-primary-foreground italic underline decoration-primary decoration-4 underline-offset-8">своими руками</span>
             </h1>
-            <p className="mt-6 max-w-md text-lg text-muted-foreground">
+            <p className="mt-6 max-w-md text-lg text-white/85">
               Тёплая атмосфера мастерской, опытные преподаватели и настоящая
               радость творчества. Для взрослых и детей.
             </p>
@@ -77,20 +86,14 @@ const Index = () => {
                 <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
               </Button>
               <Link to="/certificates">
-                <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full border-white/40 bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white hover:text-foreground"
+                >
                   <Icon name="Gift" size={18} className="mr-2" /> Подарить сертификат
                 </Button>
               </Link>
-            </div>
-          </div>
-          <div className="animate-scale-in">
-            <div className="relative">
-              <div className="absolute -inset-4 rounded-[2rem] bg-accent/20 blur-2xl" />
-              <img
-                src={HERO_IMG}
-                alt="Мастерская керамики"
-                className="relative aspect-square w-full rounded-[2rem] object-cover shadow-2xl"
-              />
             </div>
           </div>
         </div>
