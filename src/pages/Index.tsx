@@ -257,7 +257,16 @@ const Index = () => {
             rel="noreferrer"
           >
             <Button size="lg" className="rounded-full px-8 text-base">
-              <Icon name="Star" size={18} className="mr-2" /> Оставить отзыв
+              <Icon name="Star" size={18} className="mr-2" /> Отзыв на Яндексе
+            </Button>
+          </a>
+          <a
+            href="https://2gis.ru/moscow/firm/4504128908512077"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Button size="lg" className="rounded-full px-8 text-base">
+              <Icon name="Star" size={18} className="mr-2" /> Отзыв в 2ГИС
             </Button>
           </a>
           <Link to="/reviews">

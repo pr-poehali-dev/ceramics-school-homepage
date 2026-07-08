@@ -72,14 +72,23 @@ const Reviews = () => {
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a
               href="https://yandex.ru/profile/8182762882?lang=ru&utm_source=copy_link&utm_medium=social&utm_campaign=share"
               target="_blank"
               rel="noreferrer"
             >
               <Button size="lg" className="rounded-full px-8">
-                <Icon name="Star" size={18} className="mr-2" /> Оставить отзыв
+                <Icon name="Star" size={18} className="mr-2" /> Отзыв на Яндексе
+              </Button>
+            </a>
+            <a
+              href="https://2gis.ru/moscow/firm/4504128908512077"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Button size="lg" variant="outline" className="rounded-full px-8">
+                <Icon name="Star" size={18} className="mr-2" /> Отзыв в 2ГИС
               </Button>
             </a>
           </div>
