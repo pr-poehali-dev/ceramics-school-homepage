@@ -1,12 +1,6 @@
-import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
-import MobileMenu from '@/components/MobileMenu';
-import Logo from '@/components/Logo';
-import SocialLinks from '@/components/SocialLinks';
-import ReviewLinks from '@/components/ReviewLinks';
-import FooterLegal from '@/components/FooterLegal';
-import DesktopNav from '@/components/DesktopNav';
-import CartButton from '@/components/CartButton';
+import SiteHeader from '@/components/SiteHeader';
+import SiteFooter from '@/components/SiteFooter';
 
 const SECTIONS = [
   { id: 'delivery', label: 'Доставка', icon: 'Truck' },
@@ -17,24 +11,7 @@ const Info = () => {
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
-        <div className="container flex h-20 items-center justify-between">
-          <Link to="/moscow" className="flex items-center">
-            <Logo scale={false} />
-          </Link>
-          <DesktopNav />
-          <a
-            href="tel:+79854198903"
-            className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
-          >
-            <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
-          </a>
-          <div className="flex items-center gap-3">
-            <CartButton />
-            <MobileMenu />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       <div className="container py-12 md:py-16">
         <div className="mx-auto max-w-3xl">
@@ -163,20 +140,7 @@ const Info = () => {
       </div>
 
       {/* FOOTER */}
-      <footer className="mt-16 border-t border-border bg-secondary/40">
-        <div className="container flex flex-col items-center justify-between gap-4 py-8 text-sm text-muted-foreground md:flex-row">
-          <Logo className="h-9" />
-          <span className="flex items-center gap-2">
-            <Icon name="MapPin" size={16} className="text-primary" /> ВДНХ, Москва
-          </span>
-          <a href="tel:+79854198903" className="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary">
-            <Icon name="Phone" size={16} className="text-primary" /> +7 (985) 419-89-03
-          </a>
-          <ReviewLinks />
-          <SocialLinks size={18} variant="solid" />
-          <FooterLegal />
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 };

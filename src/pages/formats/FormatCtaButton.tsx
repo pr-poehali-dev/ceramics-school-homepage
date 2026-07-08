@@ -1,14 +1,26 @@
+import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import type { FormatItem } from './formatsData';
-import KidsDialog from './dialogs/KidsDialog';
-import PromoDialog from './dialogs/PromoDialog';
-import OffsiteDialog from './dialogs/OffsiteDialog';
-import ThematicDialog from './dialogs/ThematicDialog';
-import EventsDialog from './dialogs/EventsDialog';
-import CoworkingDialog from './dialogs/CoworkingDialog';
-import DateDialog from './dialogs/DateDialog';
+
+const KidsDialog = lazy(() => import('./dialogs/KidsDialog'));
+const PromoDialog = lazy(() => import('./dialogs/PromoDialog'));
+const OffsiteDialog = lazy(() => import('./dialogs/OffsiteDialog'));
+const ThematicDialog = lazy(() => import('./dialogs/ThematicDialog'));
+const EventsDialog = lazy(() => import('./dialogs/EventsDialog'));
+const CoworkingDialog = lazy(() => import('./dialogs/CoworkingDialog'));
+const DateDialog = lazy(() => import('./dialogs/DateDialog'));
+
+const DIALOGS = {
+  kids: KidsDialog,
+  promo: PromoDialog,
+  offsite: OffsiteDialog,
+  thematic: ThematicDialog,
+  events: EventsDialog,
+  coworking: CoworkingDialog,
+  date: DateDialog,
+} as const;
 
 const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
   const button = (
@@ -19,7 +31,6 @@ const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
   );
 
   const action = 'action' in cta ? cta.action : undefined;
-
   const to = 'to' in cta ? cta.to : undefined;
 
   if (action === 'link' && to) {
@@ -33,13 +44,15 @@ const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
     );
   }
 
-  if (action === 'kids') return <KidsDialog>{button}</KidsDialog>;
-  if (action === 'promo') return <PromoDialog>{button}</PromoDialog>;
-  if (action === 'offsite') return <OffsiteDialog>{button}</OffsiteDialog>;
-  if (action === 'thematic') return <ThematicDialog>{button}</ThematicDialog>;
-  if (action === 'events') return <EventsDialog>{button}</EventsDialog>;
-  if (action === 'coworking') return <CoworkingDialog>{button}</CoworkingDialog>;
-  if (action === 'date') return <DateDialog>{button}</DateDialog>;
+  const Dialog = action ? DIALOGS[action as keyof typeof DIALOGS] : undefined;
+
+  if (Dialog) {
+    return (
+      <Suspense fallback={button}>
+        <Dialog>{button}</Dialog>
+      </Suspense>
+    );
+  }
 
   return button;
 };

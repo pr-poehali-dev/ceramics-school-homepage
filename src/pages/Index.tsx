@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
-import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import ReviewLinks from '@/components/ReviewLinks';
-import DesktopNav from '@/components/DesktopNav';
+import SiteHeader from '@/components/SiteHeader';
 import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
 
@@ -57,22 +56,7 @@ const initials = (name: string) =>
 const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
-      {/* HEADER */}
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
-        <div className="container flex h-20 items-center justify-between">
-          <Link to="/moscow" className="flex items-center">
-            <Logo scale={false} />
-          </Link>
-          <DesktopNav />
-          <a
-            href="tel:+79854198903"
-            className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
-          >
-            <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
-          </a>
-          <MobileMenu />
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* HERO */}
       <section className="relative overflow-hidden">

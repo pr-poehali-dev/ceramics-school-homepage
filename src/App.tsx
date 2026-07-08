@@ -1,4 +1,4 @@
-
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,19 +7,26 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import ChooseCity from "./pages/ChooseCity";
 import Index from "./pages/Index";
-import Workshops from "./pages/Workshops";
-import WorkshopDetail from "./pages/WorkshopDetail";
-import Formats from "./pages/Formats";
-import Certificates from "./pages/Certificates";
-import Contacts from "./pages/Contacts";
-import Cart from "./pages/Cart";
-import Reviews from "./pages/Reviews";
-import Offer from "./pages/Offer";
-import Info from "./pages/Info";
-import NotFound from "./pages/NotFound";
 import { CartProvider } from "./context/CartContext";
 
+const Workshops = lazy(() => import("./pages/Workshops"));
+const WorkshopDetail = lazy(() => import("./pages/WorkshopDetail"));
+const Formats = lazy(() => import("./pages/Formats"));
+const Certificates = lazy(() => import("./pages/Certificates"));
+const Contacts = lazy(() => import("./pages/Contacts"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Reviews = lazy(() => import("./pages/Reviews"));
+const Offer = lazy(() => import("./pages/Offer"));
+const Info = lazy(() => import("./pages/Info"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
 const queryClient = new QueryClient();
+
+const PageLoader = () => (
+  <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -29,21 +36,23 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<ChooseCity />} />
-            <Route path="/moscow" element={<Index />} />
-            <Route path="/workshops" element={<Workshops />} />
-            <Route path="/workshops/:slug" element={<WorkshopDetail />} />
-            <Route path="/formats" element={<Formats />} />
-            <Route path="/certificates" element={<Certificates />} />
-            <Route path="/contacts" element={<Contacts />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/reviews" element={<Reviews />} />
-            <Route path="/offer" element={<Offer />} />
-            <Route path="/info" element={<Info />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<ChooseCity />} />
+              <Route path="/moscow" element={<Index />} />
+              <Route path="/workshops" element={<Workshops />} />
+              <Route path="/workshops/:slug" element={<WorkshopDetail />} />
+              <Route path="/formats" element={<Formats />} />
+              <Route path="/certificates" element={<Certificates />} />
+              <Route path="/contacts" element={<Contacts />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/offer" element={<Offer />} />
+              <Route path="/info" element={<Info />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>
