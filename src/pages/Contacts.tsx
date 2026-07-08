@@ -71,14 +71,19 @@ const Contacts = () => {
               href={c.href ?? undefined}
               target={c.href?.startsWith('http') ? '_blank' : undefined}
               rel="noreferrer"
-              className={`group rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg ${c.href ? 'cursor-pointer' : 'cursor-default'}`}
+              className={`group block rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg sm:p-6 ${c.href ? 'cursor-pointer' : 'cursor-default'}`}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                 <Icon name={c.icon} size={22} />
               </span>
               <p className="mt-4 text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">{c.label}</p>
               {c.lines.map((l) => (
-                <p key={l} className="mt-1 font-medium leading-snug">{l}</p>
+                <p
+                  key={l}
+                  className="mt-1 break-words hyphens-auto text-[15px] font-medium leading-snug sm:text-base"
+                >
+                  {l}
+                </p>
               ))}
             </a>
           ))}
