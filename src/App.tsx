@@ -12,29 +12,34 @@ import WorkshopDetail from "./pages/WorkshopDetail";
 import Formats from "./pages/Formats";
 import Certificates from "./pages/Certificates";
 import Contacts from "./pages/Contacts";
+import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
+import { CartProvider } from "./context/CartContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<ChooseCity />} />
-          <Route path="/moscow" element={<Index />} />
-          <Route path="/workshops" element={<Workshops />} />
-          <Route path="/workshops/:slug" element={<WorkshopDetail />} />
-          <Route path="/formats" element={<Formats />} />
-          <Route path="/certificates" element={<Certificates />} />
-          <Route path="/contacts" element={<Contacts />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <CartProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<ChooseCity />} />
+            <Route path="/moscow" element={<Index />} />
+            <Route path="/workshops" element={<Workshops />} />
+            <Route path="/workshops/:slug" element={<WorkshopDetail />} />
+            <Route path="/formats" element={<Formats />} />
+            <Route path="/certificates" element={<Certificates />} />
+            <Route path="/contacts" element={<Contacts />} />
+            <Route path="/cart" element={<Cart />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

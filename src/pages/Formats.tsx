@@ -5,6 +5,7 @@ import MobileMenu from '@/components/MobileMenu';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import DesktopNav from '@/components/DesktopNav';
+import CartButton from '@/components/CartButton';
 import { ALL_FORMATS, PEOPLE_OPTIONS } from './formats/formatsData';
 import FormatsFilters from './formats/FormatsFilters';
 import FormatsResults from './formats/FormatsResults';
@@ -58,7 +59,10 @@ const Formats = () => {
           >
             <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
           </a>
-          <MobileMenu active="/formats" />
+          <div className="flex items-center gap-3">
+            <CartButton />
+            <MobileMenu active="/formats" />
+          </div>
         </div>
       </header>
 

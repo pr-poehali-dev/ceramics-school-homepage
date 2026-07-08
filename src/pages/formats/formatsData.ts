@@ -17,7 +17,7 @@ export const ALL_FORMATS = [
     location: 'studio',
     durationKey: '1h',
     desc: 'Классические мастер-классы — это отдельные занятия по одной из четырёх техник на выбор: лепка из глины, гончарный круг, роспись ангобами или роспись акрилом. Всё включено, готовое изделие выдаётся после обжига.',
-    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
+    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight', action: 'link', to: '/workshops' },
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/cd92a426-9a1e-4eba-81fa-09e5b75b623d.jpg',
@@ -37,7 +37,7 @@ export const ALL_FORMATS = [
     location: 'studio',
     durationKey: '1h',
     desc: 'Детский мастер-класс выходного дня по субботам и воскресеньям. Состоит из двух этапов: сначала лепка за столом, через две недели — роспись готовых изделий или утиля. Готовое изделие забирают через две недели после росписи.',
-    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
+    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight', action: 'kids' },
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
@@ -57,7 +57,7 @@ export const ALL_FORMATS = [
     location: 'studio',
     durationKey: '1h',
     desc: 'Детские будничные группы по тарифу промо для групп от 10 до 30 человек. Чем больше групп и человек, тем дешевле стоимость. Скидки до 50% от первоначальной цены.',
-    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight' },
+    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight', action: 'promo' },
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
@@ -157,7 +157,7 @@ export const ALL_FORMATS = [
     location: 'offsite',
     durationKey: 'negotiable',
     desc: 'Выездной мастер-класс, куда входит лепка из глины, роспись ангобами и акрилом. Мастера приезжают с материалами и инструментами, подходит для детей и взрослых, готовые изделия забираете с собой. Стоимость рассчитывается индивидуально.',
-    cta: { label: 'Рассчитать', variant: 'outline' as const, icon: 'Calculator' },
+    cta: { label: 'Отправить заявку', variant: 'outline' as const, icon: 'Send', action: 'offsite' },
   },
 ];
 

@@ -1,6 +1,7 @@
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import type { FormatItem } from './formatsData';
+import FormatCtaButton from './FormatCtaButton';
 
 interface FormatsResultsProps {
   results: FormatItem[];
@@ -76,13 +77,7 @@ const FormatsResults = ({ results, expanded, setExpanded, reset }: FormatsResult
                   </>
                 )}
 
-                <Button
-                  variant={f.cta.variant}
-                  className="mt-5 w-fit shrink-0 rounded-full px-6"
-                >
-                  {f.cta.label}
-                  <Icon name={f.cta.icon} size={15} className="ml-2" />
-                </Button>
+                <FormatCtaButton cta={f.cta} />
               </div>
             </div>
           </div>
