@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 
+const CERTIFICATE_IMG =
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
+
 const PRESETS = [
   { value: 2000, label: '2 000 ₽', popular: false },
   { value: 5000, label: '5 000 ₽', popular: false },
@@ -64,6 +67,18 @@ const Certificates = () => {
             Сертификат на мастер-класс по керамике — подарок, который запомнится.
             Выберите готовый номинал или укажите свою сумму.
           </p>
+        </div>
+
+        {/* CERTIFICATE PHOTO */}
+        <div className="mx-auto mt-12 flex max-w-md justify-center">
+          <div className="relative animate-scale-in">
+            <div className="absolute -inset-4 rounded-[2rem] bg-accent/20 blur-2xl" />
+            <img
+              src={CERTIFICATE_IMG}
+              alt="Подарочный сертификат Дымов Керамика"
+              className="relative w-full rounded-2xl shadow-2xl ring-1 ring-border"
+            />
+          </div>
         </div>
 
         <div className="mx-auto mt-14 max-w-3xl">
