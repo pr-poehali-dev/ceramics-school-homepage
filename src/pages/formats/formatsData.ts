@@ -2,6 +2,7 @@ export const ALL_FORMATS = [
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
     icon: 'Landmark',
+    slug: 'classic',
     title: 'Классические мастер-классы',
     place: 'В студии',
     duration: '1 час',
@@ -22,6 +23,7 @@ export const ALL_FORMATS = [
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/cd92a426-9a1e-4eba-81fa-09e5b75b623d.jpg',
     icon: 'Baby',
+    slug: 'kids',
     title: 'Детская группа (сб/вс)',
     place: 'В студии',
     duration: '1 час',
@@ -42,6 +44,7 @@ export const ALL_FORMATS = [
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
     icon: 'Rocket',
+    slug: 'promo',
     title: 'Промо-группа (пн–пт)',
     place: 'В студии',
     duration: '1 час',
@@ -62,6 +65,7 @@ export const ALL_FORMATS = [
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
     icon: 'UtensilsCrossed',
+    slug: 'thematic',
     title: 'Тематические мастер-классы',
     place: 'В студии',
     duration: '6,5 ч',
@@ -82,6 +86,7 @@ export const ALL_FORMATS = [
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0691624f-cc62-4d3b-8069-e5ab1d935b18.png',
     icon: 'Heart',
+    slug: 'date',
     title: 'Свидание в мастерской',
     place: 'В студии',
     duration: '1,5 часа',
@@ -102,6 +107,7 @@ export const ALL_FORMATS = [
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/42ebb68f-5d36-4a32-b4bd-b871307db9bc.jpg',
     icon: 'Armchair',
+    slug: 'coworking',
     title: 'Коворкинг',
     place: 'В студии',
     duration: 'от 1 часа',
@@ -122,6 +128,7 @@ export const ALL_FORMATS = [
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7898283f-b258-43b1-ae5e-b5d2e1c4b1f7.jpg',
     icon: 'PartyPopper',
+    slug: 'events',
     title: 'Мероприятия (ДР, корп, девичник)',
     place: 'В студии или выезд',
     duration: 'Индивидуально',
@@ -142,6 +149,7 @@ export const ALL_FORMATS = [
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
     icon: 'Truck',
+    slug: 'offsite',
     title: 'Выездной мастер-класс',
     place: 'Выезд к вам',
     duration: 'от 30 мин',

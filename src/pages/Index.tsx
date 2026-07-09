@@ -140,13 +140,7 @@ const Index = () => {
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {ALL_FORMATS.map((f) => {
-              const action = 'action' in f.cta ? f.cta.action : undefined;
-              const formatTo =
-                action && action !== 'link'
-                  ? `/moscow/formats?open=${action}`
-                  : 'to' in f.cta && f.cta.to
-                    ? f.cta.to
-                    : '/moscow/formats';
+              const formatTo = `/moscow/formats?show=${f.slug}#format-${f.slug}`;
               return (
               <Link
                 key={f.title}

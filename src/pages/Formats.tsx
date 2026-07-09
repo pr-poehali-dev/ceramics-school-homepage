@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
@@ -11,12 +11,26 @@ import FormatsCta from './formats/FormatsCta';
 const Formats = () => {
   const [searchParams] = useSearchParams();
   const openAction = searchParams.get('open');
+  const showSlug = searchParams.get('show');
   const [ageFilter, setAgeFilter] = useState<string | null>(null);
   const [dayFilter, setDayFilter] = useState<string>('any');
   const [durationFilter, setDurationFilter] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string>('any');
   const [peopleFilter, setPeopleFilter] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!showSlug) return;
+    const format = ALL_FORMATS.find((f) => f.slug === showSlug);
+    if (!format) return;
+    setExpanded(format.title);
+    const timer = setTimeout(() => {
+      document
+        .getElementById(`format-${showSlug}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [showSlug]);
 
   const reset = () => {
     setAgeFilter(null);

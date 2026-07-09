@@ -34,7 +34,8 @@ const FormatsResults = ({ results, expanded, setExpanded, reset, openAction }: F
         results.map((f, i) => (
           <div
             key={f.title}
-            className="group animate-fade-in rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg md:p-7"
+            id={`format-${f.slug}`}
+            className="group animate-fade-in scroll-mt-28 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg md:p-7"
             style={{ animationDelay: `${i * 60}ms` }}
           >
             <div className="flex flex-col gap-6 md:flex-row md:items-start">
