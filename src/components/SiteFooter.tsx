@@ -20,6 +20,11 @@ const SECTION_LINKS = [
   { label: 'Контакты', to: '/moscow/contacts' },
 ];
 
+const CUSTOMER_LINKS = [
+  { label: 'Информация', to: '/moscow/info' },
+  { label: 'Публичная оферта', to: '/moscow/offer' },
+];
+
 const FooterCol = ({
   title,
   links,
@@ -47,7 +52,7 @@ const FooterCol = ({
 const SiteFooter = () => (
   <footer className="mt-16 border-t border-border bg-secondary/40">
     <div className="container py-14">
-      <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
         {/* About + contacts */}
         <div>
           <Logo className="h-9" />
@@ -75,6 +80,9 @@ const SiteFooter = () => (
         {/* Sections */}
         <FooterCol title="Разделы" links={SECTION_LINKS} />
 
+        {/* Customers */}
+        <FooterCol title="Покупателям" links={CUSTOMER_LINKS} />
+
         {/* Shop */}
         <div>
           <h4 className="font-display text-base font-semibold text-foreground">Интернет-магазин</h4>
@@ -96,26 +104,18 @@ const SiteFooter = () => (
       {/* Bottom */}
       <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-sm text-muted-foreground md:flex-row">
         <span>© 2003–2026 «Дымов Керамика». Все права защищены.</span>
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-          <Link to="/moscow/info" className="transition-colors hover:text-primary">
-            Информация
-          </Link>
-          <Link to="/moscow/offer" className="transition-colors hover:text-primary">
-            Публичная оферта
-          </Link>
-          <span className="flex flex-wrap items-center gap-1.5">
-            Хотите такой же крутой сайт?
-            <a
-              href="#"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 font-semibold text-primary transition-colors hover:underline"
-            >
-              Star Media
-              <Icon name="ArrowUpRight" size={15} />
-            </a>
-          </span>
-        </div>
+        <span className="flex flex-wrap items-center justify-center gap-1.5">
+          Хотите такой же крутой сайт?
+          <a
+            href="#"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 font-semibold text-primary transition-colors hover:underline"
+          >
+            Star Media
+            <Icon name="ArrowUpRight" size={15} />
+          </a>
+        </span>
       </div>
     </div>
   </footer>
