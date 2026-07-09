@@ -16,11 +16,14 @@ const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
 
 const PRESETS = [
-  { value: 2000, label: '2 000 ₽', popular: false },
-  { value: 5000, label: '5 000 ₽', popular: false },
-  { value: 10000, label: '10 000 ₽', popular: true },
-  { value: 25000, label: '25 000 ₽', popular: false },
-  { value: 50000, label: '50 000 ₽', popular: false },
+  { value: 1900, label: '1 900 ₽', popular: false },
+  { value: 2100, label: '2 100 ₽', popular: false },
+  { value: 2900, label: '2 900 ₽', popular: false },
+  { value: 5000, label: '5 000 ₽', popular: true },
+  { value: 7000, label: '7 000 ₽', popular: false },
+  { value: 9000, label: '9 000 ₽', popular: false },
+  { value: 10000, label: '10 000 ₽', popular: false },
+  { value: 13000, label: '13 000 ₽', popular: false },
 ];
 
 
