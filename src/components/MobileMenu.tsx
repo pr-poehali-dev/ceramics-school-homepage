@@ -8,8 +8,8 @@ import SocialLinks from '@/components/SocialLinks';
 
 const NAV = [
   { label: 'Форматы', to: '/moscow/formats' },
+  { label: 'Сертификаты', to: '/moscow/certificates' },
   { label: 'Отзывы', to: '/moscow/reviews' },
-  { label: 'Подарочные сертификаты', to: '/moscow/certificates' },
   { label: 'Контакты', to: '/moscow/contacts' },
 ];
 

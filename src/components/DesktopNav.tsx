@@ -11,8 +11,8 @@ const WORKSHOP_LINKS = [
 
 const LINKS = [
   { label: 'Форматы', to: '/moscow/formats' },
+  { label: 'Сертификаты', to: '/moscow/certificates' },
   { label: 'Отзывы', to: '/moscow/reviews' },
-  { label: 'Подарочные сертификаты', to: '/moscow/certificates' },
   { label: 'Контакты', to: '/moscow/contacts' },
 ];
 
