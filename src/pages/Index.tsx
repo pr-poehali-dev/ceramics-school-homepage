@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
-import Logo from '@/components/Logo';
-import SocialLinks from '@/components/SocialLinks';
-import ReviewLinks from '@/components/ReviewLinks';
 import SiteHeader from '@/components/SiteHeader';
+import SiteFooter from '@/components/SiteFooter';
 import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
 
@@ -317,42 +315,44 @@ const Index = () => {
         </div>
       </section>
 
+      {/* SHOP INVITE */}
+      <section className="container py-16 md:py-20">
+        <div className="overflow-hidden rounded-[2rem] border border-border bg-card">
+          <div className="grid items-center gap-8 md:grid-cols-2">
+            <div className="p-8 md:p-12">
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+                <Icon name="ShoppingBag" size={16} /> Интернет-магазин
+              </span>
+              <h2 className="mt-5 font-display text-3xl font-semibold md:text-4xl">
+                Керамика ручной работы с доставкой
+              </h2>
+              <p className="mt-4 max-w-md text-muted-foreground">
+                Не только мастер-классы — в нашем магазине «Дымов Керамика» вы найдёте авторскую
+                посуду, декор и подарки, созданные вручную.
+              </p>
+              <a
+                href="https://dymovceramic.ru/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Перейти в магазин
+                <Icon name="ArrowRight" size={18} />
+              </a>
+            </div>
+            <div className="relative hidden h-full min-h-[18rem] md:block">
+              <img
+                src={HERO_IMG}
+                alt="Керамика ручной работы"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FOOTER */}
-      <footer id="contacts" className="border-t border-border bg-secondary/40">
-        <div className="container grid gap-8 py-14 md:grid-cols-3">
-          <div>
-            <Logo className="h-10" scale={false} />
-            <p className="mt-3 text-sm text-muted-foreground">
-              Студия керамики в тёплой атмосфере мастерской. Творим из глины
-              вместе с 2015 года.
-            </p>
-          </div>
-          <div className="space-y-3 text-sm">
-            <p className="flex items-center gap-2">
-              <Icon name="MapPin" size={18} className="text-primary" /> ВДНХ, Москва
-            </p>
-            <a href="tel:+79854198903" className="flex items-center gap-2 transition-colors hover:text-primary">
-              <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
-            </a>
-            <p className="flex items-center gap-2">
-              <Icon name="Clock" size={18} className="text-primary" /> Ежедневно 10:00–21:00
-            </p>
-            <ReviewLinks />
-          </div>
-          <SocialLinks className="md:justify-end" />
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-t border-border/60 py-5 text-center text-sm text-muted-foreground">
-          <span>© 2003–2026 Дымов Керамика. Все права защищены.</span>
-          <span className="text-muted-foreground/50">·</span>
-          <Link to="/moscow/info" className="transition-colors hover:text-primary">
-            Информация
-          </Link>
-          <span className="text-muted-foreground/50">·</span>
-          <Link to="/moscow/offer" className="transition-colors hover:text-primary">
-            Публичная оферта
-          </Link>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 };

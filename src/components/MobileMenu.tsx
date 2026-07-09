@@ -133,6 +133,19 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
                 <Icon name="ChevronRight" size={18} className="text-muted-foreground" />
               </Link>
             ))}
+
+            <a
+              href="https://dymovceramic.ru/"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setOpen(false)}
+              className="mt-1 flex items-center justify-between rounded-xl bg-primary/10 px-4 py-3.5 text-lg font-medium text-primary transition-colors hover:bg-primary/15"
+            >
+              <span className="flex items-center gap-2">
+                <Icon name="ShoppingBag" size={18} /> Магазин керамики
+              </span>
+              <Icon name="ExternalLink" size={16} className="text-primary/70" />
+            </a>
           </nav>
 
           {/* CONTACTS */}

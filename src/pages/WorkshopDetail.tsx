@@ -158,57 +158,71 @@ const WorkshopDetail = () => {
           </div>
         </div>
 
-        {/* DESCRIPTION */}
-        <div className="mt-14 max-w-5xl rounded-2xl border border-border bg-card p-7 md:p-10">
-          <h2 className="flex items-center gap-3 font-display text-2xl font-semibold">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Icon name="Info" size={20} />
-            </span>
-            О мастер-классе
-          </h2>
+        {/* DESCRIPTION + NOTES */}
+        <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
+          {/* DESCRIPTION */}
+          <div className="rounded-2xl border border-border bg-card p-7 md:p-10">
+            <h2 className="flex items-center gap-3 font-display text-2xl font-semibold">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Icon name="Info" size={20} />
+              </span>
+              О мастер-классе
+            </h2>
 
-          {/* Первый абзац — вводный, крупнее */}
-          <p className="mt-5 text-lg leading-relaxed text-foreground/90 md:text-xl">
-            {data.paragraphs[0]}
-          </p>
+            {/* Первый абзац — вводный, крупнее */}
+            <p className="mt-5 text-lg leading-relaxed text-foreground/90 md:text-xl">
+              {data.paragraphs[0]}
+            </p>
 
-          {/* Остальные абзацы — в две колонки для удобного чтения */}
-          {data.paragraphs.length > 1 && (
-            <div className="mt-6 gap-x-10 border-t border-border/60 pt-6 md:columns-2 [&>p]:mt-0 [&>p]:mb-4 [&>p]:break-inside-avoid">
-              {data.paragraphs.slice(1).map((p, i) => (
-                <p key={i} className="leading-relaxed text-muted-foreground">
-                  {p}
-                </p>
-              ))}
-            </div>
-          )}
-        </div>
+            {/* Остальные абзацы */}
+            {data.paragraphs.length > 1 && (
+              <div className="mt-6 space-y-4 border-t border-border/60 pt-6">
+                {data.paragraphs.slice(1).map((p, i) => (
+                  <p key={i} className="leading-relaxed text-muted-foreground">
+                    {p}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
 
-        {/* NOTES */}
-        <div className="mt-6 grid max-w-5xl gap-4 md:grid-cols-2">
-          {data.benefit && (
-            <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/15 p-5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
-                <Icon name="Baby" size={18} />
+          {/* NOTES — правая колонка */}
+          <div className="space-y-4 lg:sticky lg:top-24">
+            {data.benefit && (
+              <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/15 p-5">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
+                  <Icon name="Baby" size={18} />
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Дети на мастер-классе</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{data.benefit}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-secondary/40 p-5">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Icon name="Percent" size={18} />
               </span>
               <div>
-                <p className="text-sm font-semibold text-foreground">Дети на мастер-классе</p>
-                <p className="mt-1 text-sm text-muted-foreground">{data.benefit}</p>
+                <p className="text-sm font-semibold text-foreground">Льготникам — скидка</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Социальная скидка для пенсионеров, студентов, именинников в день рождения, членов
+                  многодетных семей и инвалидов всех групп. Не распространяется на мастер-класс
+                  «Детская группа». Скидки не суммируются, действуют при предъявлении документа.
+                </p>
               </div>
             </div>
-          )}
 
-          <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-secondary/40 p-5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Icon name="Percent" size={18} />
-            </span>
-            <div>
-              <p className="text-sm font-semibold text-foreground">Льготникам — скидка</p>
+            {/* Мини-CTA записаться */}
+            <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 text-center">
+              <p className="text-sm font-semibold text-foreground">Готовы попробовать?</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Социальная скидка для пенсионеров, студентов, именинников в день рождения, членов
-                многодетных семей и инвалидов всех групп. Не распространяется на мастер-класс
-                «Детская группа». Скидки не суммируются, действуют при предъявлении документа.
+                Запишитесь на удобное время — поможем с выбором.
               </p>
+              <Button className="mt-4 w-full rounded-full">
+                <Icon name="CalendarCheck" size={16} className="mr-2" /> Записаться
+              </Button>
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ interface LogoProps {
   scale?: boolean;
 }
 
-const Logo = ({ className = 'h-9 md:h-10', scale = true }: LogoProps) => (
+const Logo = ({ className = 'h-[1.8rem] md:h-8', scale = true }: LogoProps) => (
   <img
     src={LOGO_URL}
     alt="Дымов Керамика"
