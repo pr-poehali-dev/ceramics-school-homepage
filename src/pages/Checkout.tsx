@@ -1,0 +1,240 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Icon from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { toast } from '@/hooks/use-toast';
+import SiteHeader from '@/components/SiteHeader';
+import SiteFooter from '@/components/SiteFooter';
+import { useCart } from '@/context/CartContext';
+
+const Checkout = () => {
+  const { items, total, count, clear } = useCart();
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [comment, setComment] = useState('');
+  const [payment, setPayment] = useState('cash');
+  const [delivery, setDelivery] = useState('pickup');
+  const [zip, setZip] = useState('');
+  const [region, setRegion] = useState('');
+  const [city, setCity] = useState('');
+  const [street, setStreet] = useState('');
+  const [house, setHouse] = useState('');
+  const [flat, setFlat] = useState('');
+
+  const needAddress = delivery === 'mail';
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !name || !phone) {
+      toast({ title: 'Заполните обязательные поля', description: 'Email, получатель и телефон обязательны.' });
+      return;
+    }
+    if (needAddress && !city) {
+      toast({ title: 'Укажите город доставки' });
+      return;
+    }
+    toast({
+      title: 'Заказ оформлен!',
+      description: 'Мы свяжемся с вами для подтверждения.',
+    });
+    clear();
+    navigate('/moscow');
+  };
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-background text-foreground clay-texture">
+        <SiteHeader />
+        <div className="container py-20">
+          <div className="mx-auto max-w-md rounded-2xl border border-dashed border-border py-20 text-center">
+            <Icon name="ShoppingBag" size={44} className="mx-auto mb-4 text-muted-foreground/50" />
+            <p className="text-lg font-medium">Корзина пуста</p>
+            <p className="mt-1 text-sm text-muted-foreground">Добавьте услугу, чтобы оформить заказ</p>
+            <Button asChild className="mt-6 rounded-full px-7">
+              <Link to="/formats">
+                <Icon name="LayoutGrid" size={16} className="mr-2" /> К форматам
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <SiteFooter />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground clay-texture">
+      <SiteHeader />
+
+      <div className="container py-10 md:py-14">
+        <Link
+          to="/moscow"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+        >
+          <Icon name="ArrowLeft" size={16} /> Вернуться на главную
+        </Link>
+
+        <div className="mt-6 flex items-center gap-3">
+          <Icon name="ShoppingCart" size={28} className="text-primary" />
+          <h1 className="font-display text-4xl font-semibold md:text-5xl">Ваша корзина</h1>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
+          {/* LEFT: items + fields */}
+          <div className="space-y-8">
+            {/* ITEMS TABLE */}
+            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="hidden grid-cols-[1fr_90px_120px] gap-4 border-b border-border px-6 py-4 text-sm font-medium text-muted-foreground sm:grid">
+                <span>Наименование</span>
+                <span className="text-center">Количество</span>
+                <span className="text-right">Цена</span>
+              </div>
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="grid gap-2 border-b border-border px-6 py-5 last:border-0 sm:grid-cols-[1fr_90px_120px] sm:items-center sm:gap-4"
+                >
+                  <div>
+                    <h3 className="font-display text-lg font-semibold">{item.title}</h3>
+                    {item.details && (
+                      <p className="mt-1 text-sm text-muted-foreground">{item.details}</p>
+                    )}
+                  </div>
+                  <div className="text-sm text-muted-foreground sm:text-center">
+                    {item.qty} шт.
+                  </div>
+                  <div className="font-semibold sm:text-right">
+                    {(item.price * item.qty).toLocaleString('ru-RU')} руб.
+                  </div>
+                </div>
+              ))}
+              <div className="flex items-center justify-between gap-4 bg-secondary/40 px-6 py-4">
+                <span className="font-semibold">Итого:</span>
+                <span className="text-sm text-muted-foreground">{count} шт.</span>
+                <span className="font-display text-xl font-semibold text-primary">
+                  {total.toLocaleString('ru-RU')} руб.
+                </span>
+              </div>
+            </div>
+
+            {/* RECIPIENT */}
+            <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
+              <h2 className="font-display text-2xl font-semibold">Данные получателя</h2>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="email">Email *</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="mt-1.5" required />
+                </div>
+                <div>
+                  <Label htmlFor="name">Получатель *</Label>
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Получатель" className="mt-1.5" required />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Телефон *</Label>
+                  <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Телефон" className="mt-1.5" required />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label htmlFor="comment">Комментарий</Label>
+                  <Textarea id="comment" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Комментарий" className="mt-1.5" rows={3} />
+                </div>
+              </div>
+            </div>
+
+            {/* PAYMENT & DELIVERY */}
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className="rounded-2xl border border-border bg-card p-6">
+                <h2 className="font-display text-xl font-semibold">Способы оплаты</h2>
+                <RadioGroup value={payment} onValueChange={setPayment} className="mt-4 space-y-3">
+                  <label className="flex cursor-pointer items-center gap-3 text-sm">
+                    <RadioGroupItem value="cash" id="pay-cash" /> Оплата наличными
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-3 text-sm">
+                    <RadioGroupItem value="online" id="pay-online" /> Онлайн оплата
+                  </label>
+                </RadioGroup>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-card p-6">
+                <h2 className="font-display text-xl font-semibold">Варианты доставки</h2>
+                <RadioGroup value={delivery} onValueChange={setDelivery} className="mt-4 space-y-3">
+                  <label className="flex cursor-pointer items-center gap-3 text-sm">
+                    <RadioGroupItem value="pickup" id="del-pickup" /> Получить билет в школе
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-3 text-sm">
+                    <RadioGroupItem value="mail" id="del-mail" /> В электронном виде
+                  </label>
+                </RadioGroup>
+              </div>
+            </div>
+
+            {/* ADDRESS */}
+            {needAddress && (
+              <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
+                <h2 className="font-display text-2xl font-semibold">Адрес доставки</h2>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="zip">Почтовый индекс</Label>
+                    <Input id="zip" value={zip} onChange={(e) => setZip(e.target.value)} placeholder="Почтовый индекс" className="mt-1.5" />
+                  </div>
+                  <div>
+                    <Label htmlFor="region">Область</Label>
+                    <Input id="region" value={region} onChange={(e) => setRegion(e.target.value)} placeholder="Область" className="mt-1.5" />
+                  </div>
+                  <div>
+                    <Label htmlFor="city">Город *</Label>
+                    <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Город" className="mt-1.5" />
+                  </div>
+                  <div>
+                    <Label htmlFor="street">Улица</Label>
+                    <Input id="street" value={street} onChange={(e) => setStreet(e.target.value)} placeholder="Улица" className="mt-1.5" />
+                  </div>
+                  <div>
+                    <Label htmlFor="house">Дом</Label>
+                    <Input id="house" value={house} onChange={(e) => setHouse(e.target.value)} placeholder="Дом" className="mt-1.5" />
+                  </div>
+                  <div>
+                    <Label htmlFor="flat">Квартира</Label>
+                    <Input id="flat" value={flat} onChange={(e) => setFlat(e.target.value)} placeholder="Квартира" className="mt-1.5" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT: summary */}
+          <div className="rounded-2xl border border-border bg-card p-6 lg:sticky lg:top-6">
+            <h2 className="font-display text-xl font-semibold">Ваш заказ</h2>
+            <div className="mt-4 space-y-2 text-sm">
+              {items.map((item) => (
+                <div key={item.id} className="flex justify-between gap-2 text-muted-foreground">
+                  <span className="line-clamp-1">{item.title} × {item.qty}</span>
+                  <span className="whitespace-nowrap">{(item.price * item.qty).toLocaleString('ru-RU')} ₽</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex items-end justify-between border-t border-border pt-4">
+              <span className="font-semibold">Итого:</span>
+              <span className="font-display text-2xl font-semibold text-primary">
+                {total.toLocaleString('ru-RU')} руб.
+              </span>
+            </div>
+            <Button type="submit" size="lg" className="mt-6 w-full rounded-full">
+              <Icon name="CreditCard" size={18} className="mr-2" /> Оформить заказ
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      <SiteFooter />
+    </div>
+  );
+};
+
+export default Checkout;

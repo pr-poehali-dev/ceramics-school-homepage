@@ -15,6 +15,7 @@ const Formats = lazy(() => import("./pages/Formats"));
 const Certificates = lazy(() => import("./pages/Certificates"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
 const Reviews = lazy(() => import("./pages/Reviews"));
 const Offer = lazy(() => import("./pages/Offer"));
 const Info = lazy(() => import("./pages/Info"));
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/certificates" element={<Certificates />} />
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/offer" element={<Offer />} />
               <Route path="/info" element={<Info />} />

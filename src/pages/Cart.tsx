@@ -98,8 +98,10 @@ const Cart = () => {
                 </div>
               </div>
 
-              <Button size="lg" className="mt-6 w-full rounded-full">
-                <Icon name="CreditCard" size={18} className="mr-2" /> Оформить заказ
+              <Button asChild size="lg" className="mt-6 w-full rounded-full">
+                <Link to="/checkout">
+                  <Icon name="CreditCard" size={18} className="mr-2" /> Оформить заказ
+                </Link>
               </Button>
             </>
           )}
