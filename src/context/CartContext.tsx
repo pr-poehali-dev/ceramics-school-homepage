@@ -12,6 +12,12 @@ export interface CartItem {
     recipientName?: string;
     senderName?: string;
   };
+  booking?: {
+    email: string;
+    phone: string;
+    service: string;
+    people: number;
+  };
 }
 
 interface CartContextValue {

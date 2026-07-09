@@ -80,6 +80,20 @@ const Checkout = () => {
         }
       }
 
+      const bookingItems = items.filter((i) => i.booking);
+      for (const item of bookingItems) {
+        await fetch(func2url['booking-request'], {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service: item.booking?.service,
+            people: item.booking?.people,
+            email: item.booking?.email,
+            phone: item.booking?.phone,
+          }),
+        });
+      }
+
       clear();
       if (results.length > 0) {
         setCertResults(results);

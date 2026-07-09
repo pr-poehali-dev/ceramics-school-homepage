@@ -10,6 +10,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -46,8 +49,14 @@ const PromoDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: b
   }, [autoOpen]);
   const [service, setService] = useState('lepka');
   const [range, setRange] = useState('small');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [agree, setAgree] = useState(false);
   const { addItem } = useCart();
   const { toast } = useToast();
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const formValid = emailValid && phone.trim().length >= 6 && agree;
 
   const selectedService = SERVICES.find((s) => s.value === service)!;
   const selectedRange = RANGES.find((r) => r.value === range)!;
@@ -65,14 +74,24 @@ const PromoDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: b
   const total = pricePerPerson * clampedPeople;
 
   const handleBuy = () => {
+    if (!formValid) return;
     addItem({
       id: `promo-${service}-${range}-${clampedPeople}`,
       title: 'Промо-группа (пн–пт)',
       details: `${selectedService.label}, ${clampedPeople} чел. × ${pricePerPerson.toLocaleString('ru-RU')} ₽`,
       price: pricePerPerson,
       qty: clampedPeople,
+      booking: {
+        email: email.trim(),
+        phone: phone.trim(),
+        service: `Промо-группа (пн–пт) · ${selectedService.label}`,
+        people: clampedPeople,
+      },
     });
     setOpen(false);
+    setEmail('');
+    setPhone('');
+    setAgree(false);
     toast({ title: 'Добавлено в корзину', description: selectedService.label });
   };
 
@@ -151,6 +170,45 @@ const PromoDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: b
             </div>
           </div>
 
+          <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-4">
+            <p className="text-sm text-muted-foreground">
+              Оставьте контакты — после оплаты сотрудник школы свяжется и уточнит дату посещения.
+            </p>
+            <div>
+              <Label htmlFor="promo-email">Email</Label>
+              <Input
+                id="promo-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="mt-1.5"
+              />
+            </div>
+            <div>
+              <Label htmlFor="promo-phone">Телефон</Label>
+              <Input
+                id="promo-phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+7 (___) ___-__-__"
+                className="mt-1.5"
+              />
+            </div>
+            <label className="flex cursor-pointer items-start gap-2.5">
+              <Checkbox
+                checked={agree}
+                onCheckedChange={(v) => setAgree(Boolean(v))}
+                className="mt-0.5"
+              />
+              <span className="text-xs leading-relaxed text-muted-foreground">
+                Я даю согласие на обработку персональных данных на условиях и для целей,
+                определённых в Согласии на обработку персональных данных.
+              </span>
+            </label>
+          </div>
+
           <div className="flex items-center justify-between border-t border-border pt-4">
             <span className="text-sm text-muted-foreground">
               Итого ({clampedPeople} × {pricePerPerson.toLocaleString('ru-RU')} ₽)
@@ -160,7 +218,12 @@ const PromoDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: b
             </span>
           </div>
 
-          <Button onClick={handleBuy} size="lg" className="w-full rounded-full">
+          <Button
+            onClick={handleBuy}
+            size="lg"
+            className="w-full rounded-full"
+            disabled={!formValid}
+          >
             <Icon name="ShoppingCart" size={18} className="mr-2" /> Купить
           </Button>
         </div>
