@@ -15,7 +15,7 @@ const WORKSHOP_LINKS = [
 const SECTION_LINKS = [
   { label: 'Все мастер-классы', to: '/moscow/workshops' },
   { label: 'Форматы и цены', to: '/moscow/formats' },
-  { label: 'Подарочные сертификаты', to: '/moscow/certificates' },
+  { label: 'Сертификаты', to: '/moscow/certificates' },
   { label: 'Отзывы', to: '/moscow/reviews' },
   { label: 'Контакты', to: '/moscow/contacts' },
 ];
