@@ -105,6 +105,20 @@ const SiteFooter = () => (
           </Link>
         </div>
       </div>
+
+      {/* Made by */}
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground">
+        <span>Хотите такой же крутой сайт?</span>
+        <a
+          href="#"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 font-semibold text-primary transition-colors hover:underline"
+        >
+          Star Media
+          <Icon name="ArrowUpRight" size={15} />
+        </a>
+      </div>
     </div>
   </footer>
 );
