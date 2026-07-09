@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import { openBooking } from '@/lib/booking';
 import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
 
@@ -84,7 +85,7 @@ const Index = () => {
               радость творчества. Для взрослых и детей.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Button size="lg" className="rounded-full px-8 text-base">
+              <Button size="lg" onClick={openBooking} className="rounded-full px-8 text-base">
                 <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
               </Button>
               <Link to="/moscow/certificates">

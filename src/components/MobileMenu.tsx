@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import { useNavClick } from '@/hooks/useNavClick';
+import { openBooking } from '@/lib/booking';
 
 const NAV = [
   { label: 'Форматы', to: '/moscow/formats' },
@@ -202,7 +203,15 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
         </div>
 
             <div className="border-t border-border p-6">
-              <Button className="w-full rounded-full py-6 text-base">Записаться</Button>
+              <Button
+                onClick={() => {
+                  setOpen(false);
+                  openBooking();
+                }}
+                className="w-full rounded-full py-6 text-base"
+              >
+                Записаться
+              </Button>
             </div>
           </aside>
         </div>,

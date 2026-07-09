@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import CookieConsent from "./components/CookieConsent";
 import OnlineBooking from "./components/OnlineBooking";
+import BookingDrawer from "./components/BookingDrawer";
 import ChooseCity from "./pages/ChooseCity";
 import Index from "./pages/Index";
 import { CartProvider } from "./context/CartContext";
@@ -83,6 +84,7 @@ const App = () => (
             </Routes>
           </Suspense>
           <OnlineBooking />
+          <BookingDrawer />
           <CookieConsent />
         </BrowserRouter>
       </CartProvider>

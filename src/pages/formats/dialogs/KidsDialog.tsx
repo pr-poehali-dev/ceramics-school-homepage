@@ -13,6 +13,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import { openBooking } from '@/lib/booking';
 
 const OPTIONS = [
   { value: 'single', label: 'Разовый', price: 1900 },
@@ -58,11 +59,8 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
   };
 
   const handleEnroll = () => {
-    // В будущем: открытие стороннего приложения с выбором даты и оплатой.
-    toast({
-      title: 'Скоро откроется запись',
-      description: 'Здесь появится выбор даты и оплата урока.',
-    });
+    setOpen(false);
+    openBooking();
   };
 
   return (

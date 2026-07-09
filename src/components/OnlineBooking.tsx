@@ -1,12 +1,10 @@
 import Icon from '@/components/ui/icon';
-
-const YCLIENTS_URL = 'https://n248670.yclients.com/';
+import { openBooking } from '@/lib/booking';
 
 const OnlineBooking = () => (
-  <a
-    href={YCLIENTS_URL}
-    target="_blank"
-    rel="noreferrer"
+  <button
+    type="button"
+    onClick={openBooking}
     aria-label="Онлайн-запись"
     className="group fixed bottom-6 right-6 z-[110] flex items-center gap-2.5 rounded-full bg-primary px-5 py-3.5 font-semibold text-primary-foreground shadow-xl shadow-primary/30 transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-2xl md:px-6"
   >
@@ -15,7 +13,7 @@ const OnlineBooking = () => (
       <Icon name="CalendarCheck" size={22} className="relative" />
     </span>
     <span className="hidden sm:inline">Онлайн-запись</span>
-  </a>
+  </button>
 );
 
 export default OnlineBooking;

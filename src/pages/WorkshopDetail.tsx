@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import { openBooking } from '@/lib/booking';
 
 interface WorkshopData {
   slug: string;
@@ -152,7 +153,7 @@ const WorkshopDetail = () => {
               ))}
             </div>
 
-            <Button size="lg" className="mt-7 w-fit rounded-full px-10 text-base">
+            <Button size="lg" onClick={openBooking} className="mt-7 w-fit rounded-full px-10 text-base">
               <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
             </Button>
           </div>
@@ -220,7 +221,7 @@ const WorkshopDetail = () => {
               <p className="mt-1 text-sm text-muted-foreground">
                 Запишитесь на удобное время — поможем с выбором.
               </p>
-              <Button className="mt-4 w-full rounded-full">
+              <Button onClick={openBooking} className="mt-4 w-full rounded-full">
                 <Icon name="CalendarCheck" size={16} className="mr-2" /> Записаться
               </Button>
             </div>
