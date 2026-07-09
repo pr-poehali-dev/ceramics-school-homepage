@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Validation error without contacts",
+      "method": "POST",
+      "path": "/",
+      "body": {"total": 1000},
+      "expectedStatus": 400,
+      "expectedBody": {"error": "string"},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Save order",
+      "method": "POST",
+      "path": "/",
+      "body": {"number": "123456", "name": "Тест Тестов", "email": "test@example.com", "phone": "+79990000000", "payment": "cash", "total": 1900, "items": [{"title": "Сертификат", "qty": 1, "price": 1900}]},
+      "expectedStatus": 200,
+      "expectedBody": {"success": true},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

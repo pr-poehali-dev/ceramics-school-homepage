@@ -2,6 +2,7 @@ import json
 import os
 import smtplib
 import ssl
+import psycopg2
 from email.mime.text import MIMEText
 from email.header import Header
 
@@ -54,6 +55,24 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Email и телефон обязательны'}),
         }
 
+    people_val = None
+    if people not in (None, ''):
+        try:
+            people_val = int(people)
+        except (TypeError, ValueError):
+            people_val = None
+
+    conn = psycopg2.connect(os.environ['DATABASE_URL'])
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO leads (service, people, email, phone) VALUES (%s, %s, %s, %s)",
+            (service, people_val, email, phone),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -63,9 +82,9 @@ def handler(event: dict, context) -> dict:
 
     if not all([smtp_host, smtp_user, smtp_password]):
         return {
-            'statusCode': 500,
+            'statusCode': 200,
             'headers': cors_headers,
-            'body': json.dumps({'error': 'SMTP не настроен'}),
+            'body': json.dumps({'success': True, 'emailSent': False}),
         }
 
     text = (

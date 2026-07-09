@@ -121,6 +121,25 @@ const Checkout = () => {
         certificates: results,
       };
 
+      try {
+        await fetch(func2url.orders, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            number: snapshot.number,
+            name,
+            email,
+            phone,
+            comment,
+            payment,
+            total,
+            items: snapshot.lines,
+          }),
+        });
+      } catch {
+        // Сохранение заказа не должно срывать оформление.
+      }
+
       clear();
       setOrderResult(snapshot);
       window.scrollTo({ top: 0 });
