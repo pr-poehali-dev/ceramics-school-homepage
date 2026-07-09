@@ -6,6 +6,12 @@ export interface CartItem {
   details?: string;
   price: number;
   qty: number;
+  certificate?: {
+    message: string;
+    recipientEmail: string;
+    recipientName?: string;
+    senderName?: string;
+  };
 }
 
 interface CartContextValue {

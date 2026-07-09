@@ -10,6 +10,15 @@ import { toast } from '@/hooks/use-toast';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
+import func2url from '../../backend/func2url.json';
+
+interface CertificateResult {
+  title: string;
+  email: string;
+  code: string;
+  pdfUrl: string;
+  validUntil: string;
+}
 
 const Checkout = () => {
   const { items, total, count, clear } = useCart();
@@ -27,10 +36,12 @@ const Checkout = () => {
   const [street, setStreet] = useState('');
   const [house, setHouse] = useState('');
   const [flat, setFlat] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [certResults, setCertResults] = useState<CertificateResult[] | null>(null);
 
   const needAddress = delivery === 'mail';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !name || !phone) {
       toast({ title: 'Заполните обязательные поля', description: 'Email, получатель и телефон обязательны.' });
@@ -40,13 +51,89 @@ const Checkout = () => {
       toast({ title: 'Укажите город доставки' });
       return;
     }
-    toast({
-      title: 'Заказ оформлен!',
-      description: 'Мы свяжемся с вами для подтверждения.',
-    });
-    clear();
-    navigate('/moscow');
+
+    setLoading(true);
+    try {
+      const certItems = items.filter((i) => i.certificate);
+      const results: CertificateResult[] = [];
+      for (const item of certItems) {
+        const resp = await fetch(func2url.certificate, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: item.price,
+            message: item.certificate?.message,
+            recipientName: item.certificate?.recipientName,
+            senderName: item.certificate?.senderName,
+            recipientEmail: item.certificate?.recipientEmail,
+          }),
+        });
+        const data = await resp.json();
+        if (data.pdfUrl) {
+          results.push({
+            title: item.title,
+            email: item.certificate?.recipientEmail || '',
+            code: data.code,
+            pdfUrl: data.pdfUrl,
+            validUntil: data.validUntil,
+          });
+        }
+      }
+
+      clear();
+      if (results.length > 0) {
+        setCertResults(results);
+      } else {
+        toast({ title: 'Заказ оформлен!', description: 'Мы свяжемся с вами для подтверждения.' });
+        navigate('/moscow');
+      }
+    } catch {
+      toast({ title: 'Не удалось оформить заказ', description: 'Попробуйте ещё раз.' });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (certResults) {
+    return (
+      <div className="min-h-screen bg-background text-foreground clay-texture">
+        <SiteHeader />
+        <div className="container py-16">
+          <div className="mx-auto max-w-xl text-center">
+            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Icon name="CircleCheck" size={36} />
+            </span>
+            <h1 className="mt-6 font-display text-4xl font-semibold">Сертификат готов!</h1>
+            <p className="mt-3 text-muted-foreground">
+              Сертификат сформирован. Скачайте PDF или перешлите его получателю.
+            </p>
+          </div>
+          <div className="mx-auto mt-8 max-w-xl space-y-4">
+            {certResults.map((c) => (
+              <div key={c.code} className="rounded-2xl border border-border bg-card p-6">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Icon name="Ticket" size={16} className="text-primary" /> Код: <span className="font-semibold text-foreground">{c.code}</span>
+                </div>
+                <p className="mt-2 font-display text-lg font-semibold">{c.title}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Отправим на {c.email} · действует до {c.validUntil}
+                </p>
+                <Button asChild className="mt-4 w-full rounded-full">
+                  <a href={c.pdfUrl} target="_blank" rel="noreferrer">
+                    <Icon name="Download" size={18} className="mr-2" /> Скачать PDF
+                  </a>
+                </Button>
+              </div>
+            ))}
+            <Button asChild variant="outline" size="lg" className="w-full rounded-full">
+              <Link to="/moscow">На главную</Link>
+            </Button>
+          </div>
+        </div>
+        <SiteFooter />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -105,6 +192,16 @@ const Checkout = () => {
                     <h3 className="font-display text-lg font-semibold">{item.title}</h3>
                     {item.details && (
                       <p className="mt-1 text-sm text-muted-foreground">{item.details}</p>
+                    )}
+                    {item.certificate && (
+                      <div className="mt-2 rounded-lg bg-accent/15 px-3 py-2 text-xs text-muted-foreground">
+                        {item.certificate.message && (
+                          <p className="italic">«{item.certificate.message}»</p>
+                        )}
+                        <p className="mt-1 flex items-center gap-1.5">
+                          <Icon name="Mail" size={12} /> {item.certificate.recipientEmail}
+                        </p>
+                      </div>
                     )}
                   </div>
                   <div className="text-sm text-muted-foreground sm:text-center">
@@ -225,8 +322,16 @@ const Checkout = () => {
                 {total.toLocaleString('ru-RU')} руб.
               </span>
             </div>
-            <Button type="submit" size="lg" className="mt-6 w-full rounded-full">
-              <Icon name="CreditCard" size={18} className="mr-2" /> Оформить заказ
+            <Button type="submit" size="lg" disabled={loading} className="mt-6 w-full rounded-full">
+              {loading ? (
+                <>
+                  <Icon name="Loader2" size={18} className="mr-2 animate-spin" /> Оформляем…
+                </>
+              ) : (
+                <>
+                  <Icon name="CreditCard" size={18} className="mr-2" /> Оформить заказ
+                </>
+              )}
             </Button>
           </div>
         </form>

@@ -1,0 +1,33 @@
+{
+  "tests": [
+    {
+      "name": "Генерация PDF сертификата",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "amount": 5000,
+        "message": "С Днём рождения! Творческого вдохновения.",
+        "recipientName": "Анна",
+        "senderName": "Мама и папа",
+        "recipientEmail": "test@example.com"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "code": "string",
+        "pdfUrl": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Ошибка при неверном номинале",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "amount": 100
+      },
+      "expectedStatus": 400,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

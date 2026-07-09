@@ -43,6 +43,16 @@ const Cart = () => {
                       {item.details && (
                         <p className="mt-1 text-sm text-muted-foreground">{item.details}</p>
                       )}
+                      {item.certificate && (
+                        <div className="mt-2 rounded-lg bg-accent/15 px-3 py-2 text-xs text-muted-foreground">
+                          {item.certificate.message && (
+                            <p className="italic">«{item.certificate.message}»</p>
+                          )}
+                          <p className="mt-1 flex items-center gap-1.5">
+                            <Icon name="Mail" size={12} /> {item.certificate.recipientEmail}
+                          </p>
+                        </div>
+                      )}
                       <p className="mt-1 text-sm font-semibold text-primary">
                         {item.price.toLocaleString('ru-RU')} ₽
                       </p>

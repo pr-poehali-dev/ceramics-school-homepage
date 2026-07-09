@@ -1,8 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/hooks/use-toast';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import { useCart } from '@/context/CartContext';
+
+const MAX_MESSAGE = 160;
 
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
@@ -17,11 +25,46 @@ const PRESETS = [
 
 
 const Certificates = () => {
+  const { addItem } = useCart();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<number | null>(null);
   const [custom, setCustom] = useState('');
   const [customError, setCustomError] = useState('');
 
+  const [message, setMessage] = useState('');
+  const [recipientName, setRecipientName] = useState('');
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [senderName, setSenderName] = useState('');
+  const [emailError, setEmailError] = useState('');
+
   const activeAmount = selected ?? (custom ? parseInt(custom.replace(/\D/g, '')) || 0 : 0);
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail.trim());
+
+  const handleAddToCart = () => {
+    if (!emailValid) {
+      setEmailError('Укажите корректный e-mail получателя');
+      toast({ title: 'Проверьте e-mail получателя' });
+      return;
+    }
+    addItem({
+      id: `certificate-${activeAmount}-${Date.now()}`,
+      title: 'Подарочный сертификат «Дымов Керамика»',
+      details: `Номинал ${formatNum(activeAmount)}${recipientName ? ` · для ${recipientName}` : ''}`,
+      price: activeAmount,
+      certificate: {
+        message: message.trim(),
+        recipientEmail: recipientEmail.trim(),
+        recipientName: recipientName.trim(),
+        senderName: senderName.trim(),
+      },
+    });
+    toast({
+      title: 'Сертификат добавлен в корзину',
+      description: 'Перейдите к оформлению, чтобы завершить покупку.',
+    });
+    navigate('/checkout');
+  };
 
   const handlePreset = (val: number) => {
     setSelected(val);
@@ -107,6 +150,26 @@ const Certificates = () => {
                 </p>
               </div>
             </div>
+
+            {/* LIVE PERSONALISATION */}
+            {(recipientName || message || senderName) && (
+              <div className="relative mt-8 rounded-2xl border border-white/20 bg-white/5 px-5 py-4 text-center">
+                {recipientName && (
+                  <p className="font-display text-lg italic md:text-xl">
+                    Дорогой(ая) {recipientName}!
+                  </p>
+                )}
+                {message && (
+                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-primary-foreground/90 md:text-base">
+                    «{message}»
+                  </p>
+                )}
+                {senderName && (
+                  <p className="mt-2 text-sm text-primary-foreground/70">— {senderName}</p>
+                )}
+              </div>
+            )}
+
             <div className="relative mt-8 border-t border-white/20 pt-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
@@ -181,6 +244,84 @@ const Certificates = () => {
             )}
           </div>
 
+          {/* PERSONALISATION */}
+          <div className="mt-8 rounded-2xl border border-border bg-card p-6 md:p-7">
+            <div className="flex items-center gap-2">
+              <Icon name="Sparkles" size={18} className="text-primary" />
+              <p className="text-sm font-medium uppercase tracking-[0.15em] text-muted-foreground">
+                Персонализация сертификата
+              </p>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Добавьте тёплые слова — они появятся прямо на сертификате выше.
+            </p>
+
+            <div className="mt-5 space-y-4">
+              <div>
+                <div className="mb-1.5 flex items-center justify-between">
+                  <Label htmlFor="cert-message">Поздравительная фраза</Label>
+                  <span className="text-xs text-muted-foreground">
+                    {message.length}/{MAX_MESSAGE}
+                  </span>
+                </div>
+                <Textarea
+                  id="cert-message"
+                  value={message}
+                  maxLength={MAX_MESSAGE}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="С Днём рождения! Творческого вдохновения и тёплых моментов у гончарного круга."
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="cert-to">Имя получателя</Label>
+                  <Input
+                    id="cert-to"
+                    value={recipientName}
+                    onChange={(e) => setRecipientName(e.target.value)}
+                    placeholder="Например, Анна"
+                    className="mt-1.5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cert-from">От кого</Label>
+                  <Input
+                    id="cert-from"
+                    value={senderName}
+                    onChange={(e) => setSenderName(e.target.value)}
+                    placeholder="Например, Мама и папа"
+                    className="mt-1.5"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="cert-email">E-mail получателя *</Label>
+                <Input
+                  id="cert-email"
+                  type="email"
+                  value={recipientEmail}
+                  onChange={(e) => {
+                    setRecipientEmail(e.target.value);
+                    setEmailError('');
+                  }}
+                  placeholder="recipient@email.ru"
+                  className={`mt-1.5 ${emailError ? 'border-destructive' : ''}`}
+                />
+                <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Icon name="Mail" size={13} /> На этот адрес придёт готовый сертификат после оплаты.
+                </p>
+                {emailError && (
+                  <p className="mt-1.5 flex items-center gap-1.5 text-sm text-destructive">
+                    <Icon name="TriangleAlert" size={14} /> {emailError}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* PERKS */}
           <div className="mt-10 grid gap-3 sm:grid-cols-3">
             {[
@@ -203,10 +344,11 @@ const Certificates = () => {
               size="lg"
               className="w-full rounded-xl py-6 text-base"
               disabled={!canOrder}
+              onClick={handleAddToCart}
             >
               <Icon name="ShoppingBag" size={20} className="mr-2" />
               {canOrder
-                ? `Оформить сертификат на ${formatNum(activeAmount)}`
+                ? `В корзину — ${formatNum(activeAmount)}`
                 : 'Выберите номинал'}
             </Button>
             {!canOrder && activeAmount > 0 && (
