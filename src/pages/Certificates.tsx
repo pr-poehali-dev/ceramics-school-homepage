@@ -90,30 +90,33 @@ const Certificates = () => {
       <SiteHeader active="/moscow/certificates" />
 
       <div className="container py-12 md:py-16">
-        {/* HERO */}
-        <div className="animate-fade-in text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-            <Icon name="Gift" size={16} /> Подарочные сертификаты
-          </span>
-          <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
-            Подарите впечатления,<br />
-            <span className="text-primary italic">а не вещи</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-            Сертификат на мастер-класс по керамике — подарок, который запомнится.
-            Выберите готовый номинал или укажите свою сумму.
-          </p>
-        </div>
-
-        {/* CERTIFICATE PHOTO */}
-        <div className="mx-auto mt-12 flex max-w-md justify-center">
-          <div className="relative animate-scale-in">
-            <div className="absolute -inset-4 rounded-[2rem] bg-accent/20 blur-2xl" />
-            <img
-              src={CERTIFICATE_IMG}
-              alt="Подарочный сертификат Дымов Керамика"
-              className="relative w-full rounded-2xl shadow-2xl ring-1 ring-border"
-            />
+        {/* HERO BANNER */}
+        <div className="animate-fade-in overflow-hidden rounded-[2rem] border border-border bg-card">
+          <div className="grid items-center gap-8 md:grid-cols-2">
+            <div className="p-8 md:p-12">
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+                <Icon name="Gift" size={16} /> Подарочные сертификаты
+              </span>
+              <h1 className="mt-5 font-display text-4xl font-semibold leading-tight md:text-5xl">
+                Подарите впечатления,<br />
+                <span className="text-primary italic">а не вещи</span>
+              </h1>
+              <p className="mt-4 max-w-md text-lg text-muted-foreground">
+                Сертификат на мастер-класс по керамике — подарок, который запомнится. Выберите
+                готовый номинал или укажите свою сумму.
+              </p>
+            </div>
+            <div className="relative flex h-full items-center justify-center p-8 md:justify-end md:p-12">
+              <div className="pointer-events-none absolute inset-0 bg-accent/10" />
+              <div className="relative animate-scale-in">
+                <div className="absolute -inset-4 rounded-[2rem] bg-accent/20 blur-2xl" />
+                <img
+                  src={CERTIFICATE_IMG}
+                  alt="Подарочный сертификат Дымов Керамика"
+                  className="relative w-full max-w-sm rotate-2 rounded-2xl shadow-2xl ring-1 ring-border transition-transform duration-500 hover:rotate-0"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
