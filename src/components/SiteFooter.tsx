@@ -24,6 +24,7 @@ const CUSTOMER_LINKS = [
   { label: 'Информация', to: '/moscow/info' },
   { label: 'Публичная оферта', to: '/moscow/offer' },
   { label: 'Политика конфиденциальности', to: '/moscow/privacy' },
+  { label: 'Политика cookie', to: '/moscow/cookies' },
 ];
 
 const FooterCol = ({
