@@ -12,6 +12,22 @@ import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
 import func2url from '../../backend/func2url.json';
 
+const CDN = 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket';
+
+const ITEM_IMAGES: { prefix: string; img: string }[] = [
+  { prefix: 'certificate', img: `${CDN}/858c5def-a2d9-4503-aef3-192e73b205e1.png` },
+  { prefix: 'kids', img: `${CDN}/cd92a426-9a1e-4eba-81fa-09e5b75b623d.jpg` },
+  { prefix: 'promo', img: `${CDN}/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png` },
+  { prefix: 'thematic', img: `${CDN}/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg` },
+  { prefix: 'date', img: `${CDN}/0691624f-cc62-4d3b-8069-e5ab1d935b18.png` },
+  { prefix: 'coworking', img: `${CDN}/42ebb68f-5d36-4a32-b4bd-b871307db9bc.jpg` },
+];
+
+const DEFAULT_ITEM_IMAGE = `${CDN}/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png`;
+
+const itemImage = (id: string) =>
+  ITEM_IMAGES.find((m) => id.startsWith(m.prefix))?.img ?? DEFAULT_ITEM_IMAGE;
+
 interface CertificateResult {
   title: string;
   email: string;
@@ -203,7 +219,13 @@ const Checkout = () => {
                   key={item.id}
                   className="grid gap-2 border-b border-border px-6 py-5 last:border-0 sm:grid-cols-[1fr_90px_120px_44px] sm:items-center sm:gap-4"
                 >
-                  <div>
+                  <div className="flex items-start gap-3">
+                    <img
+                      src={itemImage(item.id)}
+                      alt={item.title}
+                      className="h-16 w-16 shrink-0 rounded-xl object-cover"
+                    />
+                    <div>
                     <h3 className="font-display text-lg font-semibold">{item.title}</h3>
                     {item.details && (
                       <p className="mt-1 text-sm text-muted-foreground">{item.details}</p>
@@ -218,6 +240,7 @@ const Checkout = () => {
                         </p>
                       </div>
                     )}
+                    </div>
                   </div>
                   <div className="text-sm text-muted-foreground sm:text-center">
                     {item.qty} шт.
@@ -255,15 +278,15 @@ const Checkout = () => {
 
             {/* RECIPIENT */}
             <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
-              <h2 className="font-display text-2xl font-semibold">Данные получателя</h2>
+              <h2 className="font-display text-2xl font-semibold">Данные покупателя</h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="name">ФИО *</Label>
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="ФИО" className="mt-1.5" required />
+                </div>
                 <div>
                   <Label htmlFor="email">Email *</Label>
                   <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="mt-1.5" required />
-                </div>
-                <div>
-                  <Label htmlFor="name">Получатель *</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Получатель" className="mt-1.5" required />
                 </div>
                 <div>
                   <Label htmlFor="phone">Телефон *</Label>
@@ -281,11 +304,18 @@ const Checkout = () => {
               <div className="rounded-2xl border border-border bg-card p-6">
                 <h2 className="font-display text-xl font-semibold">Способы оплаты</h2>
                 <RadioGroup value={payment} onValueChange={setPayment} className="mt-4 space-y-3">
-                  <label className="flex cursor-pointer items-center gap-3 text-sm">
-                    <RadioGroupItem value="cash" id="pay-cash" /> Оплата наличными
+                  <label className="flex cursor-pointer items-start gap-3 text-sm">
+                    <RadioGroupItem value="cash" id="pay-cash" className="mt-0.5" />
+                    <span>Оплата наличными на кассе Школы керамики</span>
                   </label>
-                  <label className="flex cursor-pointer items-center gap-3 text-sm">
-                    <RadioGroupItem value="online" id="pay-online" /> Онлайн оплата
+                  <label className="flex cursor-pointer items-start gap-3 text-sm">
+                    <RadioGroupItem value="online" id="pay-online" className="mt-0.5" />
+                    <span>
+                      Онлайн-оплата ЮKassa
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        Банковские карты, СБП
+                      </span>
+                    </span>
                   </label>
                 </RadioGroup>
               </div>
