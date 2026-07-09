@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,8 +39,11 @@ const RANGES = [
   { value: 'big', label: 'От 21 до 30 человек', min: 21, max: 30 },
 ];
 
-const PromoDialog = ({ children }: { children: ReactNode }) => {
+const PromoDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: boolean }) => {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (autoOpen) setOpen(true);
+  }, [autoOpen]);
   const [service, setService] = useState('lepka');
   const [range, setRange] = useState('small');
   const { addItem } = useCart();

@@ -22,7 +22,7 @@ const DIALOGS = {
   date: DateDialog,
 } as const;
 
-const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
+const FormatCtaButton = ({ cta, autoOpen }: { cta: FormatItem['cta']; autoOpen?: boolean }) => {
   const button = (
     <Button variant={cta.variant} className="mt-5 w-fit shrink-0 rounded-full px-6">
       {cta.label}
@@ -49,7 +49,7 @@ const FormatCtaButton = ({ cta }: { cta: FormatItem['cta'] }) => {
   if (Dialog) {
     return (
       <Suspense fallback={button}>
-        <Dialog>{button}</Dialog>
+        <Dialog autoOpen={autoOpen}>{button}</Dialog>
       </Suspense>
     );
   }

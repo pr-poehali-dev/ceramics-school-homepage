@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
@@ -8,6 +9,8 @@ import FormatsResults from './formats/FormatsResults';
 import FormatsCta from './formats/FormatsCta';
 
 const Formats = () => {
+  const [searchParams] = useSearchParams();
+  const openAction = searchParams.get('open');
   const [ageFilter, setAgeFilter] = useState<string | null>(null);
   const [dayFilter, setDayFilter] = useState<string>('any');
   const [durationFilter, setDurationFilter] = useState<string | null>(null);
@@ -80,6 +83,7 @@ const Formats = () => {
           expanded={expanded}
           setExpanded={setExpanded}
           reset={reset}
+          openAction={openAction}
         />
 
         {/* CTA */}

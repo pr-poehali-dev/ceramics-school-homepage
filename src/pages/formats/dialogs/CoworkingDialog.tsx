@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -61,8 +61,11 @@ const CATEGORIES: { title: string; icon: string; items: PriceItem[] }[] = [
 
 const ALL_ITEMS = CATEGORIES.flatMap((c) => c.items);
 
-const CoworkingDialog = ({ children }: { children: ReactNode }) => {
+const CoworkingDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: boolean }) => {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (autoOpen) setOpen(true);
+  }, [autoOpen]);
   const [qtys, setQtys] = useState<Record<string, number>>({});
   const { addItem } = useCart();
   const { toast } = useToast();

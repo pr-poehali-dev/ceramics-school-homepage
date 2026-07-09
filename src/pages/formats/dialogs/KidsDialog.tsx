@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,8 +18,11 @@ const OPTIONS = [
   { value: 'gift', label: 'Подарочный сертификат', price: 1900 },
 ];
 
-const KidsDialog = ({ children }: { children: ReactNode }) => {
+const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: boolean }) => {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (autoOpen) setOpen(true);
+  }, [autoOpen]);
   const [type, setType] = useState('single');
   const [qty, setQty] = useState(1);
   const { addItem } = useCart();

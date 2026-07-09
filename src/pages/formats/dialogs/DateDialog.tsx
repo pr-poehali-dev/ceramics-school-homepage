@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,8 +24,11 @@ const META = [
   { label: 'Код', value: 'ВДНХ-0008-Р' },
 ];
 
-const DateDialog = ({ children }: { children: ReactNode }) => {
+const DateDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: boolean }) => {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (autoOpen) setOpen(true);
+  }, [autoOpen]);
   const [ticket, setTicket] = useState<'single' | 'gift'>('single');
   const [qty, setQty] = useState(1);
   const { addItem } = useCart();

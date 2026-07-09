@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,8 +28,11 @@ const WORKSHOPS = [
   'Роспись акрилом',
 ];
 
-const OffsiteDialog = ({ children }: { children: ReactNode }) => {
+const OffsiteDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: boolean }) => {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (autoOpen) setOpen(true);
+  }, [autoOpen]);
   const [form, setForm] = useState({
     datetime: '',
     workshop: '',

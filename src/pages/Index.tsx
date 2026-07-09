@@ -20,24 +20,28 @@ const SERVICES = [
     title: 'Лепка',
     desc: 'Ручная работа с глиной',
     price: 'от 1900₽',
+    href: '/moscow/workshops/lepka',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/ab36a67f-4ea0-4d3a-8ebe-21e8a9dfb891.png',
     title: 'Гончарный круг',
     desc: 'Создание на круге',
     price: 'от 2900₽',
+    href: '/moscow/workshops/krug',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
     title: 'Ангобы',
     desc: 'Роспись цветной глиной',
     price: 'от 1900₽',
+    href: '/moscow/workshops/angoby',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
     title: 'Акрил',
     desc: 'Роспись готовых изделий',
     price: 'от 1500₽',
+    href: '/moscow/workshops/akril',
   },
 ];
 
@@ -106,7 +110,7 @@ const Index = () => {
           {SERVICES.map((s) => (
             <Link
               key={s.title}
-              to="/moscow/workshops"
+              to={s.href}
               className="group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl"
             >
               <div className="aspect-[4/3] overflow-hidden">
@@ -135,10 +139,18 @@ const Index = () => {
             подходящий вариант для себя, ребёнка или компании.
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {ALL_FORMATS.map((f) => (
+            {ALL_FORMATS.map((f) => {
+              const action = 'action' in f.cta ? f.cta.action : undefined;
+              const formatTo =
+                action && action !== 'link'
+                  ? `/moscow/formats?open=${action}`
+                  : 'to' in f.cta && f.cta.to
+                    ? f.cta.to
+                    : '/moscow/formats';
+              return (
               <Link
                 key={f.title}
-                to="/moscow/formats"
+                to={formatTo}
                 className="group flex flex-col overflow-hidden rounded-2xl bg-background shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
@@ -164,7 +176,8 @@ const Index = () => {
                   <p className="mt-auto pt-4 text-base font-semibold text-primary">{f.price}</p>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
           <div className="mt-10 text-center">
             <Link to="/moscow/formats">

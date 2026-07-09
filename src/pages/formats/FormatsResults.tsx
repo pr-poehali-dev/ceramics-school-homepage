@@ -8,6 +8,7 @@ interface FormatsResultsProps {
   expanded: string | null;
   setExpanded: (v: string | null) => void;
   reset: () => void;
+  openAction?: string | null;
 }
 
 const Dot = ({ text }: { text: string }) => (
@@ -17,7 +18,7 @@ const Dot = ({ text }: { text: string }) => (
   </span>
 );
 
-const FormatsResults = ({ results, expanded, setExpanded, reset }: FormatsResultsProps) => {
+const FormatsResults = ({ results, expanded, setExpanded, reset, openAction }: FormatsResultsProps) => {
   return (
     <div className="mx-auto mt-8 max-w-4xl space-y-5">
       {results.length === 0 ? (
@@ -77,7 +78,12 @@ const FormatsResults = ({ results, expanded, setExpanded, reset }: FormatsResult
                   </>
                 )}
 
-                <FormatCtaButton cta={f.cta} />
+                <FormatCtaButton
+                  cta={f.cta}
+                  autoOpen={
+                    !!openAction && 'action' in f.cta && f.cta.action === openAction
+                  }
+                />
               </div>
             </div>
           </div>

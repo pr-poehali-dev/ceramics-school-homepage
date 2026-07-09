@@ -21,7 +21,7 @@ interface CertificateResult {
 }
 
 const Checkout = () => {
-  const { items, total, count, clear } = useCart();
+  const { items, total, count, clear, removeItem } = useCart();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -178,15 +178,16 @@ const Checkout = () => {
           <div className="space-y-8">
             {/* ITEMS TABLE */}
             <div className="overflow-hidden rounded-2xl border border-border bg-card">
-              <div className="hidden grid-cols-[1fr_90px_120px] gap-4 border-b border-border px-6 py-4 text-sm font-medium text-muted-foreground sm:grid">
+              <div className="hidden grid-cols-[1fr_90px_120px_44px] gap-4 border-b border-border px-6 py-4 text-sm font-medium text-muted-foreground sm:grid">
                 <span>Наименование</span>
                 <span className="text-center">Количество</span>
                 <span className="text-right">Цена</span>
+                <span />
               </div>
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="grid gap-2 border-b border-border px-6 py-5 last:border-0 sm:grid-cols-[1fr_90px_120px] sm:items-center sm:gap-4"
+                  className="grid gap-2 border-b border-border px-6 py-5 last:border-0 sm:grid-cols-[1fr_90px_120px_44px] sm:items-center sm:gap-4"
                 >
                   <div>
                     <h3 className="font-display text-lg font-semibold">{item.title}</h3>
@@ -210,14 +211,31 @@ const Checkout = () => {
                   <div className="font-semibold sm:text-right">
                     {(item.price * item.qty).toLocaleString('ru-RU')} руб.
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item.id)}
+                    className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-destructive sm:justify-center"
+                    aria-label="Удалить товар"
+                  >
+                    <Icon name="Trash2" size={18} />
+                    <span className="sm:hidden">Удалить</span>
+                  </button>
                 </div>
               ))}
-              <div className="flex items-center justify-between gap-4 bg-secondary/40 px-6 py-4">
-                <span className="font-semibold">Итого:</span>
-                <span className="text-sm text-muted-foreground">{count} шт.</span>
-                <span className="font-display text-xl font-semibold text-primary">
-                  {total.toLocaleString('ru-RU')} руб.
-                </span>
+              <div className="flex flex-wrap items-center justify-between gap-4 bg-secondary/40 px-6 py-4">
+                <button
+                  type="button"
+                  onClick={clear}
+                  className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-destructive"
+                >
+                  <Icon name="Trash2" size={15} /> Очистить корзину
+                </button>
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-muted-foreground">{count} шт.</span>
+                  <span className="font-display text-xl font-semibold text-primary">
+                    {total.toLocaleString('ru-RU')} руб.
+                  </span>
+                </div>
               </div>
             </div>
 

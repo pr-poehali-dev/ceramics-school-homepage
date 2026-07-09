@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,8 +37,11 @@ const WORKSHOPS = [
   'Тематический',
 ];
 
-const EventsDialog = ({ children }: { children: ReactNode }) => {
+const EventsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: boolean }) => {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (autoOpen) setOpen(true);
+  }, [autoOpen]);
   const [form, setForm] = useState({
     eventType: '',
     people: '',

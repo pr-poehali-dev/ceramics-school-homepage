@@ -36,6 +36,7 @@ const Certificates = () => {
   const [recipientEmail, setRecipientEmail] = useState('');
   const [senderName, setSenderName] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [personalOpen, setPersonalOpen] = useState(false);
 
   const activeAmount = selected ?? (custom ? parseInt(custom.replace(/\D/g, '')) || 0 : 0);
 
@@ -253,21 +254,34 @@ const Certificates = () => {
 
           {/* PERSONALISATION */}
           <div className="mt-8 rounded-2xl border border-border bg-card p-6 md:p-7">
-            <div className="flex flex-wrap items-center gap-2">
-              <Icon name="Sparkles" size={18} className="text-primary" />
-              <p className="text-sm font-medium uppercase tracking-[0.15em] text-muted-foreground">
-                Персонализация сертификата
-              </p>
-              <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                необязательно
+            <button
+              type="button"
+              onClick={() => setPersonalOpen((v) => !v)}
+              className="flex w-full items-center justify-between gap-3 text-left"
+            >
+              <span className="flex flex-wrap items-center gap-2">
+                <Icon name="Sparkles" size={18} className="text-primary" />
+                <span className="text-sm font-medium uppercase tracking-[0.15em] text-muted-foreground">
+                  Персонализация сертификата
+                </span>
+                <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                  необязательно
+                </span>
               </span>
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Добавьте тёплые слова — они появятся прямо на сертификате выше. Этот шаг можно
-              пропустить.
-            </p>
+              <Icon
+                name="ChevronDown"
+                size={20}
+                className={`shrink-0 text-muted-foreground transition-transform ${personalOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
 
-            <div className="mt-5 space-y-4">
+            {!personalOpen && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Добавьте тёплые слова — они появятся прямо на сертификате. Нажмите, чтобы раскрыть.
+              </p>
+            )}
+
+            <div className={`mt-5 space-y-4 ${personalOpen ? '' : 'hidden'}`}>
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
                   <Label htmlFor="cert-message">Поздравительная фраза</Label>

@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,8 +14,11 @@ import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { THEMATIC_WORKSHOPS, ThematicWorkshop } from '../thematicData';
 
-const ThematicDialog = ({ children }: { children: ReactNode }) => {
+const ThematicDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: boolean }) => {
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (autoOpen) setOpen(true);
+  }, [autoOpen]);
   const [selected, setSelected] = useState<ThematicWorkshop | null>(null);
   const [ticket, setTicket] = useState<'single' | 'gift'>('single');
   const [qty, setQty] = useState(1);
