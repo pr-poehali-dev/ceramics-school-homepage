@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import CookieConsent from "./components/CookieConsent";
+import OnlineBooking from "./components/OnlineBooking";
 import ChooseCity from "./pages/ChooseCity";
 import Index from "./pages/Index";
 import { CartProvider } from "./context/CartContext";
@@ -81,6 +82,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <OnlineBooking />
           <CookieConsent />
         </BrowserRouter>
       </CartProvider>
