@@ -7,7 +7,7 @@ const CartButton = () => {
 
   return (
     <Link
-      to="/cart"
+      to="/moscow/cart"
       aria-label="Корзина"
       className="relative flex h-11 w-11 items-center justify-center rounded-full border border-border transition-colors hover:bg-primary hover:text-primary-foreground"
     >

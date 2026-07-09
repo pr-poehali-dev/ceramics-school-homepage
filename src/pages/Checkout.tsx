@@ -145,7 +145,7 @@ const Checkout = () => {
             <p className="text-lg font-medium">Корзина пуста</p>
             <p className="mt-1 text-sm text-muted-foreground">Добавьте услугу, чтобы оформить заказ</p>
             <Button asChild className="mt-6 rounded-full px-7">
-              <Link to="/formats">
+              <Link to="/moscow/formats">
                 <Icon name="LayoutGrid" size={16} className="mr-2" /> К форматам
               </Link>
             </Button>

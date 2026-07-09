@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 
 const WORKSHOP_LINKS = [
-  { label: 'Лепка из глины', to: '/workshops/lepka' },
-  { label: 'Гончарный круг', to: '/workshops/krug' },
-  { label: 'Роспись ангобами', to: '/workshops/angoby' },
-  { label: 'Роспись акрилом', to: '/workshops/akril' },
+  { label: 'Лепка из глины', to: '/moscow/workshops/lepka' },
+  { label: 'Гончарный круг', to: '/moscow/workshops/krug' },
+  { label: 'Роспись ангобами', to: '/moscow/workshops/angoby' },
+  { label: 'Роспись акрилом', to: '/moscow/workshops/akril' },
 ];
 
 const LINKS = [
-  { label: 'Форматы', to: '/formats' },
-  { label: 'Отзывы', to: '/reviews' },
-  { label: 'Подарочные сертификаты', to: '/certificates' },
-  { label: 'Контакты', to: '/contacts' },
+  { label: 'Форматы', to: '/moscow/formats' },
+  { label: 'Отзывы', to: '/moscow/reviews' },
+  { label: 'Подарочные сертификаты', to: '/moscow/certificates' },
+  { label: 'Контакты', to: '/moscow/contacts' },
 ];
 
 interface DesktopNavProps {
@@ -36,9 +36,9 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
     <nav className="hidden items-center gap-8 md:flex">
       <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
         <Link
-          to="/workshops"
+          to="/moscow/workshops"
           className={`flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary ${
-            active === '/workshops' ? 'text-primary' : 'text-muted-foreground'
+            active === '/moscow/workshops' ? 'text-primary' : 'text-muted-foreground'
           }`}
         >
           Мастер-классы

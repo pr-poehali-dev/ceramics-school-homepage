@@ -13,7 +13,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 1 900 ₽',
     age: '3+',
-    href: '/workshops/lepka',
+    href: '/moscow/workshops/lepka',
     note: null as null | { icon: string; text: string; tone: 'warn' | 'fast' },
   },
   {
@@ -24,7 +24,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 2 900 ₽',
     age: '7+',
-    href: '/workshops/krug' as null | string,
+    href: '/moscow/workshops/krug' as null | string,
     note: { icon: 'TriangleAlert', text: 'Нет кругов вт / ср / чт', tone: 'warn' as const },
   },
   {
@@ -35,7 +35,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 2 100 ₽',
     age: '3+',
-    href: '/workshops/angoby' as null | string,
+    href: '/moscow/workshops/angoby' as null | string,
     note: null,
   },
   {
@@ -46,7 +46,7 @@ const WORKSHOPS = [
     duration: '1 час',
     price: 'от 1 500 ₽',
     age: '3+',
-    href: '/workshops/akril' as null | string,
+    href: '/moscow/workshops/akril' as null | string,
     note: { icon: 'Zap', text: 'Забрать сразу', tone: 'fast' as const },
   },
 ];
@@ -55,7 +55,7 @@ const Workshops = () => {
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}
-      <SiteHeader active="/workshops" />
+      <SiteHeader active="/moscow/workshops" />
 
       {/* HERO */}
       <section className="container py-14 md:py-20">

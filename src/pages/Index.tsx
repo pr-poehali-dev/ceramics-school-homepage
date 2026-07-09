@@ -85,7 +85,7 @@ const Index = () => {
               <Button size="lg" className="rounded-full px-8 text-base">
                 <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
               </Button>
-              <Link to="/certificates">
+              <Link to="/moscow/certificates">
                 <Button
                   size="lg"
                   variant="outline"
@@ -106,7 +106,7 @@ const Index = () => {
           {SERVICES.map((s) => (
             <Link
               key={s.title}
-              to="/workshops"
+              to="/moscow/workshops"
               className="group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl"
             >
               <div className="aspect-[4/3] overflow-hidden">
@@ -138,7 +138,7 @@ const Index = () => {
             {ALL_FORMATS.map((f) => (
               <Link
                 key={f.title}
-                to="/formats"
+                to="/moscow/formats"
                 className="group flex flex-col overflow-hidden rounded-2xl bg-background shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
@@ -167,7 +167,7 @@ const Index = () => {
             ))}
           </div>
           <div className="mt-10 text-center">
-            <Link to="/formats">
+            <Link to="/moscow/formats">
               <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
                 Все форматы и цены
                 <Icon name="ArrowRight" size={18} className="ml-2" />
@@ -196,7 +196,7 @@ const Index = () => {
           {HOME_GALLERY.map((src, i) => (
             <Link
               key={src}
-              to="/reviews"
+              to="/moscow/reviews"
               className="group relative aspect-square overflow-hidden rounded-2xl"
             >
               <img
@@ -257,7 +257,7 @@ const Index = () => {
               <Icon name="Star" size={18} className="mr-2" /> Отзыв в 2ГИС
             </Button>
           </a>
-          <Link to="/reviews">
+          <Link to="/moscow/reviews">
             <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
               Все отзывы и работы
               <Icon name="ArrowRight" size={18} className="ml-2" />
@@ -286,7 +286,7 @@ const Index = () => {
                 Отличный подарок близким — незабываемый вечер в мастерской и
                 изделие, созданное своими руками.
               </p>
-              <Link to="/certificates">
+              <Link to="/moscow/certificates">
                 <Button
                   size="lg"
                   variant="secondary"
@@ -337,11 +337,11 @@ const Index = () => {
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-t border-border/60 py-5 text-center text-sm text-muted-foreground">
           <span>© 2003–2026 Дымов Керамика. Все права защищены.</span>
           <span className="text-muted-foreground/50">·</span>
-          <Link to="/info" className="transition-colors hover:text-primary">
+          <Link to="/moscow/info" className="transition-colors hover:text-primary">
             Информация
           </Link>
           <span className="text-muted-foreground/50">·</span>
-          <Link to="/offer" className="transition-colors hover:text-primary">
+          <Link to="/moscow/offer" className="transition-colors hover:text-primary">
             Публичная оферта
           </Link>
         </div>

@@ -25,7 +25,7 @@ const Cart = () => {
               <p className="text-lg font-medium">Корзина пуста</p>
               <p className="mt-1 text-sm text-muted-foreground">Выберите услугу или мастер-класс</p>
               <Button asChild className="mt-6 rounded-full px-7">
-                <Link to="/formats">
+                <Link to="/moscow/formats">
                   <Icon name="LayoutGrid" size={16} className="mr-2" /> К форматам
                 </Link>
               </Button>
@@ -109,7 +109,7 @@ const Cart = () => {
               </div>
 
               <Button asChild size="lg" className="mt-6 w-full rounded-full">
-                <Link to="/checkout">
+                <Link to="/moscow/checkout">
                   <Icon name="CreditCard" size={18} className="mr-2" /> Оформить заказ
                 </Link>
               </Button>

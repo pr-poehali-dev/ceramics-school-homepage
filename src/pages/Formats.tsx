@@ -42,7 +42,7 @@ const Formats = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
-      <SiteHeader active="/formats" />
+      <SiteHeader active="/moscow/formats" />
 
       <div className="container py-12 md:py-16">
         {/* PAGE TITLE */}

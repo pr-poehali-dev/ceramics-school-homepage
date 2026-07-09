@@ -105,18 +105,18 @@ const WorkshopDetail = () => {
   const data = slug ? WORKSHOP_DETAILS[slug] : undefined;
 
   if (!data) {
-    return <Navigate to="/workshops" replace />;
+    return <Navigate to="/moscow/workshops" replace />;
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}
-      <SiteHeader active="/workshops" />
+      <SiteHeader active="/moscow/workshops" />
 
       <div className="container py-10 md:py-14">
         {/* BACK */}
         <Link
-          to="/workshops"
+          to="/moscow/workshops"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
         >
           <Icon name="ArrowLeft" size={16} /> Назад к услугам

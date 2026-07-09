@@ -6,7 +6,7 @@ import SiteHeader from '@/components/SiteHeader';
 const Contacts = () => {
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
-      <SiteHeader active="/contacts" />
+      <SiteHeader active="/moscow/contacts" />
 
       <div className="container py-12 md:py-16">
         {/* HERO */}
@@ -194,11 +194,11 @@ const Contacts = () => {
           <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center">
             <span>© 2003–2026 «Дымов Керамика»</span>
             <span className="text-muted-foreground/50">·</span>
-            <Link to="/info" className="transition-colors hover:text-primary">
+            <Link to="/moscow/info" className="transition-colors hover:text-primary">
               Информация
             </Link>
             <span className="text-muted-foreground/50">·</span>
-            <Link to="/offer" className="transition-colors hover:text-primary">
+            <Link to="/moscow/offer" className="transition-colors hover:text-primary">
               Публичная оферта
             </Link>
           </span>

@@ -17,7 +17,7 @@ export const ALL_FORMATS = [
     location: 'studio',
     durationKey: '1h',
     desc: 'Классические мастер-классы — это отдельные занятия по одной из четырёх техник на выбор: лепка из глины, гончарный круг, роспись ангобами или роспись акрилом. Всё включено, готовое изделие выдаётся после обжига.',
-    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight', action: 'link', to: '/workshops' },
+    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight', action: 'link', to: '/moscow/workshops' },
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/cd92a426-9a1e-4eba-81fa-09e5b75b623d.jpg',

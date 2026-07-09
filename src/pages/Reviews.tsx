@@ -17,7 +17,7 @@ const Reviews = () => {
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}
-      <SiteHeader active="/reviews" />
+      <SiteHeader active="/moscow/reviews" />
 
       <div className="container py-12 md:py-16">
         {/* PAGE TITLE */}
@@ -120,7 +120,7 @@ const Reviews = () => {
             Выберите формат мастер-класса и создайте своё изделие из глины — впечатления
             останутся надолго.
           </p>
-          <Link to="/formats">
+          <Link to="/moscow/formats">
             <Button size="lg" variant="secondary" className="mt-7 rounded-full px-8">
               <Icon name="LayoutGrid" size={18} className="mr-2" /> Выбрать формат
             </Button>

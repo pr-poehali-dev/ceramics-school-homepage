@@ -7,17 +7,17 @@ import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 
 const NAV = [
-  { label: 'Форматы', to: '/formats' },
-  { label: 'Отзывы', to: '/reviews' },
-  { label: 'Подарочные сертификаты', to: '/certificates' },
-  { label: 'Контакты', to: '/contacts' },
+  { label: 'Форматы', to: '/moscow/formats' },
+  { label: 'Отзывы', to: '/moscow/reviews' },
+  { label: 'Подарочные сертификаты', to: '/moscow/certificates' },
+  { label: 'Контакты', to: '/moscow/contacts' },
 ];
 
 const WORKSHOP_LINKS = [
-  { label: 'Лепка из глины', to: '/workshops/lepka' },
-  { label: 'Гончарный круг', to: '/workshops/krug' },
-  { label: 'Роспись ангобами', to: '/workshops/angoby' },
-  { label: 'Роспись акрилом', to: '/workshops/akril' },
+  { label: 'Лепка из глины', to: '/moscow/workshops/lepka' },
+  { label: 'Гончарный круг', to: '/moscow/workshops/krug' },
+  { label: 'Роспись ангобами', to: '/moscow/workshops/angoby' },
+  { label: 'Роспись акрилом', to: '/moscow/workshops/akril' },
 ];
 
 const CONTACTS = [
@@ -81,11 +81,11 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
             {/* Мастер-классы с подпунктами */}
             <div
               className={`flex items-center rounded-xl text-lg font-medium transition-colors ${
-                active === '/workshops' ? 'bg-primary/10 text-primary' : 'text-foreground'
+                active === '/moscow/workshops' ? 'bg-primary/10 text-primary' : 'text-foreground'
               }`}
             >
               <Link
-                to="/workshops"
+                to="/moscow/workshops"
                 onClick={() => setOpen(false)}
                 className="flex-1 rounded-l-xl px-4 py-3.5 hover:bg-muted"
               >

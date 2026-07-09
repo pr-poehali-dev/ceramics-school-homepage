@@ -41,8 +41,13 @@ const Certificates = () => {
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail.trim());
 
+  const hasPersonalisation = Boolean(
+    message.trim() || recipientName.trim() || senderName.trim() || recipientEmail.trim(),
+  );
+
   const handleAddToCart = () => {
-    if (!emailValid) {
+    // Персонализация опциональна. Но если что-то заполнено — просим корректный e-mail.
+    if (hasPersonalisation && !emailValid) {
       setEmailError('Укажите корректный e-mail получателя');
       toast({ title: 'Проверьте e-mail получателя' });
       return;
@@ -52,18 +57,20 @@ const Certificates = () => {
       title: 'Подарочный сертификат «Дымов Керамика»',
       details: `Номинал ${formatNum(activeAmount)}${recipientName ? ` · для ${recipientName}` : ''}`,
       price: activeAmount,
-      certificate: {
-        message: message.trim(),
-        recipientEmail: recipientEmail.trim(),
-        recipientName: recipientName.trim(),
-        senderName: senderName.trim(),
-      },
+      certificate: hasPersonalisation
+        ? {
+            message: message.trim(),
+            recipientEmail: recipientEmail.trim(),
+            recipientName: recipientName.trim(),
+            senderName: senderName.trim(),
+          }
+        : undefined,
     });
     toast({
       title: 'Сертификат добавлен в корзину',
       description: 'Перейдите к оформлению, чтобы завершить покупку.',
     });
-    navigate('/checkout');
+    navigate('/moscow/checkout');
   };
 
   const handlePreset = (val: number) => {
@@ -94,7 +101,7 @@ const Certificates = () => {
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}
-      <SiteHeader active="/certificates" />
+      <SiteHeader active="/moscow/certificates" />
 
       <div className="container py-12 md:py-16">
         {/* HERO */}
@@ -246,14 +253,18 @@ const Certificates = () => {
 
           {/* PERSONALISATION */}
           <div className="mt-8 rounded-2xl border border-border bg-card p-6 md:p-7">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Icon name="Sparkles" size={18} className="text-primary" />
               <p className="text-sm font-medium uppercase tracking-[0.15em] text-muted-foreground">
                 Персонализация сертификата
               </p>
+              <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                необязательно
+              </span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              Добавьте тёплые слова — они появятся прямо на сертификате выше.
+              Добавьте тёплые слова — они появятся прямо на сертификате выше. Этот шаг можно
+              пропустить.
             </p>
 
             <div className="mt-5 space-y-4">
@@ -298,7 +309,7 @@ const Certificates = () => {
               </div>
 
               <div>
-                <Label htmlFor="cert-email">E-mail получателя *</Label>
+                <Label htmlFor="cert-email">E-mail получателя</Label>
                 <Input
                   id="cert-email"
                   type="email"
