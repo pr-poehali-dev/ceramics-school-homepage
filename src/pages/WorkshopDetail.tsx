@@ -159,17 +159,33 @@ const WorkshopDetail = () => {
         </div>
 
         {/* DESCRIPTION */}
-        <div className="mt-14 max-w-3xl rounded-2xl border border-border bg-card p-7 md:p-9">
-          <h2 className="font-display text-2xl font-semibold">О мастер-классе</h2>
-          {data.paragraphs.map((p, i) => (
-            <p key={i} className="mt-3 leading-relaxed text-muted-foreground">
-              {p}
-            </p>
-          ))}
+        <div className="mt-14 max-w-5xl rounded-2xl border border-border bg-card p-7 md:p-10">
+          <h2 className="flex items-center gap-3 font-display text-2xl font-semibold">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Icon name="Info" size={20} />
+            </span>
+            О мастер-классе
+          </h2>
+
+          {/* Первый абзац — вводный, крупнее */}
+          <p className="mt-5 text-lg leading-relaxed text-foreground/90 md:text-xl">
+            {data.paragraphs[0]}
+          </p>
+
+          {/* Остальные абзацы — в две колонки для удобного чтения */}
+          {data.paragraphs.length > 1 && (
+            <div className="mt-6 gap-x-10 border-t border-border/60 pt-6 md:columns-2 [&>p]:mt-0 [&>p]:mb-4 [&>p]:break-inside-avoid">
+              {data.paragraphs.slice(1).map((p, i) => (
+                <p key={i} className="leading-relaxed text-muted-foreground">
+                  {p}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* NOTES */}
-        <div className="mt-6 grid max-w-3xl gap-4 md:grid-cols-2">
+        <div className="mt-6 grid max-w-5xl gap-4 md:grid-cols-2">
           {data.benefit && (
             <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/15 p-5">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
