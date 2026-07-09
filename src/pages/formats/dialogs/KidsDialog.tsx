@@ -33,7 +33,6 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [agree, setAgree] = useState(false);
-  const [sending, setSending] = useState(false);
   const { addItem } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -49,14 +48,26 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
   const formValid = emailValid && phone.trim().length >= 6 && agree;
 
   const handleBuy = () => {
+    if (isGroupRequest && !formValid) return;
     addItem({
-      id: `kids-${type}`,
+      id: `kids-${type}${isGroupRequest ? '-group' : ''}`,
       title: 'Детская группа (сб/вс)',
       details: selected.label,
       price: selected.price,
       qty,
+      ...(isGroupRequest && {
+        booking: {
+          email: email.trim(),
+          phone: phone.trim(),
+          service: 'Детская группа (сб/вс)',
+          people: qty,
+        },
+      }),
     });
     setOpen(false);
+    setEmail('');
+    setPhone('');
+    setAgree(false);
     navigate('/moscow/checkout');
   };
 
@@ -66,40 +77,6 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
       title: 'Скоро откроется запись',
       description: 'Здесь появится выбор даты и оплата урока.',
     });
-  };
-
-  const handleRequest = async () => {
-    if (!formValid || sending) return;
-    setSending(true);
-    try {
-      const resp = await fetch(func2url['booking-request'], {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          service: 'Детская группа (сб/вс)',
-          people: qty,
-          email: email.trim(),
-          phone: phone.trim(),
-        }),
-      });
-      if (!resp.ok) throw new Error('fail');
-      setOpen(false);
-      setEmail('');
-      setPhone('');
-      setAgree(false);
-      toast({
-        title: 'Заявка отправлена!',
-        description: 'Сотрудник школы свяжется с вами, чтобы уточнить дату посещения.',
-      });
-    } catch {
-      toast({
-        title: 'Не удалось отправить',
-        description: 'Попробуйте позже или позвоните нам.',
-        variant: 'destructive',
-      });
-    } finally {
-      setSending(false);
-    }
   };
 
   return (
@@ -160,8 +137,7 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
           {isGroupRequest && (
             <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-4">
               <p className="text-sm text-muted-foreground">
-                Для группы оставьте контакты — сотрудник школы свяжется и уточнит удобную дату
-                посещения.
+                Оставьте контакты — после оплаты сотрудник школы свяжется и уточнит дату посещения.
               </p>
               <div>
                 <Label htmlFor="kids-email">Email</Label>
@@ -199,8 +175,8 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
             </div>
           )}
 
-          {/* Итого показываем для покупки (подарочный или разовый 1 участник) */}
-          {!isGroupRequest && (
+          {/* Итого показываем для покупки (подарочный, разовый 1 или группа) */}
+          {!isSingleOne && (
             <div className="flex items-center justify-between border-t border-border pt-4">
               <span className="text-sm text-muted-foreground">Итого</span>
               <span className="font-display text-2xl font-semibold text-primary">
@@ -210,25 +186,18 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
           )}
 
           {/* Кнопка меняется в зависимости от выбора */}
-          {isGift && (
-            <Button onClick={handleBuy} size="lg" className="w-full rounded-full">
-              <Icon name="ShoppingCart" size={18} className="mr-2" /> Купить
-            </Button>
-          )}
-          {isSingleOne && (
+          {isSingleOne ? (
             <Button onClick={handleEnroll} size="lg" className="w-full rounded-full">
               <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
             </Button>
-          )}
-          {isGroupRequest && (
+          ) : (
             <Button
-              onClick={handleRequest}
+              onClick={handleBuy}
               size="lg"
               className="w-full rounded-full"
-              disabled={!formValid || sending}
+              disabled={isGroupRequest && !formValid}
             >
-              <Icon name="Send" size={18} className="mr-2" />
-              {sending ? 'Отправляем…' : 'Отправить'}
+              <Icon name="ShoppingCart" size={18} className="mr-2" /> Купить
             </Button>
           )}
         </div>
