@@ -88,8 +88,8 @@ const Checkout = () => {
           body: JSON.stringify({
             service: item.booking?.service,
             people: item.booking?.people,
-            email: item.booking?.email,
-            phone: item.booking?.phone,
+            email: item.booking?.email || email,
+            phone: item.booking?.phone || phone,
           }),
         });
       }

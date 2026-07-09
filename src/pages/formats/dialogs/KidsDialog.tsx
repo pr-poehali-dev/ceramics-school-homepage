@@ -11,12 +11,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
-import func2url from '../../../../backend/func2url.json';
 
 const OPTIONS = [
   { value: 'single', label: 'Разовый', price: 1900 },
@@ -30,9 +26,6 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
   }, [autoOpen]);
   const [type, setType] = useState('single');
   const [qty, setQty] = useState(1);
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [agree, setAgree] = useState(false);
   const { addItem } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -44,11 +37,7 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
   const isSingleOne = type === 'single' && qty === 1;
   const isGroupRequest = type === 'single' && qty > 1;
 
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const formValid = emailValid && phone.trim().length >= 6 && agree;
-
   const handleBuy = () => {
-    if (isGroupRequest && !formValid) return;
     addItem({
       id: `kids-${type}${isGroupRequest ? '-group' : ''}`,
       title: 'Детская группа (сб/вс)',
@@ -57,17 +46,14 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
       qty,
       ...(isGroupRequest && {
         booking: {
-          email: email.trim(),
-          phone: phone.trim(),
+          email: '',
+          phone: '',
           service: 'Детская группа (сб/вс)',
           people: qty,
         },
       }),
     });
     setOpen(false);
-    setEmail('');
-    setPhone('');
-    setAgree(false);
     navigate('/moscow/checkout');
   };
 
@@ -133,45 +119,14 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
             </div>
           </div>
 
-          {/* Форма заявки для группы (разовый, >1 участника) */}
+          {/* Сообщение для группы (разовый, >1 участника) */}
           {isGroupRequest && (
-            <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-4">
+            <div className="flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+              <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-primary" />
               <p className="text-sm text-muted-foreground">
-                Оставьте контакты — после оплаты сотрудник школы свяжется и уточнит дату посещения.
+                После оплаты с Вами свяжется представитель Школы керамики и уточнит выбор даты и
+                времени посещения.
               </p>
-              <div>
-                <Label htmlFor="kids-email">Email</Label>
-                <Input
-                  id="kids-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="mt-1.5"
-                />
-              </div>
-              <div>
-                <Label htmlFor="kids-phone">Телефон</Label>
-                <Input
-                  id="kids-phone"
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+7 (___) ___-__-__"
-                  className="mt-1.5"
-                />
-              </div>
-              <label className="flex cursor-pointer items-start gap-2.5">
-                <Checkbox
-                  checked={agree}
-                  onCheckedChange={(v) => setAgree(Boolean(v))}
-                  className="mt-0.5"
-                />
-                <span className="text-xs leading-relaxed text-muted-foreground">
-                  Я даю согласие на обработку персональных данных на условиях и для целей,
-                  определённых в Согласии на обработку персональных данных.
-                </span>
-              </label>
             </div>
           )}
 
@@ -191,12 +146,7 @@ const KidsDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
               <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
             </Button>
           ) : (
-            <Button
-              onClick={handleBuy}
-              size="lg"
-              className="w-full rounded-full"
-              disabled={isGroupRequest && !formValid}
-            >
+            <Button onClick={handleBuy} size="lg" className="w-full rounded-full">
               <Icon name="ShoppingCart" size={18} className="mr-2" /> Купить
             </Button>
           )}
