@@ -123,35 +123,38 @@ const WorkshopDetail = () => {
         </Link>
 
         {/* HERO */}
-        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-center">
-          <div className="animate-fade-in">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+        <div className="relative mt-8 animate-scale-in overflow-hidden rounded-[2rem] shadow-xl">
+          <img
+            src={data.img}
+            alt={data.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/25" />
+
+          <div className="relative flex min-h-[26rem] flex-col justify-end p-7 text-white md:min-h-[32rem] md:p-12">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur">
               <Icon name={data.badgeIcon} size={16} /> Мастер-класс
             </span>
             <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
               {data.title}
             </h1>
-            <p className="mt-4 max-w-xl text-xl text-muted-foreground">{data.subtitle}</p>
+            <p className="mt-4 max-w-xl text-lg text-white/85 md:text-xl">{data.subtitle}</p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               {data.stats.map((s) => (
                 <span
                   key={s.text}
-                  className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium"
+                  className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur"
                 >
-                  <Icon name={s.icon} size={16} className="text-primary" />
+                  <Icon name={s.icon} size={16} className="text-white" />
                   {s.text}
                 </span>
               ))}
             </div>
 
-            <Button size="lg" className="mt-7 rounded-full px-10 text-base">
+            <Button size="lg" className="mt-7 w-fit rounded-full px-10 text-base">
               <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
             </Button>
-          </div>
-
-          <div className="animate-scale-in overflow-hidden rounded-[2rem] shadow-xl">
-            <img src={data.img} alt={data.title} className="h-full w-full object-cover" />
           </div>
         </div>
 
@@ -163,20 +166,34 @@ const WorkshopDetail = () => {
               {p}
             </p>
           ))}
+        </div>
 
+        {/* NOTES */}
+        <div className="mt-6 grid max-w-3xl gap-4 md:grid-cols-2">
           {data.benefit && (
-            <div className="mt-6 flex items-start gap-3 rounded-xl bg-accent/20 px-4 py-3 text-sm font-medium text-primary">
-              <Icon name="Info" size={18} className="mt-0.5 shrink-0" />
-              {data.benefit}
+            <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/15 p-5">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
+                <Icon name="Baby" size={18} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Дети на мастер-классе</p>
+                <p className="mt-1 text-sm text-muted-foreground">{data.benefit}</p>
+              </div>
             </div>
           )}
 
-          <div className="mt-6 rounded-xl border border-border/60 bg-secondary/40 px-4 py-3 text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">Льготникам — скидка.</span>{' '}
-            Действует социальная скидка для пенсионеров, студентов, именинников в день рождения,
-            членов многодетных семей и инвалидов всех групп. Не распространяется на мастер-класс
-            «Детская группа». Скидки не суммируются и действуют при предъявлении соответствующего
-            документа.
+          <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-secondary/40 p-5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Icon name="Percent" size={18} />
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-foreground">Льготникам — скидка</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Социальная скидка для пенсионеров, студентов, именинников в день рождения, членов
+                многодетных семей и инвалидов всех групп. Не распространяется на мастер-класс
+                «Детская группа». Скидки не суммируются, действуют при предъявлении документа.
+              </p>
+            </div>
           </div>
         </div>
 
