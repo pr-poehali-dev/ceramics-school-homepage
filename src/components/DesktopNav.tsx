@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
+import { useNavClick } from '@/hooks/useNavClick';
 
 const WORKSHOP_LINKS = [
   { label: 'Лепка из глины', to: '/moscow/workshops/lepka' },
@@ -23,6 +24,7 @@ interface DesktopNavProps {
 const DesktopNav = ({ active }: DesktopNavProps) => {
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navClick = useNavClick();
 
   const show = () => {
     if (timer.current) clearTimeout(timer.current);
@@ -37,6 +39,7 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
       <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
         <Link
           to="/moscow/workshops"
+          onClick={navClick('/moscow/workshops')}
           className={`flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary ${
             active === '/moscow/workshops' ? 'text-primary' : 'text-muted-foreground'
           }`}
@@ -59,6 +62,7 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
               <Link
                 key={w.to}
                 to={w.to}
+                onClick={navClick(w.to)}
                 className="block px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
               >
                 {w.label}
@@ -72,6 +76,7 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
         <Link
           key={l.to}
           to={l.to}
+          onClick={navClick(l.to)}
           className={`text-sm font-medium transition-colors hover:text-primary ${
             active === l.to ? 'text-primary' : 'text-muted-foreground'
           }`}

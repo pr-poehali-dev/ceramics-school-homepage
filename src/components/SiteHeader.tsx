@@ -4,15 +4,18 @@ import Logo from '@/components/Logo';
 import DesktopNav from '@/components/DesktopNav';
 import MobileMenu from '@/components/MobileMenu';
 import CartButton from '@/components/CartButton';
+import { useNavClick } from '@/hooks/useNavClick';
 
 interface SiteHeaderProps {
   active?: string;
 }
 
-const SiteHeader = ({ active }: SiteHeaderProps) => (
+const SiteHeader = ({ active }: SiteHeaderProps) => {
+  const navClick = useNavClick();
+  return (
   <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
     <div className="container flex h-20 items-center justify-between">
-      <Link to="/moscow" className="flex items-center">
+      <Link to="/moscow" onClick={navClick('/moscow')} className="flex items-center">
         <Logo scale={false} />
       </Link>
       <DesktopNav active={active} />
@@ -28,6 +31,7 @@ const SiteHeader = ({ active }: SiteHeaderProps) => (
       </div>
     </div>
   </header>
-);
+  );
+};
 
 export default SiteHeader;

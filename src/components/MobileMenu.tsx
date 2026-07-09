@@ -5,6 +5,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import { useNavClick } from '@/hooks/useNavClick';
 
 const NAV = [
   { label: 'Форматы', to: '/moscow/formats' },
@@ -35,6 +36,12 @@ interface MobileMenuProps {
 const MobileMenu = ({ active }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
   const [wsOpen, setWsOpen] = useState(false);
+  const navClick = useNavClick();
+
+  const handleLink = (to: string) => (e: React.MouseEvent) => {
+    navClick(to)(e);
+    setOpen(false);
+  };
 
   return (
     <>
@@ -63,7 +70,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
             }`}
           >
         <div className="flex items-center justify-between border-b border-border px-6 py-5">
-          <Link to="/moscow" onClick={() => setOpen(false)} className="flex items-center">
+          <Link to="/moscow" onClick={handleLink('/moscow')} className="flex items-center">
             <Logo className="h-8" />
           </Link>
           <button
@@ -86,7 +93,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
             >
               <Link
                 to="/moscow/workshops"
-                onClick={() => setOpen(false)}
+                onClick={handleLink('/moscow/workshops')}
                 className="flex-1 rounded-l-xl px-4 py-3.5 hover:bg-muted"
               >
                 Мастер-классы
@@ -109,7 +116,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
                   <Link
                     key={w.to}
                     to={w.to}
-                    onClick={() => setOpen(false)}
+                    onClick={handleLink(w.to)}
                     className="rounded-lg px-3 py-2.5 text-base text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
                   >
                     {w.label}
@@ -122,7 +129,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
               <Link
                 key={n.label}
                 to={n.to}
-                onClick={() => setOpen(false)}
+                onClick={handleLink(n.to)}
                 className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium transition-colors ${
                   active === n.to
                     ? 'bg-primary/10 text-primary'
