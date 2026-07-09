@@ -31,8 +31,6 @@ const Certificates = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<number | null>(null);
-  const [custom, setCustom] = useState('');
-  const [customError, setCustomError] = useState('');
 
   const [message, setMessage] = useState('');
   const [recipientName, setRecipientName] = useState('');
@@ -41,7 +39,7 @@ const Certificates = () => {
   const [emailError, setEmailError] = useState('');
   const [personalOpen, setPersonalOpen] = useState(false);
 
-  const activeAmount = selected ?? (custom ? parseInt(custom.replace(/\D/g, '')) || 0 : 0);
+  const activeAmount = selected ?? 0;
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail.trim());
 
@@ -79,28 +77,12 @@ const Certificates = () => {
 
   const handlePreset = (val: number) => {
     setSelected(val);
-    setCustom('');
-    setCustomError('');
-  };
-
-  const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, '');
-    setCustom(raw);
-    setSelected(null);
-    if (raw) {
-      const num = parseInt(raw);
-      if (num < 1000) setCustomError('Минимум 1 000 ₽');
-      else if (num > 1000000) setCustomError('Максимум 1 000 000 ₽');
-      else setCustomError('');
-    } else {
-      setCustomError('');
-    }
   };
 
   const formatNum = (n: number) =>
     n.toLocaleString('ru-RU') + ' ₽';
 
-  const canOrder = activeAmount >= 1000 && activeAmount <= 1000000 && !customError;
+  const canOrder = activeAmount >= 1000 && activeAmount <= 1000000;
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
@@ -218,41 +200,6 @@ const Certificates = () => {
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* CUSTOM AMOUNT */}
-          <div className="mt-8">
-            <p className="mb-4 text-sm font-medium uppercase tracking-[0.15em] text-muted-foreground">
-              Свой номинал
-            </p>
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-5 flex items-center text-muted-foreground">
-                <Icon name="Pencil" size={16} />
-              </div>
-              <input
-                type="text"
-                inputMode="numeric"
-                placeholder="Введите сумму от 1 000 до 1 000 000 ₽"
-                value={custom ? parseInt(custom).toLocaleString('ru-RU') : ''}
-                onChange={handleCustomChange}
-                className={`w-full rounded-xl border bg-card py-4 pl-12 pr-16 text-base font-medium outline-none transition-all focus:ring-2 focus:ring-primary/40 ${
-                  customError ? 'border-destructive' : 'border-border focus:border-primary'
-                }`}
-              />
-              <span className="pointer-events-none absolute inset-y-0 right-5 flex items-center text-muted-foreground font-medium">
-                ₽
-              </span>
-            </div>
-            {customError && (
-              <p className="mt-2 flex items-center gap-1.5 text-sm text-destructive">
-                <Icon name="TriangleAlert" size={14} /> {customError}
-              </p>
-            )}
-            {!customError && custom && parseInt(custom) >= 1000 && (
-              <p className="mt-2 flex items-center gap-1.5 text-sm text-primary">
-                <Icon name="Check" size={14} /> {formatNum(parseInt(custom))} — отличный выбор!
-              </p>
-            )}
           </div>
 
           {/* PERSONALISATION */}
