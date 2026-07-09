@@ -4,35 +4,35 @@
 
 @layer base {
   :root {
-    --background: 36 30% 96%;
-    --foreground: 20 25% 18%;
+    --background: 40 60% 98%;
+    --foreground: 240 20% 14%;
 
-    --card: 34 34% 92%;
-    --card-foreground: 20 25% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 20% 14%;
 
-    --popover: 36 30% 96%;
-    --popover-foreground: 20 25% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 20% 14%;
 
-    --primary: 16 45% 42%;
-    --primary-foreground: 36 40% 97%;
+    --primary: 12 88% 56%;
+    --primary-foreground: 40 60% 99%;
 
-    --secondary: 30 25% 86%;
-    --secondary-foreground: 20 25% 22%;
+    --secondary: 33 100% 94%;
+    --secondary-foreground: 18 40% 24%;
 
-    --muted: 32 20% 88%;
-    --muted-foreground: 22 15% 42%;
+    --muted: 40 30% 94%;
+    --muted-foreground: 240 8% 46%;
 
-    --accent: 28 40% 60%;
-    --accent-foreground: 20 30% 15%;
+    --accent: 174 72% 44%;
+    --accent-foreground: 180 60% 12%;
 
-    --destructive: 0 70% 45%;
-    --destructive-foreground: 36 40% 97%;
+    --destructive: 0 78% 52%;
+    --destructive-foreground: 40 60% 99%;
 
-    --border: 28 22% 82%;
-    --input: 28 22% 82%;
-    --ring: 16 45% 42%;
+    --border: 36 30% 89%;
+    --input: 36 30% 89%;
+    --ring: 12 88% 56%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -111,7 +111,7 @@
 @layer utilities {
   .clay-texture {
     background-image: radial-gradient(
-      hsl(28 40% 60% / 0.08) 1px,
+      hsl(12 88% 56% / 0.06) 1px,
       transparent 1px
     );
     background-size: 22px 22px;
