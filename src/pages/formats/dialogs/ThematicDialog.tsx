@@ -40,6 +40,14 @@ const ThematicDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?
       details: ticketLabel,
       price: selected.price,
       qty,
+      ...(ticket === 'single' && {
+        booking: {
+          email: '',
+          phone: '',
+          service: `Тематический МК «${selected.title}»`,
+          people: qty,
+        },
+      }),
     });
     setOpen(false);
     toast({ title: 'Добавлено в корзину', description: `${selected.title} — ${qty} шт.` });
@@ -211,6 +219,14 @@ const ThematicDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?
                     {(selected.price * qty).toLocaleString('ru-RU')} ₽
                   </p>
                 </div>
+              </div>
+
+              <div className="mt-4 flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-primary" />
+                <p className="text-sm text-muted-foreground">
+                  После оплаты с Вами свяжется представитель Школы керамики и уточнит выбор даты и
+                  времени посещения.
+                </p>
               </div>
 
               <Button onClick={handleBuy} size="lg" className="mt-4 w-full rounded-full">
