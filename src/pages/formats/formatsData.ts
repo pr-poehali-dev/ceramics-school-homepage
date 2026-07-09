@@ -123,7 +123,7 @@ export const ALL_FORMATS = [
     location: 'studio',
     durationKey: 'negotiable',
     desc: 'Коворкинг — это аренда рабочего места в мастерской на ВДНХ для самостоятельной работы с глиной. Доступны гончарный круг (700 ₽/час), лепка (500 ₽/час) и роспись ангобами (500 ₽/час). Глина и обжиг оплачиваются отдельно. Роспись глазурями не входит. Для участников любого возраста, ежедневно с 11:00 до 20:00. Обязательна предварительная запись.',
-    cta: { label: 'Выбрать услугу', variant: 'default' as const, icon: 'ChevronRight', action: 'coworking' },
+    cta: { label: 'Подробнее', variant: 'default' as const, icon: 'ChevronRight', action: 'coworking' },
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7898283f-b258-43b1-ae5e-b5d2e1c4b1f7.jpg',
