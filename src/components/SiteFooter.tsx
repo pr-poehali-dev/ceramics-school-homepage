@@ -23,6 +23,7 @@ const SECTION_LINKS = [
 const CUSTOMER_LINKS = [
   { label: 'Информация', to: '/moscow/info' },
   { label: 'Публичная оферта', to: '/moscow/offer' },
+  { label: 'Политика конфиденциальности', to: '/moscow/privacy' },
 ];
 
 const FooterCol = ({

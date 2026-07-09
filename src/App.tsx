@@ -20,6 +20,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const Reviews = lazy(() => import("./pages/Reviews"));
 const Offer = lazy(() => import("./pages/Offer"));
 const Info = lazy(() => import("./pages/Info"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="/moscow/reviews" element={<Reviews />} />
               <Route path="/moscow/offer" element={<Offer />} />
               <Route path="/moscow/info" element={<Info />} />
+              <Route path="/moscow/privacy" element={<Privacy />} />
 
               {/* Redirects for old flat routes */}
               <Route path="/workshops" element={<Navigate to="/moscow/workshops" replace />} />
@@ -69,6 +71,7 @@ const App = () => (
               <Route path="/reviews" element={<Navigate to="/moscow/reviews" replace />} />
               <Route path="/offer" element={<Navigate to="/moscow/offer" replace />} />
               <Route path="/info" element={<Navigate to="/moscow/info" replace />} />
+              <Route path="/privacy" element={<Navigate to="/moscow/privacy" replace />} />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
