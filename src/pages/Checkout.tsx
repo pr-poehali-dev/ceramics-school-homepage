@@ -30,26 +30,13 @@ const Checkout = () => {
   const [phone, setPhone] = useState('');
   const [comment, setComment] = useState('');
   const [payment, setPayment] = useState('cash');
-  const [delivery, setDelivery] = useState('pickup');
-  const [zip, setZip] = useState('');
-  const [region, setRegion] = useState('');
-  const [city, setCity] = useState('');
-  const [street, setStreet] = useState('');
-  const [house, setHouse] = useState('');
-  const [flat, setFlat] = useState('');
   const [loading, setLoading] = useState(false);
   const [certResults, setCertResults] = useState<CertificateResult[] | null>(null);
-
-  const needAddress = delivery === 'mail';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !name || !phone) {
-      toast({ title: 'Заполните обязательные поля', description: 'Email, получатель и телефон обязательны.' });
-      return;
-    }
-    if (needAddress && !city) {
-      toast({ title: 'Укажите город доставки' });
+      toast({ title: 'Заполните обязательные поля', description: 'ФИО, email и телефон обязательны.' });
       return;
     }
 
@@ -284,72 +271,25 @@ const Checkout = () => {
               </div>
             </div>
 
-            {/* PAYMENT & DELIVERY */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border bg-card p-6">
-                <h2 className="font-display text-xl font-semibold">Способы оплаты</h2>
-                <RadioGroup value={payment} onValueChange={setPayment} className="mt-4 space-y-3">
-                  <label className="flex cursor-pointer items-start gap-3 text-sm">
-                    <RadioGroupItem value="cash" id="pay-cash" className="mt-0.5" />
-                    <span>Оплата наличными на кассе Школы керамики</span>
-                  </label>
-                  <label className="flex cursor-pointer items-start gap-3 text-sm">
-                    <RadioGroupItem value="online" id="pay-online" className="mt-0.5" />
-                    <span>
-                      Онлайн-оплата ЮKassa
-                      <span className="mt-0.5 block text-xs text-muted-foreground">
-                        Банковские карты, СБП
-                      </span>
+            {/* PAYMENT */}
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-display text-xl font-semibold">Способы оплаты</h2>
+              <RadioGroup value={payment} onValueChange={setPayment} className="mt-4 space-y-3">
+                <label className="flex cursor-pointer items-start gap-3 text-sm">
+                  <RadioGroupItem value="cash" id="pay-cash" className="mt-0.5" />
+                  <span>Оплата наличными на кассе Школы керамики</span>
+                </label>
+                <label className="flex cursor-pointer items-start gap-3 text-sm">
+                  <RadioGroupItem value="online" id="pay-online" className="mt-0.5" />
+                  <span>
+                    Онлайн-оплата ЮKassa
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      Банковские карты, СБП
                     </span>
-                  </label>
-                </RadioGroup>
-              </div>
-
-              <div className="rounded-2xl border border-border bg-card p-6">
-                <h2 className="font-display text-xl font-semibold">Варианты доставки</h2>
-                <RadioGroup value={delivery} onValueChange={setDelivery} className="mt-4 space-y-3">
-                  <label className="flex cursor-pointer items-center gap-3 text-sm">
-                    <RadioGroupItem value="pickup" id="del-pickup" /> Получить билет в школе
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-3 text-sm">
-                    <RadioGroupItem value="mail" id="del-mail" /> В электронном виде
-                  </label>
-                </RadioGroup>
-              </div>
+                  </span>
+                </label>
+              </RadioGroup>
             </div>
-
-            {/* ADDRESS */}
-            {needAddress && (
-              <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
-                <h2 className="font-display text-2xl font-semibold">Адрес доставки</h2>
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="zip">Почтовый индекс</Label>
-                    <Input id="zip" value={zip} onChange={(e) => setZip(e.target.value)} placeholder="Почтовый индекс" className="mt-1.5" />
-                  </div>
-                  <div>
-                    <Label htmlFor="region">Область</Label>
-                    <Input id="region" value={region} onChange={(e) => setRegion(e.target.value)} placeholder="Область" className="mt-1.5" />
-                  </div>
-                  <div>
-                    <Label htmlFor="city">Город *</Label>
-                    <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Город" className="mt-1.5" />
-                  </div>
-                  <div>
-                    <Label htmlFor="street">Улица</Label>
-                    <Input id="street" value={street} onChange={(e) => setStreet(e.target.value)} placeholder="Улица" className="mt-1.5" />
-                  </div>
-                  <div>
-                    <Label htmlFor="house">Дом</Label>
-                    <Input id="house" value={house} onChange={(e) => setHouse(e.target.value)} placeholder="Дом" className="mt-1.5" />
-                  </div>
-                  <div>
-                    <Label htmlFor="flat">Квартира</Label>
-                    <Input id="flat" value={flat} onChange={(e) => setFlat(e.target.value)} placeholder="Квартира" className="mt-1.5" />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* RIGHT: summary */}
