@@ -1,4 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,19 +34,39 @@ const DateDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
   const [qty, setQty] = useState(1);
   const { addItem } = useCart();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const ticketLabel = ticket === 'gift' ? 'Подарочный сертификат' : 'Разовый билет';
 
+  const isSingleOne = ticket === 'single' && qty === 1;
+  const isSingleGroup = ticket === 'single' && qty > 1;
+
   const handleBuy = () => {
     addItem({
-      id: `date-${ticket}`,
+      id: `date-${ticket}${isSingleGroup ? '-group' : ''}`,
       title: 'Свидание в мастерской',
       details: ticketLabel,
       price: PRICE,
       qty,
+      ...(isSingleGroup && {
+        booking: {
+          email: '',
+          phone: '',
+          service: 'Свидание в мастерской',
+          people: qty,
+        },
+      }),
     });
     setOpen(false);
-    toast({ title: 'Добавлено в корзину', description: `${ticketLabel} — ${qty} шт.` });
+    navigate('/moscow/checkout');
+  };
+
+  const handleEnroll = () => {
+    // В будущем: открытие стороннего приложения с выбором даты и оплатой.
+    toast({
+      title: 'Скоро откроется запись',
+      description: 'Здесь появится выбор даты и оплата урока.',
+    });
   };
 
   return (
@@ -156,9 +177,25 @@ const DateDialog = ({ children, autoOpen }: { children: ReactNode; autoOpen?: bo
             </div>
           </div>
 
-          <Button onClick={handleBuy} size="lg" className="mt-4 w-full rounded-full">
-            <Icon name="ShoppingCart" size={18} className="mr-2" /> Купить
-          </Button>
+          {isSingleGroup && (
+            <div className="mt-4 flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+              <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-primary" />
+              <p className="text-sm text-muted-foreground">
+                После оплаты с Вами свяжется представитель Школы керамики и уточнит выбор даты и
+                времени посещения.
+              </p>
+            </div>
+          )}
+
+          {isSingleOne ? (
+            <Button onClick={handleEnroll} size="lg" className="mt-4 w-full rounded-full">
+              <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
+            </Button>
+          ) : (
+            <Button onClick={handleBuy} size="lg" className="mt-4 w-full rounded-full">
+              <Icon name="ShoppingCart" size={18} className="mr-2" /> Купить
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
