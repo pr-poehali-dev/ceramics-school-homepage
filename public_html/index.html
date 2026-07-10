@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дымов Керамика — школа керамики на ВДНХ | Мастер-классы в Москве</title>
+  <meta name="description" content="Студия керамики «Дымов Керамика» на ВДНХ. Мастер-классы по лепке, гончарному кругу и росписи для взрослых и детей. Подарочные сертификаты, форматы для компаний и праздников." />
+
+  <!-- Шрифты -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Стили -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ==================== ХЕДЕР ==================== -->
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="index.html" aria-label="На главную">
+        <img class="logo" src="images/85c661c4-3d31-4162-87f9-898d5ae1514d.png" alt="Дымов Керамика" />
+      </a>
+
+      <!-- Десктоп-навигация -->
+      <nav class="nav">
+        <div class="nav__dropdown">
+          <a class="nav__dropdown-trigger" href="workshops/krug.html">
+            Мастер-классы
+            <svg class="icon nav__chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </a>
+          <div class="nav__dropdown-menu">
+            <div class="nav__dropdown-inner">
+              <a href="workshops/lepka.html">Лепка из глины</a>
+              <a href="workshops/krug.html">Гончарный круг</a>
+              <a href="workshops/angoby.html">Роспись ангобами</a>
+              <a href="workshops/akril.html">Роспись акрилом</a>
+            </div>
+          </div>
+        </div>
+        <a href="formats.html">Форматы</a>
+        <a href="certificates.html">Сертификаты</a>
+        <a href="reviews.html">Отзывы</a>
+        <a href="contacts.html">Контакты</a>
+        <a class="nav__shop" href="https://dymovceramic.ru/" target="_blank" rel="noreferrer">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Магазин
+        </a>
+      </nav>
+
+      <!-- Телефон -->
+      <a class="header__phone" href="tel:+79854198903">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        +7 (985) 419-89-03
+      </a>
+
+      <div class="header__actions">
+        <a class="cart-btn" href="cart.html" aria-label="Корзина">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        </a>
+        <button class="burger" data-burger aria-label="Меню">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Мобильное меню -->
+    <div class="mobile-menu" data-mobile-menu>
+      <div class="container">
+        <a href="workshops/lepka.html">Лепка из глины</a>
+        <a href="workshops/krug.html">Гончарный круг</a>
+        <a href="workshops/angoby.html">Роспись ангобами</a>
+        <a href="workshops/akril.html">Роспись акрилом</a>
+        <a href="formats.html">Форматы</a>
+        <a href="certificates.html">Сертификаты</a>
+        <a href="reviews.html">Отзывы</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="https://dymovceramic.ru/" target="_blank" rel="noreferrer">Интернет-магазин</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero">
+    <img class="hero__bg" src="images/15712126-3d2f-4720-9917-7fe580f849d4.jpg" alt="Мастерская керамики" />
+    <div class="hero__overlay"></div>
+    <div class="container hero__inner">
+      <div class="hero__content animate-fade-in">
+        <span class="badge hero__badge">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          Студия керамики на ВДНХ
+        </span>
+        <h1 class="hero__title font-display">
+          Создайте изделие из&nbsp;глины <em>своими руками</em>
+        </h1>
+        <p class="hero__text">
+          Тёплая атмосфера мастерской, опытные преподаватели и настоящая радость
+          творчества. Для взрослых и детей.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn-primary" href="formats.html">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+            Записаться
+          </a>
+          <a class="btn btn-ghost-light" href="certificates.html">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>
+            Подарить сертификат
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== УСЛУГИ ==================== -->
+  <section id="services" class="section container">
+    <div class="section-title reveal">
+      <span class="section-title__eyebrow">Наши услуги</span>
+      <h2 class="section-title__h font-display">Мастер-классы</h2>
+    </div>
+    <div class="grid grid--4">
+      <a class="service-card reveal" href="workshops/lepka.html">
+        <img class="service-card__img" src="images/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png" alt="Лепка" />
+        <div class="service-card__body">
+          <h3 class="service-card__title font-display">Лепка</h3>
+          <p class="service-card__desc">Ручная работа с глиной</p>
+          <p class="service-card__price">от 1900₽</p>
+        </div>
+      </a>
+      <a class="service-card reveal" href="workshops/krug.html">
+        <img class="service-card__img" src="images/ab36a67f-4ea0-4d3a-8ebe-21e8a9dfb891.png" alt="Гончарный круг" />
+        <div class="service-card__body">
+          <h3 class="service-card__title font-display">Гончарный круг</h3>
+          <p class="service-card__desc">Создание на круге</p>
+          <p class="service-card__price">от 2900₽</p>
+        </div>
+      </a>
+      <a class="service-card reveal" href="workshops/angoby.html">
+        <img class="service-card__img" src="images/7f664b40-fac2-4114-b0ad-70fc8524f908.png" alt="Ангобы" />
+        <div class="service-card__body">
+          <h3 class="service-card__title font-display">Ангобы</h3>
+          <p class="service-card__desc">Роспись цветной глиной</p>
+          <p class="service-card__price">от 1900₽</p>
+        </div>
+      </a>
+      <a class="service-card reveal" href="workshops/akril.html">
+        <img class="service-card__img" src="images/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg" alt="Акрил" />
+        <div class="service-card__body">
+          <h3 class="service-card__title font-display">Акрил</h3>
+          <p class="service-card__desc">Роспись готовых изделий</p>
+          <p class="service-card__price">от 1500₽</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ==================== ФОРМАТЫ ==================== -->
+  <section id="formats" class="section section--muted">
+    <div class="container">
+      <div class="section-title reveal">
+        <span class="section-title__eyebrow">Форматы</span>
+        <h2 class="section-title__h font-display">Выберите свой формат</h2>
+      </div>
+      <p class="section-subtitle">
+        От разовых занятий до праздников и выездных мастер-классов — подберите
+        подходящий вариант для себя, ребёнка или компании.
+      </p>
+      <div class="grid grid--4">
+
+        <a class="format-card reveal" href="formats.html">
+          <div class="format-card__media">
+            <img class="format-card__img" src="images/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png" alt="Классические мастер-классы" />
+            <span class="format-card__icon">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+            </span>
+          </div>
+          <div class="format-card__body">
+            <h3 class="format-card__title font-display">Классические мастер-классы</h3>
+            <div class="format-card__meta">
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> В студии</span>
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> Любой день</span>
+            </div>
+            <p class="format-card__price">от 1 500 ₽</p>
+          </div>
+        </a>
+
+        <a class="format-card reveal" href="formats.html">
+          <div class="format-card__media">
+            <img class="format-card__img" src="images/cd92a426-9a1e-4eba-81fa-09e5b75b623d.jpg" alt="Детская группа" />
+            <span class="format-card__icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg>
+            </span>
+          </div>
+          <div class="format-card__body">
+            <h3 class="format-card__title font-display">Детская группа (сб/вс)</h3>
+            <div class="format-card__meta">
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> В студии</span>
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> Сб / Вс</span>
+            </div>
+            <p class="format-card__price">1 900 ₽</p>
+          </div>
+        </a>
+
+        <a class="format-card reveal" href="formats.html">
+          <div class="format-card__media">
+            <img class="format-card__img" src="images/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png" alt="Промо-группа" />
+            <span class="format-card__icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91 0Z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+            </span>
+          </div>
+          <div class="format-card__body">
+            <h3 class="format-card__title font-display">Промо-группа (пн–пт)</h3>
+            <div class="format-card__meta">
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> В студии</span>
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> Пн – Пт</span>
+            </div>
+            <p class="format-card__price">2 000 ₽</p>
+          </div>
+        </a>
+
+        <a class="format-card reveal" href="formats.html">
+          <div class="format-card__media">
+            <img class="format-card__img" src="images/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg" alt="Тематические мастер-классы" />
+            <span class="format-card__icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"/><path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"/><path d="m2.1 21.8 6.4-6.3"/><path d="m19 5-7 7"/></svg>
+            </span>
+          </div>
+          <div class="format-card__body">
+            <h3 class="format-card__title font-display">Тематические мастер-классы</h3>
+            <div class="format-card__meta">
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> В студии</span>
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> Любой день</span>
+            </div>
+            <p class="format-card__price">5 000–9 000 ₽</p>
+          </div>
+        </a>
+
+        <a class="format-card reveal" href="formats.html">
+          <div class="format-card__media">
+            <img class="format-card__img" src="images/0691624f-cc62-4d3b-8069-e5ab1d935b18.png" alt="Свидание в мастерской" />
+            <span class="format-card__icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            </span>
+          </div>
+          <div class="format-card__body">
+            <h3 class="format-card__title font-display">Свидание в мастерской</h3>
+            <div class="format-card__meta">
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> В студии</span>
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> Любой день</span>
+            </div>
+            <p class="format-card__price">7 000 ₽</p>
+          </div>
+        </a>
+
+        <a class="format-card reveal" href="formats.html">
+          <div class="format-card__media">
+            <img class="format-card__img" src="images/42ebb68f-5d36-4a32-b4bd-b871307db9bc.jpg" alt="Коворкинг" />
+            <span class="format-card__icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2-2v-3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3a2 2 0 0 0 2 2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>
+            </span>
+          </div>
+          <div class="format-card__body">
+            <h3 class="format-card__title font-display">Коворкинг</h3>
+            <div class="format-card__meta">
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> В студии</span>
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> Любой день</span>
+            </div>
+            <p class="format-card__price">от 500 ₽/час</p>
+          </div>
+        </a>
+
+        <a class="format-card reveal" href="formats.html">
+          <div class="format-card__media">
+            <img class="format-card__img" src="images/7898283f-b258-43b1-ae5e-b5d2e1c4b1f7.jpg" alt="Мероприятия" />
+            <span class="format-card__icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg>
+            </span>
+          </div>
+          <div class="format-card__body">
+            <h3 class="format-card__title font-display">Мероприятия (ДР, корп, девичник)</h3>
+            <div class="format-card__meta">
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> В студии или выезд</span>
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> Любой день</span>
+            </div>
+            <p class="format-card__price">Индивидуально</p>
+          </div>
+        </a>
+
+        <a class="format-card reveal" href="formats.html">
+          <div class="format-card__media">
+            <img class="format-card__img" src="images/7f664b40-fac2-4114-b0ad-70fc8524f908.png" alt="Выездной мастер-класс" />
+            <span class="format-card__icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+            </span>
+          </div>
+          <div class="format-card__body">
+            <h3 class="format-card__title font-display">Выездной мастер-класс</h3>
+            <div class="format-card__meta">
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Выезд к вам</span>
+              <span><svg class="icon" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> Любой день</span>
+            </div>
+            <p class="format-card__price">Договорная</p>
+          </div>
+        </a>
+
+      </div>
+      <div class="center-cta">
+        <a class="btn btn-outline" href="formats.html">
+          Все форматы и цены
+          <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ОТЗЫВЫ ==================== -->
+  <section id="reviews" class="section container">
+    <div class="section-title reveal">
+      <span class="section-title__eyebrow">Отзывы</span>
+      <h2 class="section-title__h font-display">Нам доверяют</h2>
+    </div>
+
+    <div class="rating-box">
+      <span class="rating-box__value">5.0</span>
+      <div class="stars">
+        <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <span class="rating-box__count">60+ отзывов</span>
+    </div>
+
+    <!-- мини-галерея -->
+    <div class="mini-gallery">
+      <a href="reviews.html"><img src="images/1b6065a5-1805-4b93-b8e6-a13234d2595e.webp" alt="Работа участников 1" loading="lazy" /></a>
+      <a href="reviews.html"><img src="images/839e9c59-c159-4d28-98d4-e6cb0140b7cc.webp" alt="Работа участников 2" loading="lazy" /></a>
+      <a href="reviews.html"><img src="images/011195a9-f6a4-4db7-b099-a0ed35837813.webp" alt="Работа участников 3" loading="lazy" /></a>
+      <a href="reviews.html"><img src="images/e0760d99-ce9d-45f4-a48c-c4483114062d.webp" alt="Работа участников 4" loading="lazy" /></a>
+      <a href="reviews.html"><img src="images/cd54022e-ae05-4797-961f-26aae9b61f0d.webp" alt="Работа участников 5" loading="lazy" /></a>
+      <a href="reviews.html"><img src="images/996aed6a-124a-4d7a-92c9-b95dcf2856c5.webp" alt="Работа участников 6" loading="lazy" /></a>
+    </div>
+
+    <!-- карточки отзывов -->
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <div class="review-card__head">
+          <span class="review-card__avatar">НН</span>
+          <div>
+            <p class="review-card__name">Наталья Ничипорук</p>
+            <div class="review-card__stars">
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+          </div>
+        </div>
+        <p class="review-card__text">Атмосферное, уютное, приятное место.</p>
+      </div>
+
+      <div class="review-card reveal">
+        <div class="review-card__head">
+          <span class="review-card__avatar">ZV</span>
+          <div>
+            <p class="review-card__name">zvizdannah</p>
+            <div class="review-card__stars">
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+          </div>
+        </div>
+        <p class="review-card__text">Очень рекомендую к посещению с детьми 👍 просторное светлое помещение, отличный мастер, возможность выпить кофе и купить затейливых сувениров.</p>
+      </div>
+
+      <div class="review-card reveal">
+        <div class="review-card__head">
+          <span class="review-card__avatar">ФШ</span>
+          <div>
+            <p class="review-card__name">Федор Шведов</p>
+            <div class="review-card__stars">
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg class="icon star-filled" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+          </div>
+        </div>
+        <p class="review-card__text">Хорошее место. Бываем здесь часто. Раз в год точно. Интересная посуда, качественная. Можно поучиться гончарному делу, росписи по глине.</p>
+      </div>
+    </div>
+
+    <div class="reviews-actions">
+      <a class="btn btn-primary" href="https://yandex.ru/profile/8182762882" target="_blank" rel="noreferrer">
+        <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Отзыв на Яндексе
+      </a>
+      <a class="btn btn-primary" href="https://2gis.ru/moscow/firm/4504128908512077" target="_blank" rel="noreferrer">
+        <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Отзыв в 2ГИС
+      </a>
+      <a class="btn btn-outline" href="reviews.html">
+        Все отзывы и работы
+        <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ==================== СЕРТИФИКАТЫ ==================== -->
+  <section id="certificates" class="section container">
+    <div class="cert-banner reveal">
+      <svg class="cert-banner__watermark" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>
+      <div class="cert-banner__grid">
+        <div>
+          <span class="cert-banner__eyebrow">Подарочные сертификаты</span>
+          <h2 class="cert-banner__title font-display">Подарите творчество на любую сумму</h2>
+          <p class="cert-banner__text">
+            Отличный подарок близким — незабываемый вечер в мастерской и изделие,
+            созданное своими руками.
+          </p>
+          <a class="btn btn-secondary" style="margin-top:2rem" href="certificates.html">
+            Оформить сертификат
+            <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="cert-banner__img-wrap">
+          <img class="cert-banner__img" src="images/858c5def-a2d9-4503-aef3-192e73b205e1.png" alt="Подарочный сертификат Дымов Керамика" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== МАГАЗИН ==================== -->
+  <section class="section container">
+    <div class="shop-invite reveal">
+      <div class="shop-invite__grid">
+        <div class="shop-invite__body">
+          <span class="badge shop-invite__badge">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Интернет-магазин
+          </span>
+          <h2 class="shop-invite__title font-display">Керамика ручной работы с доставкой</h2>
+          <p class="shop-invite__text">
+            Не только мастер-классы — в нашем магазине «Дымов Керамика» вы найдёте
+            авторскую посуду, декор и подарки, созданные вручную.
+          </p>
+          <a class="btn btn-primary" style="margin-top:1.75rem" href="https://dymovceramic.ru/" target="_blank" rel="noreferrer">
+            Перейти в магазин
+            <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="shop-invite__media">
+          <img src="images/15712126-3d2f-4720-9917-7fe580f849d4.jpg" alt="Керамика ручной работы" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SEO-ТЕКСТ ==================== -->
+  <section class="container" style="padding-bottom:4rem">
+    <div class="seo">
+      <h2 class="font-display">О школе «Дымов Керамика»</h2>
+      <div class="seo__body">
+        <p>Компания «Дымов Керамика» берёт своё начало в 2003 году в городе Суздаль, где супруги Вадим Дымов и Евгения Зеленская основали собственную фабрику по производству керамических изделий ручной работы.</p>
+        <p>Наше производство — это сочетание традиционных методов ручной работы с материалами, современные технологии и авторское видение будущего русской керамики.</p>
+        <p>С момента своего основания мануфактура «Дымов Керамика» стремительно развивалась, воплощая на практике новые творческие концепции. На сегодняшний день на базе фабрики сформировалось целое культурное пространство, логическим продолжением которого стало основание школы керамики в Москве.</p>
+        <p>Сегодня керамику ручной работы можно не только приобрести, но и научиться делать её самому — для этого достаточно записаться на мастер-класс. Уютная мастерская, оборудованная всем необходимым инвентарём, расположена на ВДНХ и готова принять в своих стенах всех интересующихся гончарным производством.</p>
+
+        <h3 class="font-display">Творчество, доступное для детей и взрослых</h3>
+        <p>Создание керамических изделий — это удивительный творческий процесс, который не знает возрастных ограничений. Гончарное дело способно увлечь и детей, и взрослых. Каждый сделает для себя множество интересных открытий и раскроет творческий потенциал.</p>
+        <p>Развивающие занятия для детей возрастом от 3 лет по ручной лепке способствуют развитию мелкой моторики, координации движений, абстрактного мышления и фантазии.</p>
+        <p>Арт-терапия. Занятия с глиной успокаивают нервную систему, дают позитивный настрой, наполняют жизнь яркими красками и дарят положительные эмоции.</p>
+
+        <h3 class="font-display">Преимущества школы «Дымов Керамика»</h3>
+        <ul class="seo__list">
+          <li><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Занятия интересны детям и взрослым. Посетить мастер-класс с семьёй в нашей школе — отличная альтернатива совместного досуга.</span></li>
+          <li><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Наши преподаватели — опытные мастера, много лет проработавшие на гончарном производстве, готовые поделиться бесценными навыками со своими учениками.</span></li>
+          <li><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Мы формируем небольшие группы по пять-шесть человек, благодаря чему каждому ученику уделяется достаточно внимания.</span></li>
+          <li><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>На занятиях вы научитесь не только создавать изделия с нуля, но и приобретёте навыки ручной росписи.</span></li>
+          <li><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Мы работаем ежедневно. Вы всегда можете подобрать удобное время.</span></li>
+          <li><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Мы предлагаем программы различной направленности, возможность индивидуального обучения, а также гибкую ценовую политику, акции и программы лояльности (скидки пенсионерам, студентам и т. д.).</span></li>
+        </ul>
+        <p>Уточнить подробности и задать интересующие Вас вопросы можете, связавшись с нами по телефону <a href="tel:+79854198903">+7 (985) 419-89-03</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ФУТЕР ==================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer__grid">
+        <!-- О школе + контакты -->
+        <div class="footer__about">
+          <img class="logo" src="images/85c661c4-3d31-4162-87f9-898d5ae1514d.png" alt="Дымов Керамика" />
+          <p>Студия керамики на ВДНХ. Мастер-классы по лепке, гончарному кругу и росписи для взрослых и детей с 2003 года.</p>
+          <div class="footer__contacts">
+            <a href="tel:+79854198903">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+              +7 (985) 419-89-03
+            </a>
+            <span>
+              <svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              ВДНХ, Москва
+            </span>
+          </div>
+          <div class="socials">
+            <a href="https://dymovceramic.ru/" target="_blank" rel="noreferrer" aria-label="Сайт">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Мастер-классы -->
+        <div class="footer__col">
+          <h4 class="font-display">Мастер-классы</h4>
+          <ul>
+            <li><a href="workshops/lepka.html">Лепка из глины</a></li>
+            <li><a href="workshops/krug.html">Гончарный круг</a></li>
+            <li><a href="workshops/angoby.html">Роспись ангобами</a></li>
+            <li><a href="workshops/akril.html">Роспись акрилом</a></li>
+          </ul>
+        </div>
+
+        <!-- Разделы -->
+        <div class="footer__col">
+          <h4 class="font-display">Разделы</h4>
+          <ul>
+            <li><a href="workshops/krug.html">Все мастер-классы</a></li>
+            <li><a href="formats.html">Форматы и цены</a></li>
+            <li><a href="certificates.html">Сертификаты</a></li>
+            <li><a href="reviews.html">Отзывы</a></li>
+            <li><a href="contacts.html">Контакты</a></li>
+          </ul>
+        </div>
+
+        <!-- Покупателям -->
+        <div class="footer__col">
+          <h4 class="font-display">Покупателям</h4>
+          <ul>
+            <li><a href="contacts.html">Информация</a></li>
+            <li><a href="offer.html">Публичная оферта</a></li>
+            <li><a href="offer.html">Политика конфиденциальности</a></li>
+            <li><a href="offer.html">Политика cookie</a></li>
+          </ul>
+        </div>
+
+        <!-- Магазин -->
+        <div class="footer__col">
+          <h4 class="font-display">Интернет-магазин</h4>
+          <p style="margin-top:1rem;font-size:.875rem;line-height:1.6;color:var(--muted-foreground)">
+            Авторская керамика ручной работы с доставкой — посуда, декор и подарки от «Дымов Керамика».
+          </p>
+          <a class="footer__shop-btn" href="https://dymovceramic.ru/" target="_blank" rel="noreferrer">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Перейти в магазин
+          </a>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <span>© 2003–2026 «Дымов Керамика». Все права защищены.</span>
+        <span>Студия керамики на ВДНХ, Москва</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Кнопка наверх -->
+  <button class="to-top" data-to-top aria-label="Наверх">
+    <svg class="icon" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+  </button>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
