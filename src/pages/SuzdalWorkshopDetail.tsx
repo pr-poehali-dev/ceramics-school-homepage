@@ -240,7 +240,7 @@ const SuzdalWorkshopDetail = () => {
     addItem({
       id: `suzdal-${data.slug}`,
       title: data.title,
-      details: `Билет «Разовый» · ${data.sku}`,
+      details: 'Билет «Разовый»',
       price: data.price,
       qty,
     });
@@ -274,7 +274,7 @@ const SuzdalWorkshopDetail = () => {
 
           <div className="relative flex min-h-[26rem] flex-col justify-end p-7 text-white md:min-h-[32rem] md:p-12">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur">
-              <Icon name={data.badgeIcon} size={16} /> Мастер-класс · {data.sku}
+              <Icon name={data.badgeIcon} size={16} /> Мастер-класс
             </span>
             <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
               {data.title}
