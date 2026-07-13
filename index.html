@@ -33,13 +33,17 @@
     <!-- Jivo online consultant widget -->
     <script src="//code.jivo.ru/widget/QhNire9dF9" async></script>
     <style>
-      /* Поднимаем виджет Jivo, чтобы он не перекрывался и не перекрывал кнопку "Онлайн-запись" */
-      div#jivo-iframe-container {
-        bottom: 96px !important;
+      /* Поднимаем виджет Jivo, чтобы он не перекрывался кнопкой "Онлайн-запись" */
+      jdiv.globalClass_ind,
+      jdiv[class*='wrap_'],
+      jdiv[class*='button_'] {
+        bottom: 90px !important;
       }
       @media (max-width: 767px) {
-        div#jivo-iframe-container {
-          bottom: 80px !important;
+        jdiv.globalClass_ind,
+        jdiv[class*='wrap_'],
+        jdiv[class*='button_'] {
+          bottom: 78px !important;
         }
       }
     </style>
