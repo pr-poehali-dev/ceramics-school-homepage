@@ -57,6 +57,11 @@ const SuzdalReviews = () => {
               <p className="font-display text-2xl font-semibold">{REVIEWS.length}+</p>
               <p className="text-xs text-muted-foreground">отзывов о фабрике</p>
             </div>
+            <div className="h-10 w-px bg-border" />
+            <div className="text-left">
+              <p className="font-display text-2xl font-semibold">500+</p>
+              <p className="text-xs text-muted-foreground">положительных оценок</p>
+            </div>
           </div>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
