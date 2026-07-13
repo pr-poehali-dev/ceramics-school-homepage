@@ -1,19 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/components/ui/icon';
-import { GALLERY } from './reviewsData';
+import { GALLERY as MOSCOW_GALLERY } from './reviewsData';
 
-const ReviewsGallery = () => {
+interface ReviewsGalleryProps {
+  images?: string[];
+}
+
+const ReviewsGallery = ({ images = MOSCOW_GALLERY }: ReviewsGalleryProps) => {
+  const GALLERY = images;
   const [current, setCurrent] = useState<number | null>(null);
 
   const close = useCallback(() => setCurrent(null), []);
   const prev = useCallback(
     () => setCurrent((c) => (c === null ? c : (c - 1 + GALLERY.length) % GALLERY.length)),
-    [],
+    [GALLERY.length],
   );
   const next = useCallback(
     () => setCurrent((c) => (c === null ? c : (c + 1) % GALLERY.length)),
-    [],
+    [GALLERY.length],
   );
 
   useEffect(() => {
