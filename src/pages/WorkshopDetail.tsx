@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import UtilBlock from '@/pages/workshop-detail/UtilBlock';
+import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -282,11 +283,11 @@ const WorkshopDetail = () => {
                   <Icon name="Phone" size={18} className="mr-2" /> Позвонить
                 </Button>
               </a>
-              <a href="https://t.me/dymovceramicschool" target="_blank" rel="noreferrer">
+              <AskQuestionDialog>
                 <Button size="lg" variant="secondary" className="rounded-full px-8">
                   <Icon name="Send" size={18} className="mr-2" /> Написать
                 </Button>
-              </a>
+              </AskQuestionDialog>
             </div>
           </div>
         </div>
