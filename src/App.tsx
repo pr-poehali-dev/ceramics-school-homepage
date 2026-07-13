@@ -28,6 +28,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Cookies = lazy(() => import("./pages/Cookies"));
 const Admin = lazy(() => import("./pages/Admin"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
+const SuzdalWorkshops = lazy(() => import("./pages/SuzdalWorkshops"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -71,7 +72,7 @@ const App = () => (
 
               {/* SUZDAL */}
               <Route path="/suzdal" element={<Suzdal />} />
-              <Route path="/suzdal/workshops" element={<ComingSoon title="Мастер-классы" />} />
+              <Route path="/suzdal/workshops" element={<SuzdalWorkshops />} />
               <Route path="/suzdal/certificates" element={<ComingSoon title="Сертификаты" />} />
               <Route path="/suzdal/excursions" element={<ComingSoon title="Экскурсии" />} />
               <Route path="/suzdal/contacts" element={<ComingSoon title="Контакты" />} />
