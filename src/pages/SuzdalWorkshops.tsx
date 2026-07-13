@@ -35,6 +35,7 @@ const WORKSHOPS = [
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/5ed56727-04b1-4e8e-a4e7-56712723a813.jpg',
     title: 'Изготовление изразцов и роспись ангобами',
     desc: 'На мастер-классе вы изготовите изразец своими руками и распишите его ангобами.',
+    href: '/suzdal/workshops/izgotovlenie-izrazczov-rospis-angobami',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/2f872373-81e5-4152-a08e-1006706e22d2.jpg',
