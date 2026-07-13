@@ -19,35 +19,35 @@ const CitySwitcher = () => {
     <div className="relative hidden md:block" onMouseEnter={show} onMouseLeave={hide}>
       <button
         type="button"
-        className="flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+        className="flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        <Icon name="MapPin" size={15} className="text-primary" />
+        <Icon name="MapPin" size={12} />
         Москва
         <Icon
           name="ChevronDown"
-          size={14}
+          size={11}
           className={`transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
       <div
-        className={`absolute right-0 top-full z-50 pt-3 transition-all ${
+        className={`absolute left-0 top-full z-50 pt-3 transition-all ${
           open ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >
-        <div className="w-52 overflow-hidden rounded-2xl border border-border bg-background shadow-xl">
+        <div className="w-44 overflow-hidden rounded-xl border border-border bg-background shadow-xl">
           <Link
             to="/moscow"
-            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-muted"
+            className="flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-primary transition-colors hover:bg-muted"
           >
-            <Icon name="Check" size={15} />
+            <Icon name="Check" size={13} />
             Москва
           </Link>
           <a
             href={SUZDAL_URL}
-            className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+            className="flex items-center gap-2 px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
           >
-            <Icon name="MapPin" size={15} className="opacity-0" />
+            <Icon name="Check" size={13} className="opacity-0" />
             Суздаль
           </a>
         </div>

@@ -89,9 +89,9 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
         href="https://dymovceramic.ru/"
         target="_blank"
         rel="noreferrer"
-        className="flex items-center gap-1.5 rounded-full border border-primary/40 px-4 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+        className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        <Icon name="ShoppingBag" size={15} /> Магазин
+        <Icon name="ShoppingBag" size={14} /> Магазин
       </a>
     </nav>
   );

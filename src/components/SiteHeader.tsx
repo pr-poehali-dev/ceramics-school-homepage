@@ -16,9 +16,12 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
   return (
   <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
     <div className="container flex h-20 items-center justify-between">
-      <Link to="/moscow" onClick={navClick('/moscow')} className="flex items-center">
-        <Logo scale={false} />
-      </Link>
+      <div className="flex items-center gap-4">
+        <Link to="/moscow" onClick={navClick('/moscow')} className="flex items-center">
+          <Logo scale={false} />
+        </Link>
+        <CitySwitcher />
+      </div>
       <DesktopNav active={active} />
       <a
         href="tel:+79854198903"
@@ -27,7 +30,6 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
         <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
       </a>
       <div className="flex items-center gap-3">
-        <CitySwitcher />
         <CartButton />
         <MobileMenu active={active} />
       </div>
