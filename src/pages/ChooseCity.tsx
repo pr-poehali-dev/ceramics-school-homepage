@@ -38,56 +38,60 @@ const ChooseCity = () => {
       </div>
 
       {/* CHOICE BLOCKS */}
-      <div className="grid min-h-[60vh] gap-1 md:grid-cols-2">
-        {/* MOSCOW */}
-        <Link
-          to="/moscow"
-          className="group relative flex items-end overflow-hidden"
-        >
-          <img
-            src={MOSCOW_IMG}
-            alt="Школа Дымов Керамика на ВДНХ в Москве"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-opacity group-hover:from-primary/80" />
-          <div className="relative z-10 w-full p-8 text-primary-foreground md:p-12">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              <Icon name="MapPin" size={13} /> Москва · ВДНХ
-            </span>
-            <h2 className="mt-4 font-display text-3xl font-semibold leading-tight md:text-4xl">
-              Школа керамики<br />«Дымов Керамика» на ВДНХ
-            </h2>
-            <span className="mt-5 inline-flex items-center gap-2 text-base font-medium transition-all group-hover:gap-3">
-              Перейти на страницу школы
-              <Icon name="ArrowRight" size={20} />
-            </span>
-          </div>
-        </Link>
+      <div className="container">
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* MOSCOW */}
+          <Link
+            to="/moscow"
+            className="group overflow-hidden rounded-[2rem] border border-border bg-card transition-all hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div className="relative h-64 overflow-hidden md:h-80">
+              <img
+                src={MOSCOW_IMG}
+                alt="Школа Дымов Керамика на ВДНХ в Москве"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
+                <Icon name="MapPin" size={13} className="text-primary" /> Москва · ВДНХ
+              </span>
+            </div>
+            <div className="p-7 md:p-8">
+              <h2 className="font-display text-2xl font-semibold leading-tight md:text-3xl">
+                Школа керамики «Дымов Керамика» на ВДНХ
+              </h2>
+              <span className="mt-5 inline-flex items-center gap-2 text-base font-medium text-primary transition-all group-hover:gap-3">
+                Перейти на страницу школы
+                <Icon name="ArrowRight" size={20} />
+              </span>
+            </div>
+          </Link>
 
-        {/* SUZDAL */}
-        <Link
-          to="/suzdal"
-          className="group relative flex items-end overflow-hidden"
-        >
-          <img
-            src={SUZDAL_IMG}
-            alt="Фабрика и школа Дымов Керамика в Суздале"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-opacity group-hover:from-primary/80" />
-          <div className="relative z-10 w-full p-8 text-primary-foreground md:p-12">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              <Icon name="MapPin" size={13} /> Суздаль
-            </span>
-            <h2 className="mt-4 font-display text-3xl font-semibold leading-tight md:text-4xl">
-              Фабрика и Школа<br />«Дымов Керамика» в Суздале
-            </h2>
-            <span className="mt-5 inline-flex items-center gap-2 text-base font-medium transition-all group-hover:gap-3">
-              Перейти на страницу фабрики
-              <Icon name="ArrowRight" size={20} />
-            </span>
-          </div>
-        </Link>
+          {/* SUZDAL */}
+          <Link
+            to="/suzdal"
+            className="group overflow-hidden rounded-[2rem] border border-border bg-card transition-all hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div className="relative h-64 overflow-hidden md:h-80">
+              <img
+                src={SUZDAL_IMG}
+                alt="Фабрика и школа Дымов Керамика в Суздале"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
+                <Icon name="MapPin" size={13} className="text-primary" /> Суздаль
+              </span>
+            </div>
+            <div className="p-7 md:p-8">
+              <h2 className="font-display text-2xl font-semibold leading-tight md:text-3xl">
+                Фабрика и Школа «Дымов Керамика» в Суздале
+              </h2>
+              <span className="mt-5 inline-flex items-center gap-2 text-base font-medium text-primary transition-all group-hover:gap-3">
+                Перейти на страницу фабрики
+                <Icon name="ArrowRight" size={20} />
+              </span>
+            </div>
+          </Link>
+        </div>
       </div>
 
       {/* ABOUT + STATS */}
