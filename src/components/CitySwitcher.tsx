@@ -19,13 +19,13 @@ const CitySwitcher = () => {
     <div className="relative hidden md:block" onMouseEnter={show} onMouseLeave={hide}>
       <button
         type="button"
-        className="flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
+        className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        <Icon name="MapPin" size={12} />
+        <Icon name="MapPin" size={15} />
         Москва
         <Icon
           name="ChevronDown"
-          size={11}
+          size={15}
           className={`transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
