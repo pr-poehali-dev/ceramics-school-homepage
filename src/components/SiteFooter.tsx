@@ -21,6 +21,7 @@ const MOSCOW_CUSTOMER_LINKS = [
 ];
 
 const SUZDAL_CUSTOMER_LINKS = [
+  { label: 'О фабрике', to: '/suzdal/about' },
   { label: 'Публичная оферта', to: '/suzdal/offer' },
   { label: 'Политика конфиденциальности', to: '/suzdal/privacy' },
   { label: 'Политика cookie', to: '/suzdal/cookies' },

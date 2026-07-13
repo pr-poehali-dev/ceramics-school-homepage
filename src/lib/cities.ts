@@ -65,5 +65,4 @@ export const SUZDAL_NAV_LINKS: NavLink[] = [
   { label: 'Экскурсии', to: '/suzdal/excursions' },
   { label: 'Отзывы', to: '/suzdal/reviews' },
   { label: 'Контакты', to: '/suzdal/contacts' },
-  { label: 'О фабрике', to: '/suzdal/about' },
 ];
