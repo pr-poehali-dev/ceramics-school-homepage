@@ -11,9 +11,9 @@ const WORKSHOPS = Object.values(SUZDAL_WORKSHOP_DETAILS);
 
 const SuzdalWorkshops = () => {
   usePageMeta({
-    title: 'Мастер-классы по керамике в Суздале | «Дымов Керамика»',
+    title: 'Мастер-классы по гончарному мастерству в Суздале',
     description:
-      'Мастер-классы по гончарному делу, лепке и росписи керамики на фабрике «Дымов Керамика» в Суздале. Занятия для детей и взрослых.',
+      'Гончарные мастер-классы для детей и взрослых в школе «Дымов Керамика». Обучение гончарному делу. Курсы гончарного мастерства.',
   });
 
   return (
@@ -25,10 +25,10 @@ const SuzdalWorkshops = () => {
       <section className="container py-14 md:py-20">
         <div className="animate-fade-in text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-            <Icon name="Sparkles" size={16} /> Наши мастер-классы
+            <Icon name="Sparkles" size={16} /> Мастер-классы
           </span>
           <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] md:text-6xl">
-            Выберите, что хотите <span className="text-primary italic">создавать</span>
+            Наши <span className="text-primary italic">мастер-классы</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
             Гончарное ремесло, лепка и роспись керамики на фабрике «Дымов Керамика» в Суздале.

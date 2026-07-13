@@ -20,6 +20,8 @@ interface SuzdalWorkshopData {
   duration: string;
   paragraphs: string[];
   extraServices: { title: string; price: string }[];
+  metaTitle: string;
+  metaDescription: string;
 }
 
 export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
@@ -41,6 +43,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'После завершения мастер-класса рекомендуется воспользоваться дополнительными услугами и оставить изделия в мастерской, где их ждёт покрытие бесцветной глазурью и обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '180 руб. / изделие' }],
+    metaTitle: 'Гончарное ремесло: мастер-класс в Суздале',
+    metaDescription:
+      'Гончарный мастер-класс для детей и взрослых в Суздале. На мастер-классе вы узнаете основные приёмы получения формы на гончарном круге. Действуют скидки для групп!',
   },
   'goncharnoe-remeslo-rospis-angobami': {
     slug: 'goncharnoe-remeslo-rospis-angobami',
@@ -63,6 +68,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'Если вы хотите получить полностью готовое изделие, которое можно использовать в интерьере своего дома, вам необходимо воспользоваться дополнительными услугами и оставить изделие на глазурованный обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '200 руб. / изделие' }],
+    metaTitle: 'Гончарное ремесло + роспись ангобами | Суздаль',
+    metaDescription:
+      'Мастер-класс по гончарному делу для детей и взрослых в Суздале. Роспись изделий из керамики ангобами. Действуют скидки для групп!',
   },
   'rospis-keramicheskix-tarelok': {
     slug: 'rospis-keramicheskix-tarelok',
@@ -84,6 +92,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'После завершения мастер-класса рекомендуется воспользоваться дополнительными услугами и оставить изделия в мастерской, где их ждёт покрытие бесцветной глазурью и обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '200 руб. / изделие' }],
+    metaTitle: 'Роспись керамических тарелок в Суздале',
+    metaDescription:
+      'Мастер-класс по росписи керамики для детей и взрослых в Суздале. Роспись фарфоровой тарелки. Действуют скидки для групп!',
   },
   'izgotovlenie-izrazcov': {
     slug: 'izgotovlenie-izrazcov',
@@ -106,6 +117,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'После завершения мастер-класса рекомендуется воспользоваться дополнительными услугами и оставить изделия в мастерской, где их ждёт покрытие бесцветной глазурью и обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '200 руб. / изделие' }],
+    metaTitle: 'Изготовление изразцов: мастер-класс в Суздале',
+    metaDescription:
+      'Мастер-класс по изготовлению изразцов своими руками для детей и взрослых в Суздале. За одно занятие вы сможете изготовить 1-3 изразцовых плиток. Действуют скидки для групп!',
   },
   'izgotovlenie-izrazczov-rospis-angobami': {
     slug: 'izgotovlenie-izrazczov-rospis-angobami',
@@ -129,6 +143,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'Если вы хотите получить полностью готовое изделие, которое можно использовать в интерьере своего дома, вам необходимо воспользоваться дополнительными услугами и оставить изделие на глазурованный обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '200 руб. / изделие' }],
+    metaTitle: 'Изразцы с росписью ангобами | Суздаль',
+    metaDescription:
+      'Мастер-класс по изготовлению изразцов и росписи изразцов ангобами для детей и взрослых в Суздале. Действуют скидки для групп!',
   },
   'kruzhevnaya-keramika': {
     slug: 'kruzhevnaya-keramika',
@@ -151,6 +168,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'После завершения мастер-класса рекомендуется воспользоваться дополнительными услугами и оставить изделия в мастерской, где их ждёт покрытие бесцветной глазурью и обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '200 руб. / изделие' }],
+    metaTitle: 'Кружевная керамика: мастер-класс в Суздале',
+    metaDescription:
+      'Мастер-класс по кружевной керамики для детей и взрослых в Суздале. Уроки керамики для начинающих. Действуют скидки для групп!',
   },
   'lepka-keramicheskih': {
     slug: 'lepka-keramicheskih',
@@ -172,6 +192,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'После завершения мастер-класса рекомендуется воспользоваться дополнительными услугами и оставить изделия в мастерской, где их ждёт покрытие бесцветной глазурью и обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '200 руб. / изделие' }],
+    metaTitle: 'Лепка керамики: мастер-класс в Суздале',
+    metaDescription:
+      'Мастер-класс по лепке из глины для детей и взрослых в Суздале. Лепка изделий из глины. Действуют скидки для групп!',
   },
   'kruzhevnaya-keramika-s-rospisyu': {
     slug: 'kruzhevnaya-keramika-s-rospisyu',
@@ -194,6 +217,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'Если вы хотите получить полностью готовое изделие, которое можно использовать в интерьере своего дома, вам необходимо воспользоваться дополнительными услугами и оставить изделие на глазурованный обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '200 руб. / изделие' }],
+    metaTitle: 'Кружевная керамика с росписью | Суздаль',
+    metaDescription:
+      'Мастер-класс по кружевной керамики с росписью для детей и взрослых в Суздале. Уроки керамики для начинающих. Действуют скидки для групп!',
   },
   'lepka-keramicheskih-s-rospisyu': {
     slug: 'lepka-keramicheskih-s-rospisyu',
@@ -216,6 +242,9 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
       'Если вы хотите получить полностью готовое изделие, которое можно использовать в интерьере своего дома, вам необходимо воспользоваться дополнительными услугами и оставить изделие на глазурованный обжиг.',
     ],
     extraServices: [{ title: 'Обжиг', price: '200 руб. / изделие' }],
+    metaTitle: 'Лепка керамики с росписью | Суздаль',
+    metaDescription:
+      'Мастер-класс по лепке из глины с росписью для детей и взрослых в Суздале. Лепка изделий из глины. Действуют скидки для групп!',
   },
 };
 
@@ -227,10 +256,9 @@ const SuzdalWorkshopDetail = () => {
   const [qty, setQty] = useState(1);
 
   usePageMeta({
-    title: data
-      ? `${data.title} — мастер-класс в Суздале | «Дымов Керамика»`
-      : 'Мастер-классы «Дымов Керамика» в Суздале',
-    description: data?.subtitle || 'Мастер-классы по керамике на фабрике «Дымов Керамика» в Суздале.',
+    title: data?.metaTitle || 'Мастер-классы «Дымов Керамика» в Суздале',
+    description:
+      data?.metaDescription || 'Мастер-классы по керамике на фабрике «Дымов Керамика» в Суздале.',
   });
 
   if (!data) {

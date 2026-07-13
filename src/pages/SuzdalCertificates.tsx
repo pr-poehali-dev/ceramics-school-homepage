@@ -20,9 +20,9 @@ const PRESETS = [
 
 const SuzdalCertificates = () => {
   usePageMeta({
-    title: 'Сертификат в школу «Дымов Керамика» в Суздале',
+    title: 'Сертификаты в гончарную мастерскую «Дымов Керамика» в Суздале',
     description:
-      'Подарочный сертификат на мастер-классы по керамике в школе «Дымов Керамика» в Суздале. Дарите близким возможность творить и учиться новому.',
+      'Подарочные сертификаты на уроки гончарного мастерства. Сертификаты на гончарные мастер-классы для детей и взрослых в Суздале.',
   });
   const { addItem } = useCart();
   const navigate = useNavigate();
@@ -66,8 +66,7 @@ const SuzdalCertificates = () => {
                 <Icon name="Gift" size={16} /> Сертификат в школу
               </span>
               <h1 className="mt-5 font-display text-4xl font-semibold leading-tight md:text-5xl">
-                Дарите близким<br />
-                <span className="text-primary italic">возможность творить</span>
+                Сертификат <span className="text-primary italic">в школу</span>
               </h1>
               <p className="mt-4 max-w-md text-lg text-muted-foreground">
                 Сертификат в школу «Дымов Керамика» в Суздале — подарок, который запомнится.

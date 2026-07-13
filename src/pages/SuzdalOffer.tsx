@@ -6,9 +6,9 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 
 const SuzdalOffer = () => {
   usePageMeta({
-    title: 'Публичная оферта | Дымов Керамика в Суздале',
+    title: 'Публичная оферта | Дымов Керамика Суздаль',
     description:
-      'Публичная оферта фабрики и школы керамики «Дымов Керамика» в Суздале. Условия оказания услуг по проведению мастер-классов и экскурсий, оплаты и возврата.',
+      'Публичная оферта студии керамики «Дымов Керамика Суздаль». Условия оказания услуг, проведения мастер-классов, продажи товаров и возврата. Официальные документы.',
   });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
@@ -23,7 +23,7 @@ const SuzdalOffer = () => {
               <Icon name="FileText" size={16} /> Документы
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold md:text-5xl">
-              Публичная оферта
+              Публичная оферта Суздаль
             </h1>
             <p className="mt-3 text-muted-foreground">Договор</p>
           </div>
