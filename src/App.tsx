@@ -82,6 +82,8 @@ const App = () => (
               <Route path="/suzdal/excursions" element={<SuzdalExcursions />} />
               <Route path="/suzdal/contacts" element={<SuzdalContacts />} />
               <Route path="/suzdal/about" element={<SuzdalAbout />} />
+              <Route path="/suzdal/cart" element={<Cart />} />
+              <Route path="/suzdal/checkout" element={<Checkout />} />
 
               {/* Redirects for old flat routes */}
               <Route path="/workshops" element={<Navigate to="/moscow/workshops" replace />} />

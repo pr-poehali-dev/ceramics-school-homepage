@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
@@ -223,6 +223,7 @@ const SuzdalWorkshopDetail = () => {
   const { slug } = useParams();
   const data = slug ? SUZDAL_WORKSHOP_DETAILS[slug] : undefined;
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const [qty, setQty] = useState(1);
 
   usePageMeta({
@@ -248,6 +249,7 @@ const SuzdalWorkshopDetail = () => {
       title: 'Добавлено в корзину',
       description: `${data.title} × ${qty} шт.`,
     });
+    navigate('/suzdal/checkout');
   };
 
   return (

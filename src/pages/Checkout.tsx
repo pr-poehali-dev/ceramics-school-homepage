@@ -4,6 +4,8 @@ import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
+import { useCity } from '@/hooks/useCity';
+import { CITIES } from '@/lib/cities';
 import func2url from '../../backend/func2url.json';
 import OrderSuccess, {
   CertificateResult,
@@ -17,6 +19,8 @@ import { toast } from '@/hooks/use-toast';
 const Checkout = () => {
   const { items, total, count, clear, removeItem } = useCart();
   const navigate = useNavigate();
+  const city = useCity();
+  const cityConfig = CITIES[city];
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -135,7 +139,7 @@ const Checkout = () => {
 
       <div className="container py-10 md:py-14">
         <Link
-          to="/moscow"
+          to={cityConfig.path}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
         >
           <Icon name="ArrowLeft" size={16} /> Вернуться на главную

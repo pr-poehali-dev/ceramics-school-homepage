@@ -6,9 +6,14 @@ import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
 import { itemImage } from '@/lib/itemImage';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useCity } from '@/hooks/useCity';
 
 const Cart = () => {
   const { items, removeItem, updateQty, clear, total, count } = useCart();
+  const city = useCity();
+  const isSuzdal = city === 'suzdal';
+  const browseTo = isSuzdal ? '/suzdal/workshops' : '/moscow/formats';
+  const browseLabel = isSuzdal ? 'К мастер-классам' : 'К форматам';
 
   usePageMeta({
     title: 'Корзина | «Дымов Керамика»',
@@ -33,8 +38,8 @@ const Cart = () => {
               <p className="text-lg font-medium">Корзина пуста</p>
               <p className="mt-1 text-sm text-muted-foreground">Выберите услугу или мастер-класс</p>
               <Button asChild className="mt-6 rounded-full px-7">
-                <Link to="/moscow/formats">
-                  <Icon name="LayoutGrid" size={16} className="mr-2" /> К форматам
+                <Link to={browseTo}>
+                  <Icon name="LayoutGrid" size={16} className="mr-2" /> {browseLabel}
                 </Link>
               </Button>
             </div>
@@ -124,7 +129,7 @@ const Cart = () => {
               </div>
 
               <Button asChild size="lg" className="mt-6 w-full rounded-full">
-                <Link to="/moscow/checkout">
+                <Link to={`/${city}/checkout`}>
                   <Icon name="CreditCard" size={18} className="mr-2" /> Оформить заказ
                 </Link>
               </Button>

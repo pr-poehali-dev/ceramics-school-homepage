@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
@@ -24,6 +25,7 @@ const SuzdalCertificates = () => {
       'Подарочный сертификат на мастер-классы по керамике в школе «Дымов Керамика» в Суздале. Дарите близким возможность творить и учиться новому.',
   });
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<number | null>(null);
 
   const activeAmount = selected ?? 0;
@@ -39,6 +41,7 @@ const SuzdalCertificates = () => {
       title: 'Сертификат добавлен в корзину',
       description: 'Перейдите к оформлению, чтобы завершить покупку.',
     });
+    navigate('/suzdal/checkout');
   };
 
   const handlePreset = (val: number) => {

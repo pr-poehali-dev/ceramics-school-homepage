@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { itemImage } from '@/lib/itemImage';
+import { useCity } from '@/hooks/useCity';
+import { CITIES } from '@/lib/cities';
 
 const SCHOOL_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/files/29020e4b-5aca-45b7-87b4-00a7d642fd92.jpg';
@@ -40,6 +42,12 @@ interface OrderSuccessProps {
 }
 
 const OrderSuccess = ({ orderResult }: OrderSuccessProps) => {
+  const city = useCity();
+  const isSuzdal = city === 'suzdal';
+  const cityConfig = CITIES[city];
+  const browseTo = isSuzdal ? '/suzdal/workshops' : '/moscow/formats';
+  const browseLabel = isSuzdal ? 'К другим мастер-классам' : 'К другим форматам';
+
   const paymentLabel =
     orderResult.payment === 'online'
       ? 'Онлайн-оплата ЮKassa'
@@ -66,7 +74,7 @@ const OrderSuccess = ({ orderResult }: OrderSuccessProps) => {
           </h1>
           <p className="mt-3 max-w-lg text-white/85">
             Мы приняли ваш заказ. Подтверждение отправили на {orderResult.email} — скоро с вами
-            свяжется представитель школы.
+            свяжется представитель {isSuzdal ? 'фабрики' : 'школы'}.
           </p>
           <span className="mt-6 rounded-full bg-white/15 px-5 py-2 text-sm font-medium backdrop-blur">
             Заказ № {orderResult.number}
@@ -159,9 +167,14 @@ const OrderSuccess = ({ orderResult }: OrderSuccessProps) => {
                 { icon: 'Mail', text: 'Отправили подтверждение заказа вам на почту.' },
                 {
                   icon: 'PhoneCall',
-                  text: 'Представитель школы свяжется, чтобы согласовать дату и время посещения.',
+                  text: `Представитель ${isSuzdal ? 'фабрики' : 'школы'} свяжется, чтобы согласовать дату и время посещения.`,
                 },
-                { icon: 'Sparkles', text: 'Приходите творить в нашу студию на ВДНХ — ждём вас!' },
+                {
+                  icon: 'Sparkles',
+                  text: isSuzdal
+                    ? 'Приходите творить на нашу фабрику в Суздале — ждём вас!'
+                    : 'Приходите творить в нашу студию на ВДНХ — ждём вас!',
+                },
               ].map((step, i) => (
                 <div key={step.text} className="flex items-start gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
@@ -176,19 +189,19 @@ const OrderSuccess = ({ orderResult }: OrderSuccessProps) => {
           {/* ACTIONS */}
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="flex-1 rounded-full">
-              <Link to="/moscow/formats">
-                <Icon name="LayoutGrid" size={18} className="mr-2" /> К другим форматам
+              <Link to={browseTo}>
+                <Icon name="LayoutGrid" size={18} className="mr-2" /> {browseLabel}
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="flex-1 rounded-full">
-              <Link to="/moscow">На главную</Link>
+              <Link to={cityConfig.path}>На главную</Link>
             </Button>
           </div>
 
           <p className="text-center text-sm text-muted-foreground">
             Вопросы по заказу? Звоните{' '}
-            <a href="tel:+79854198903" className="font-semibold text-primary hover:underline">
-              +7 (985) 419-89-03
+            <a href={cityConfig.phoneHref} className="font-semibold text-primary hover:underline">
+              {cityConfig.phone}
             </a>
           </p>
         </div>
