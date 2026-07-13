@@ -109,9 +109,7 @@ const SiteFooter = () => (
         <span className="flex flex-wrap items-center justify-center gap-1.5">
           Хотите такой же крутой сайт?
           <a
-            href="#"
-            target="_blank"
-            rel="noreferrer"
+            href="mailto:uxdesign30@gmail.com"
             className="inline-flex items-center gap-1 font-semibold text-primary transition-colors hover:underline"
           >
             Star Media
