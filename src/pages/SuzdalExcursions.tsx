@@ -137,6 +137,19 @@ const SuzdalExcursions = () => {
               </p>
             </div>
           </div>
+
+          {/* MAP */}
+          <div className="mt-8 overflow-hidden rounded-2xl border border-border">
+            <iframe
+              src="https://yandex.ru/map-widget/v1/?mode=search&text=%D0%A1%D1%83%D0%B7%D0%B4%D0%B0%D0%BB%D1%8C%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%92%D0%B0%D1%81%D0%B8%D0%BB%D1%8C%D0%B5%D0%B2%D1%81%D0%BA%D0%B0%D1%8F%2C%2041%D0%B0&z=16"
+              width="100%"
+              height="380"
+              frameBorder="0"
+              allowFullScreen
+              title="Карта — Дымов Керамика, Суздаль, ул. Васильевская, 41а"
+              className="block w-full"
+            />
+          </div>
         </div>
       </div>
 
