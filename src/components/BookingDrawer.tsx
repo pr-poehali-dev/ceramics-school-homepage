@@ -5,6 +5,7 @@ import { YCLIENTS_URL, BOOKING_EVENT_NAME } from '@/lib/booking';
 const BookingDrawer = () => {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [iframeReady, setIframeReady] = useState(false);
 
   useEffect(() => {
     const handler = () => {
@@ -52,12 +53,19 @@ const BookingDrawer = () => {
         </div>
 
         <div className="relative flex-1">
+          {!iframeReady && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-background">
+              <span className="h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+              <p className="text-sm text-muted-foreground">Загружаем расписание…</p>
+            </div>
+          )}
           {loaded && (
             <iframe
               src={YCLIENTS_URL}
               title="Онлайн-запись Дымов Керамика"
               className="h-full w-full border-0"
               allow="payment; clipboard-write"
+              onLoad={() => setIframeReady(true)}
             />
           )}
         </div>
