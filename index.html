@@ -29,6 +29,20 @@
 
     <meta name="pp-name" value="ceramics-school-homepage">
       <script src="https://cdn.poehali.dev/intertnal/js/inspector-min.js"></script>
+
+    <!-- Jivo online consultant widget -->
+    <script src="//code.jivo.ru/widget/QhNire9dF9" async></script>
+    <style>
+      /* Поднимаем виджет Jivo, чтобы он не перекрывался и не перекрывал кнопку "Онлайн-запись" */
+      div#jivo-iframe-container {
+        bottom: 96px !important;
+      }
+      @media (max-width: 767px) {
+        div#jivo-iframe-container {
+          bottom: 80px !important;
+        }
+      }
+    </style>
   </head>
 
 <body>
