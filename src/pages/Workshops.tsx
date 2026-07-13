@@ -147,24 +147,10 @@ const Workshops = () => {
           ))}
         </div>
 
-        <div className="mx-auto mt-14 max-w-4xl overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">
-          <h3 className="font-display text-3xl font-semibold md:text-4xl">
-            Не знаете, что выбрать?
-          </h3>
-          <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
-            Напишите нам — подскажем формат под ваш возраст, компанию и повод.
-          </p>
-          <AskQuestionDialog>
-            <Button size="lg" variant="secondary" className="mt-7 rounded-full px-8 text-base">
-              <Icon name="MessageCircle" size={18} className="mr-2" /> Задать вопрос
-            </Button>
-          </AskQuestionDialog>
-        </div>
-
         {/* LINK TO FORMATS */}
         <Link
           to="/moscow/formats"
-          className="group mx-auto mt-6 flex max-w-4xl items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl md:p-7"
+          className="group mx-auto mt-14 flex max-w-4xl items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl md:p-7"
         >
           <div className="flex items-center gap-4">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -185,6 +171,20 @@ const Workshops = () => {
             className="shrink-0 text-primary transition-transform group-hover:translate-x-1"
           />
         </Link>
+
+        <div className="mx-auto mt-6 max-w-4xl overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">
+          <h3 className="font-display text-3xl font-semibold md:text-4xl">
+            Не знаете, что выбрать?
+          </h3>
+          <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
+            Напишите нам — подскажем формат под ваш возраст, компанию и повод.
+          </p>
+          <AskQuestionDialog>
+            <Button size="lg" variant="secondary" className="mt-7 rounded-full px-8 text-base">
+              <Icon name="MessageCircle" size={18} className="mr-2" /> Задать вопрос
+            </Button>
+          </AskQuestionDialog>
+        </div>
       </section>
 
       {/* SEO TEXT */}
