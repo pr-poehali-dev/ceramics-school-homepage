@@ -23,6 +23,7 @@ const WORKSHOPS = [
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/3ebbf82b-af86-48c7-bd4b-568d71bea10f.jpg',
     title: 'Роспись керамических тарелок',
     desc: 'Хотите попробовать себя в роли художника и творца прекрасного?',
+    href: '/suzdal/workshops/rospis-keramicheskix-tarelok',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/2509f970-e5ac-4b63-be09-6600e954392d.jpg',
