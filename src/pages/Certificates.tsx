@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
@@ -23,6 +24,11 @@ const PRESETS = [
 
 
 const Certificates = () => {
+  usePageMeta({
+    title: 'Сертификаты в гончарную мастерскую «Дымов Керамика» в Москве на ВДНХ',
+    description:
+      'Подарочные сертификаты на уроки гончарного мастерства. Сертификаты на гончарные мастер-классы для детей и взрослых в Москве.',
+  });
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<number | null>(null);

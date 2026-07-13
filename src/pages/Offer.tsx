@@ -2,8 +2,14 @@ import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { OFFER_INTRO, OFFER_TERMS, OFFER_SECTIONS } from './offer/offerData';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Offer = () => {
+  usePageMeta({
+    title: 'Публичная оферта | Дымов Керамика',
+    description:
+      'Публичная оферта студии керамики «Дымов Керамика». Условия оказания услуг, проведения мастер-классов, продажи товаров и возврата. Официальные документы.',
+  });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}

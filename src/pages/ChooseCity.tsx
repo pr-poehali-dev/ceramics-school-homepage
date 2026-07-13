@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const MOSCOW_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/260e7e60-766b-4577-b0ce-5dd058cede6b.jpg';
@@ -10,12 +11,17 @@ const SUZDAL_IMG =
 const SUZDAL_URL = 'https://preview--ceramics-school-homepage.poehali.dev/';
 
 const ChooseCity = () => {
+  usePageMeta({
+    title: 'Гончарная школа «Дымов Керамика» в Москве и Суздале',
+    description:
+      'Ждем вас в нашей школе гончарных искусств «Дымов Керамика» в Москве и Суздале! Мастер-классы и уроки для детей и взрослых. Экскурсии, праздники. Выгодные предложения. Звоните!',
+  });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* LOGO */}
       <div className="flex flex-col items-center pt-12 pb-8 md:pt-16">
         <Logo className="h-14 origin-center md:h-16" />
-        <p className="mt-5 text-center text-base text-muted-foreground md:text-lg">Одна из старейших гончарных школ — выберите город</p>
+        <h1 className="mt-5 text-center text-base text-muted-foreground md:text-lg">Одна из старейших гончарных школ — выберите город</h1>
       </div>
 
       {/* CHOICE BLOCKS */}

@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const WORKSHOPS = [
   {
@@ -52,6 +53,11 @@ const WORKSHOPS = [
 ];
 
 const Workshops = () => {
+  usePageMeta({
+    title: 'Мастер-классы по гончарному мастерству в Москве на ВДНХ',
+    description:
+      'Мастер-классы по керамике и гончарному делу для детей и взрослых в школе «Дымов Керамика». Уроки гончарного мастерства.',
+  });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}

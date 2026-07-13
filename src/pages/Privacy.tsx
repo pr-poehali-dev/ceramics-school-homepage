@@ -2,8 +2,14 @@ import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { PRIVACY_INTRO, PRIVACY_SECTIONS } from './privacy/privacyData';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Privacy = () => {
+  usePageMeta({
+    title: 'Политика конфиденциальности | Дымов Керамика',
+    description:
+      'Политика конфиденциальности и обработки персональных данных ООО «ТД «Дымов Керамика». Условия сбора, хранения и защиты персональной информации пользователей сайта и услуг студии керамики на ВДНХ.',
+  });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}

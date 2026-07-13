@@ -1,6 +1,7 @@
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const SECTIONS = [
   { id: 'delivery', label: 'Доставка', icon: 'Truck' },
@@ -8,6 +9,11 @@ const SECTIONS = [
 ];
 
 const Info = () => {
+  usePageMeta({
+    title: 'Информация о доставке и выдаче изделий | Дымов Керамика',
+    description:
+      'Информация о доставке готовых изделий по Москве и условиях выдачи керамики после мастер-класса в студии «Дымов Керамика» на ВДНХ. Стоимость доставки от 400 ₽. Все подробности по телефону +7 (985) 419-89-03.',
+  });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}

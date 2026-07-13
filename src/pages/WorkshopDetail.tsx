@@ -4,6 +4,30 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { openBooking } from '@/lib/booking';
+import { usePageMeta } from '@/hooks/usePageMeta';
+
+const WORKSHOP_META: Record<string, { title: string; description: string }> = {
+  krug: {
+    title: 'Мастер-класс "Гончарный круг" в гончарной школе «Дымов Керамика» в Москве',
+    description:
+      'Мастер-класс лепки из глины на гончарном круге для детей и взрослых на ВДНХ. Занятия и обучение на гончарном круге в Москве. Действуют скидки для пенсионеров и многодетных семей.',
+  },
+  lepka: {
+    title: 'Мастер-класс "Лепка" в гончарной школе «Дымов Керамика» в Москве',
+    description:
+      'Мастер-класс по лепке из глины для детей и взрослых на ВДНХ. Школа лепки из глины в Москве. Действуют скидки для пенсионеров и многодетных семей.',
+  },
+  angoby: {
+    title: 'Мастер-класс "Роспись ангобами" в гончарной школе «Дымов Керамика» в Москве',
+    description:
+      'Ручная роспись керамических тарелок, посуды и изделий из глины для детей и взрослых на ВДНХ. Действуют скидки для пенсионеров и многодетных семей.',
+  },
+  akril: {
+    title: 'Мастер-класс "Роспись акрилом" в гончарной школе «Дымов Керамика» в Москве',
+    description:
+      'Мастер-класс по росписи акрилом в гончарной школе «Дымов Керамика» на ВДНХ. Ручная роспись керамических тарелок, посуды и изделий из глины для детей и взрослых. Действуют скидки для пенсионеров и многодетных семей. Запись онлайн!',
+  },
+};
 
 interface WorkshopData {
   slug: string;
@@ -104,6 +128,14 @@ export const WORKSHOP_DETAILS: Record<string, WorkshopData> = {
 const WorkshopDetail = () => {
   const { slug } = useParams();
   const data = slug ? WORKSHOP_DETAILS[slug] : undefined;
+  const meta = slug ? WORKSHOP_META[slug] : undefined;
+
+  usePageMeta({
+    title: meta?.title || 'Мастер-классы «Дымов Керамика» в Москве',
+    description:
+      meta?.description ||
+      'Мастер-классы по керамике и гончарному делу для детей и взрослых в школе «Дымов Керамика» на ВДНХ.',
+  });
 
   if (!data) {
     return <Navigate to="/moscow/workshops" replace />;

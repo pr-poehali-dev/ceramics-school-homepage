@@ -7,12 +7,19 @@ import SiteFooter from '@/components/SiteFooter';
 import { REVIEWS } from './reviews/reviewsData';
 import ReviewCard from './reviews/ReviewCard';
 import ReviewsGallery from './reviews/ReviewsGallery';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const STEP = 24;
 const AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
 
 const Reviews = () => {
   const [visible, setVisible] = useState(STEP);
+
+  usePageMeta({
+    title: 'Отзывы о студии керамики Дымов Керамика | ВДНХ, Москва',
+    description:
+      'Честные отзывы гостей о мастер-классах в студии керамики «Дымов Керамика» на ВДНХ. 101+ отзыв, средняя оценка 5.0. Узнайте, что говорят участники о лепке, гончарном круге и росписи керамики.',
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">

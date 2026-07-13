@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { openBooking } from '@/lib/booking';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
 
@@ -57,6 +58,11 @@ const initials = (name: string) =>
     .join('');
 
 const Index = () => {
+  usePageMeta({
+    title: 'Школа керамики в Москве «Дымов Керамика»',
+    description:
+      'Гончарная мастерская в Москве ждет в гости детей и взрослых! Мастер-классы, курсы, праздники, аренда зала. Действуют скидки для пенсионеров и многодетных семей!',
+  });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       <SiteHeader />

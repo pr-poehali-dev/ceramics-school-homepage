@@ -5,9 +5,16 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
 import { itemImage } from '@/lib/itemImage';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Cart = () => {
   const { items, removeItem, updateQty, clear, total, count } = useCart();
+
+  usePageMeta({
+    title: 'Корзина | «Дымов Керамика»',
+    description:
+      'Корзина покупок в интернет-магазине «Дымов Керамика». Проверьте выбранные товары, измените количество или оформите заказ. Авторская керамика ручной работы с доставкой.',
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">

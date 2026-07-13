@@ -7,8 +7,14 @@ import { ALL_FORMATS, PEOPLE_OPTIONS } from './formats/formatsData';
 import FormatsFilters from './formats/FormatsFilters';
 import FormatsResults from './formats/FormatsResults';
 import FormatsCta from './formats/FormatsCta';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Formats = () => {
+  usePageMeta({
+    title: 'Форматы мастер-классов в «Дымов Керамика» | Выбрать занятие на ВДНХ',
+    description:
+      'Выберите формат мастер-класса по керамике в студии на ВДНХ: классические, детские, тематические, свидания, выездные. Подберём вариант под любой возраст и бюджет',
+  });
   const [searchParams] = useSearchParams();
   const openAction = searchParams.get('open');
   const showSlug = searchParams.get('show');

@@ -2,8 +2,14 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
 import SiteHeader from '@/components/SiteHeader';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Contacts = () => {
+  usePageMeta({
+    title: 'Контакты гончарной мастерской «Дымов Керамика» в Москве',
+    description:
+      'Школа керамики и гончарного мастерства «Дымов Керамика», город Москва, проспект Мира, дом 119 строение 186. График работы пн-вс с 11:00 до 20:00.',
+  });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       <SiteHeader active="/moscow/contacts" />
