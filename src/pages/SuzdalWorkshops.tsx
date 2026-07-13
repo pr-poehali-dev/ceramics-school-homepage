@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
@@ -10,6 +11,7 @@ const WORKSHOPS = [
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/f1276934-81b2-4761-a942-5591d7f8e338.jpg',
     title: 'Гончарное ремесло',
     desc: 'Вы познакомитесь с глиной, инструментом и основными приёмами работы с ними.',
+    href: '/suzdal/workshops/goncharnoe-remeslo',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/a105ba85-0ace-4ad3-ab39-4441a2d4bcc6.jpg',
@@ -82,25 +84,45 @@ const SuzdalWorkshops = () => {
       {/* CARDS */}
       <section className="container pb-20">
         <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {WORKSHOPS.map((w, i) => (
-            <div
-              key={w.title}
-              className="group animate-fade-in overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={w.img}
-                  alt={w.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+          {WORKSHOPS.map((w, i) => {
+            const cardClass =
+              'group animate-fade-in overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl';
+            const cardContent = (
+              <>
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={w.img}
+                    alt={w.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="p-6">
+                  <h2 className="font-display text-xl font-semibold leading-tight">{w.title}</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">{w.desc}</p>
+                  {w.href && (
+                    <span className="mt-3 flex items-center gap-1.5 text-sm font-medium text-primary">
+                      Подробнее <Icon name="ArrowRight" size={15} />
+                    </span>
+                  )}
+                </div>
+              </>
+            );
+
+            return w.href ? (
+              <Link
+                key={w.title}
+                to={w.href}
+                className={cardClass}
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                {cardContent}
+              </Link>
+            ) : (
+              <div key={w.title} className={cardClass} style={{ animationDelay: `${i * 60}ms` }}>
+                {cardContent}
               </div>
-              <div className="p-6">
-                <h2 className="font-display text-xl font-semibold leading-tight">{w.title}</h2>
-                <p className="mt-2 text-sm text-muted-foreground">{w.desc}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mx-auto mt-14 max-w-5xl overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">
