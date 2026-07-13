@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
-import Logo from '@/components/Logo';
 import SiteHeader from '@/components/SiteHeader';
+import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Contacts = () => {
@@ -191,25 +190,7 @@ const Contacts = () => {
       </div>
 
       {/* FOOTER */}
-      <footer className="mt-16 border-t border-border bg-secondary/40">
-        <div className="container flex flex-col items-center justify-between gap-4 py-8 text-sm text-muted-foreground md:flex-row">
-          <Logo className="h-9" />
-          <span className="flex items-center gap-2">
-            <Icon name="MapPin" size={16} className="text-primary" /> ВДНХ, Москва
-          </span>
-          <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center">
-            <span>© 2003–2026 «Дымов Керамика»</span>
-            <span className="text-muted-foreground/50">·</span>
-            <Link to="/moscow/info" className="transition-colors hover:text-primary">
-              Информация
-            </Link>
-            <span className="text-muted-foreground/50">·</span>
-            <Link to="/moscow/offer" className="transition-colors hover:text-primary">
-              Публичная оферта
-            </Link>
-          </span>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 };
