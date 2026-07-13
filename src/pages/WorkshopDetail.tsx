@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import UtilBlock from '@/pages/workshop-detail/UtilBlock';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -259,6 +260,9 @@ const WorkshopDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* УТИЛЬ ДЛЯ РОСПИСИ */}
+        {slug === 'angoby' && <UtilBlock />}
 
         {/* CTA BANNER */}
         <div className="relative mt-14 overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">
