@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const WORKSHOPS = [
@@ -153,9 +154,11 @@ const Workshops = () => {
           <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
             Напишите нам — подскажем формат под ваш возраст, компанию и повод.
           </p>
-          <Button size="lg" variant="secondary" className="mt-7 rounded-full px-8 text-base">
-            <Icon name="MessageCircle" size={18} className="mr-2" /> Задать вопрос
-          </Button>
+          <AskQuestionDialog>
+            <Button size="lg" variant="secondary" className="mt-7 rounded-full px-8 text-base">
+              <Icon name="MessageCircle" size={18} className="mr-2" /> Задать вопрос
+            </Button>
+          </AskQuestionDialog>
         </div>
       </section>
 
