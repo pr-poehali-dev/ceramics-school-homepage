@@ -3,7 +3,13 @@ import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import { useCity } from '@/hooks/useCity';
-import { CITIES, MOSCOW_WORKSHOP_LINKS, MOSCOW_NAV_LINKS, SUZDAL_NAV_LINKS } from '@/lib/cities';
+import {
+  CITIES,
+  MOSCOW_WORKSHOP_LINKS,
+  MOSCOW_NAV_LINKS,
+  SUZDAL_WORKSHOP_LINKS,
+  SUZDAL_NAV_LINKS,
+} from '@/lib/cities';
 
 const SHOP_URL = 'https://dymovceramic.ru/';
 
@@ -43,8 +49,9 @@ const SiteFooter = () => {
   const cityConfig = CITIES[city];
   const isSuzdal = city === 'suzdal';
 
+  const workshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
   const sectionLinks = isSuzdal
-    ? SUZDAL_NAV_LINKS
+    ? [{ label: 'Все мастер-классы', to: '/suzdal/workshops' }, ...SUZDAL_NAV_LINKS]
     : [{ label: 'Все мастер-классы', to: '/moscow/workshops' }, ...MOSCOW_NAV_LINKS];
 
   return (
@@ -74,14 +81,14 @@ const SiteFooter = () => {
           <SocialLinks size={18} variant="solid" className="mt-5" />
         </div>
 
-        {/* Workshops (только Москва — есть отдельные страницы по видам мастер-классов) */}
-        {!isSuzdal && <FooterCol title="Мастер-классы" links={MOSCOW_WORKSHOP_LINKS} />}
+        {/* Workshops */}
+        <FooterCol title="Мастер-классы" links={workshopLinks} />
 
         {/* Sections */}
         <FooterCol title="Разделы" links={sectionLinks} />
 
-        {/* Customers (только Москва) */}
-        {!isSuzdal && <FooterCol title="Покупателям" links={MOSCOW_CUSTOMER_LINKS} />}
+        {/* Customers */}
+        <FooterCol title="Покупателям" links={MOSCOW_CUSTOMER_LINKS} />
 
         {/* Shop */}
         <div>
