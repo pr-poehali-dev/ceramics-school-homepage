@@ -160,6 +160,31 @@ const Workshops = () => {
             </Button>
           </AskQuestionDialog>
         </div>
+
+        {/* LINK TO FORMATS */}
+        <Link
+          to="/moscow/formats"
+          className="group mx-auto mt-6 flex max-w-4xl items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl md:p-7"
+        >
+          <div className="flex items-center gap-4">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Icon name="CalendarHeart" size={22} />
+            </span>
+            <div>
+              <p className="font-display text-xl font-semibold">
+                Ищете формат для праздника или мероприятия?
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Дни рождения, корпоративы, свидания и другие форматы на базе мастер-классов.
+              </p>
+            </div>
+          </div>
+          <Icon
+            name="ArrowRight"
+            size={20}
+            className="shrink-0 text-primary transition-transform group-hover:translate-x-1"
+          />
+        </Link>
       </section>
 
       {/* SEO TEXT */}
