@@ -29,6 +29,7 @@ const WORKSHOPS = [
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/2509f970-e5ac-4b63-be09-6600e954392d.jpg',
     title: 'Изготовление изразцов',
     desc: 'На мастер-классе вы сможете изготовить изразец своими руками.',
+    href: '/suzdal/workshops/izgotovlenie-izrazcov',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/5ed56727-04b1-4e8e-a4e7-56712723a813.jpg',
