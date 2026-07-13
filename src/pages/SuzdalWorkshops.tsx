@@ -53,6 +53,7 @@ const WORKSHOPS = [
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d946944f-b0dc-4ba0-b8ec-109ca1a37e1c.jpg',
     title: 'Кружевная керамика с росписью',
     desc: 'Изготовление керамической кружевной тарелки своими руками.',
+    href: '/suzdal/workshops/kruzhevnaya-keramika-s-rospisyu',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/e92d28ed-ca0f-4410-9e1c-798d9d2f5976.jpg',
