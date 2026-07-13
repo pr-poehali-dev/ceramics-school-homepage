@@ -17,6 +17,7 @@ const WORKSHOPS = [
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/a105ba85-0ace-4ad3-ab39-4441a2d4bcc6.jpg',
     title: 'Гончарное ремесло и роспись ангобами',
     desc: 'На мастер-классе вы изготовите изделие своими руками и распишите его ангобами.',
+    href: '/suzdal/workshops/goncharnoe-remeslo-rospis-angobami',
   },
   {
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/3ebbf82b-af86-48c7-bd4b-568d71bea10f.jpg',
