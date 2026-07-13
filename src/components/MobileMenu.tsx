@@ -8,7 +8,13 @@ import SocialLinks from '@/components/SocialLinks';
 import { useNavClick } from '@/hooks/useNavClick';
 import { useCity } from '@/hooks/useCity';
 import { openBooking } from '@/lib/booking';
-import { CITIES, MOSCOW_WORKSHOP_LINKS, MOSCOW_NAV_LINKS, SUZDAL_NAV_LINKS } from '@/lib/cities';
+import {
+  CITIES,
+  MOSCOW_WORKSHOP_LINKS,
+  MOSCOW_NAV_LINKS,
+  SUZDAL_WORKSHOP_LINKS,
+  SUZDAL_NAV_LINKS,
+} from '@/lib/cities';
 
 const MOSCOW_CONTACTS = [
   { icon: 'Phone', label: 'Телефон', value: '+7 (985) 419-89-03', href: 'tel:+79854198903' },
@@ -33,8 +39,11 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
   const navClick = useNavClick();
   const city = useCity();
   const cityConfig = CITIES[city];
-  const navLinks = city === 'suzdal' ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
-  const contacts = city === 'suzdal' ? SUZDAL_CONTACTS : MOSCOW_CONTACTS;
+  const isSuzdal = city === 'suzdal';
+  const navLinks = isSuzdal ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
+  const contacts = isSuzdal ? SUZDAL_CONTACTS : MOSCOW_CONTACTS;
+  const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
+  const workshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
 
   const handleLink = (to: string) => (e: React.MouseEvent) => {
     navClick(to)(e);
@@ -108,48 +117,44 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
 
           {/* NAV */}
           <nav className="flex flex-col gap-1">
-            {city === 'moscow' && (
-              <>
-                {/* Мастер-классы с подпунктами */}
-                <div
-                  className={`flex items-center rounded-xl text-lg font-medium transition-colors ${
-                    active === '/moscow/workshops' ? 'bg-primary/10 text-primary' : 'text-foreground'
-                  }`}
-                >
+            {/* Мастер-классы с подпунктами */}
+            <div
+              className={`flex items-center rounded-xl text-lg font-medium transition-colors ${
+                active === workshopsHome ? 'bg-primary/10 text-primary' : 'text-foreground'
+              }`}
+            >
+              <Link
+                to={workshopsHome}
+                onClick={handleLink(workshopsHome)}
+                className="flex-1 rounded-l-xl px-4 py-3.5 hover:bg-muted"
+              >
+                Мастер-классы
+              </Link>
+              <button
+                onClick={() => setWsOpen((v) => !v)}
+                aria-label="Показать мастер-классы"
+                className="flex h-full items-center rounded-r-xl px-4 py-3.5 hover:bg-muted"
+              >
+                <Icon
+                  name="ChevronDown"
+                  size={18}
+                  className={`text-muted-foreground transition-transform ${wsOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+            </div>
+            {wsOpen && (
+              <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
+                {workshopLinks.map((w) => (
                   <Link
-                    to="/moscow/workshops"
-                    onClick={handleLink('/moscow/workshops')}
-                    className="flex-1 rounded-l-xl px-4 py-3.5 hover:bg-muted"
+                    key={w.to}
+                    to={w.to}
+                    onClick={handleLink(w.to)}
+                    className="rounded-lg px-3 py-2.5 text-base text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
                   >
-                    Мастер-классы
+                    {w.label}
                   </Link>
-                  <button
-                    onClick={() => setWsOpen((v) => !v)}
-                    aria-label="Показать мастер-классы"
-                    className="flex h-full items-center rounded-r-xl px-4 py-3.5 hover:bg-muted"
-                  >
-                    <Icon
-                      name="ChevronDown"
-                      size={18}
-                      className={`text-muted-foreground transition-transform ${wsOpen ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-                </div>
-                {wsOpen && (
-                  <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
-                    {MOSCOW_WORKSHOP_LINKS.map((w) => (
-                      <Link
-                        key={w.to}
-                        to={w.to}
-                        onClick={handleLink(w.to)}
-                        className="rounded-lg px-3 py-2.5 text-base text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
-                      >
-                        {w.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </>
+                ))}
+              </div>
             )}
 
             {navLinks.map((n) => (

@@ -3,7 +3,12 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { useNavClick } from '@/hooks/useNavClick';
 import { useCity } from '@/hooks/useCity';
-import { MOSCOW_WORKSHOP_LINKS, MOSCOW_NAV_LINKS, SUZDAL_NAV_LINKS } from '@/lib/cities';
+import {
+  MOSCOW_WORKSHOP_LINKS,
+  MOSCOW_NAV_LINKS,
+  SUZDAL_WORKSHOP_LINKS,
+  SUZDAL_NAV_LINKS,
+} from '@/lib/cities';
 
 interface DesktopNavProps {
   active?: string;
@@ -23,42 +28,19 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
     timer.current = setTimeout(() => setOpen(false), 120);
   };
 
-  if (city === 'suzdal') {
-    return (
-      <nav className="hidden items-center gap-8 md:flex">
-        {SUZDAL_NAV_LINKS.map((l) => (
-          <Link
-            key={l.to}
-            to={l.to}
-            onClick={navClick(l.to)}
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-              active === l.to ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            {l.label}
-          </Link>
-        ))}
-
-        <a
-          href="https://dymovceramic.ru/"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-        >
-          <Icon name="ShoppingBag" size={14} /> Магазин
-        </a>
-      </nav>
-    );
-  }
+  const isSuzdal = city === 'suzdal';
+  const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
+  const workshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
+  const navLinks = isSuzdal ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
 
   return (
     <nav className="hidden items-center gap-8 md:flex">
       <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
         <Link
-          to="/moscow/workshops"
-          onClick={navClick('/moscow/workshops')}
+          to={workshopsHome}
+          onClick={navClick(workshopsHome)}
           className={`flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary ${
-            active === '/moscow/workshops' ? 'text-primary' : 'text-muted-foreground'
+            active === workshopsHome ? 'text-primary' : 'text-muted-foreground'
           }`}
         >
           Мастер-классы
@@ -74,8 +56,8 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
             open ? 'visible opacity-100' : 'invisible opacity-0'
           }`}
         >
-          <div className="w-60 overflow-hidden rounded-2xl border border-border bg-background shadow-xl">
-            {MOSCOW_WORKSHOP_LINKS.map((w) => (
+          <div className="w-72 overflow-hidden rounded-2xl border border-border bg-background shadow-xl">
+            {workshopLinks.map((w) => (
               <Link
                 key={w.to}
                 to={w.to}
@@ -89,7 +71,7 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
         </div>
       </div>
 
-      {MOSCOW_NAV_LINKS.map((l) => (
+      {navLinks.map((l) => (
         <Link
           key={l.to}
           to={l.to}

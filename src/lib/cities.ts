@@ -46,9 +46,21 @@ export const MOSCOW_NAV_LINKS: NavLink[] = [
   { label: 'Контакты', to: '/moscow/contacts' },
 ];
 
-/** Пункты меню для Суздаля. */
+/** Пункты меню "Мастер-классы" (выпадающий список) для Суздаля. */
+export const SUZDAL_WORKSHOP_LINKS: NavLink[] = [
+  { label: 'Гончарное ремесло', to: '/suzdal/workshops/goncharnoe-remeslo' },
+  { label: 'Гончарное ремесло и роспись ангобами', to: '/suzdal/workshops/goncharnoe-remeslo-rospis-angobami' },
+  { label: 'Роспись керамических тарелок', to: '/suzdal/workshops/rospis-keramicheskix-tarelok' },
+  { label: 'Изготовление изразцов', to: '/suzdal/workshops/izgotovlenie-izrazcov' },
+  { label: 'Изготовление изразцов и роспись ангобами', to: '/suzdal/workshops/izgotovlenie-izrazczov-rospis-angobami' },
+  { label: 'Кружевная керамика', to: '/suzdal/workshops/kruzhevnaya-keramika' },
+  { label: 'Кружевная керамика с росписью', to: '/suzdal/workshops/kruzhevnaya-keramika-s-rospisyu' },
+  { label: 'Лепка керамических изделий', to: '/suzdal/workshops/lepka-keramicheskih' },
+  { label: 'Лепка керамических изделий с росписью', to: '/suzdal/workshops/lepka-keramicheskih-s-rospisyu' },
+];
+
+/** Основные пункты меню для Суздаля (без "Мастер-классов", идут отдельным блоком). */
 export const SUZDAL_NAV_LINKS: NavLink[] = [
-  { label: 'Мастер-классы', to: '/suzdal/workshops' },
   { label: 'Сертификаты', to: '/suzdal/certificates' },
   { label: 'Экскурсии', to: '/suzdal/excursions' },
   { label: 'Контакты', to: '/suzdal/contacts' },
