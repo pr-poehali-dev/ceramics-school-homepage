@@ -109,18 +109,8 @@ const SiteFooter = () => {
       </div>
 
       {/* Bottom */}
-      <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-sm text-muted-foreground md:flex-row">
+      <div className="mt-12 flex flex-col items-center justify-center gap-4 border-t border-border pt-6 text-sm text-muted-foreground md:flex-row">
         <span>© 2003–2026 «Дымов Керамика». Все права защищены.</span>
-        <span className="flex flex-wrap items-center justify-center gap-1.5">
-          Хотите такой же крутой сайт?
-          <a
-            href="mailto:uxdesign30@gmail.com"
-            className="inline-flex items-center gap-1 font-semibold text-primary transition-colors hover:underline"
-          >
-            Star Media
-            <Icon name="ArrowUpRight" size={15} />
-          </a>
-        </span>
       </div>
     </div>
   </footer>
