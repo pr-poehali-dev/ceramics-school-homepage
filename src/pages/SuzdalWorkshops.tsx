@@ -59,6 +59,7 @@ const WORKSHOPS = [
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/e92d28ed-ca0f-4410-9e1c-798d9d2f5976.jpg',
     title: 'Лепка керамических изделий с росписью',
     desc: 'Глина благодарный материал — она пластична, податлива, послушна человеческим рукам.',
+    href: '/suzdal/workshops/lepka-keramicheskih-s-rospisyu',
   },
 ];
 
