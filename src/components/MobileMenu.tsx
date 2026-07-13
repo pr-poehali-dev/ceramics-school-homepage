@@ -6,29 +6,21 @@ import { Button } from '@/components/ui/button';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import { useNavClick } from '@/hooks/useNavClick';
+import { useCity } from '@/hooks/useCity';
 import { openBooking } from '@/lib/booking';
-import { SUZDAL_URL } from '@/lib/cities';
+import { CITIES, MOSCOW_WORKSHOP_LINKS, MOSCOW_NAV_LINKS, SUZDAL_NAV_LINKS } from '@/lib/cities';
 
-const NAV = [
-  { label: 'Форматы', to: '/moscow/formats' },
-  { label: 'Сертификаты', to: '/moscow/certificates' },
-  { label: 'Отзывы', to: '/moscow/reviews' },
-  { label: 'Контакты', to: '/moscow/contacts' },
-];
-
-const WORKSHOP_LINKS = [
-  { label: 'Лепка из глины', to: '/moscow/workshops/lepka' },
-  { label: 'Гончарный круг', to: '/moscow/workshops/krug' },
-  { label: 'Роспись ангобами', to: '/moscow/workshops/angoby' },
-  { label: 'Роспись акрилом', to: '/moscow/workshops/akril' },
-];
-
-const CONTACTS = [
+const MOSCOW_CONTACTS = [
   { icon: 'Phone', label: 'Телефон', value: '+7 (985) 419-89-03', href: 'tel:+79854198903' },
   { icon: 'MessageCircle', label: 'WhatsApp', value: '+7 (985) 419-89-03', href: 'https://wa.me/79854198903' },
   { icon: 'Mail', label: 'Почта', value: 'hello@dymovceramic.ru', href: 'mailto:hello@dymovceramic.ru' },
   { icon: 'MapPin', label: 'Адрес', value: 'г. Москва, проспект Мира, д. 119, стр. 186', href: null },
   { icon: 'Clock', label: 'График работы', value: 'Пн–Вс, с 11:00 до 20:00', href: null },
+];
+
+const SUZDAL_CONTACTS = [
+  { icon: 'Phone', label: 'Телефон', value: '8-915-157-64-85', href: 'tel:+79151576485' },
+  { icon: 'MapPin', label: 'Адрес', value: 'г. Суздаль', href: null },
 ];
 
 interface MobileMenuProps {
@@ -39,6 +31,10 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
   const [wsOpen, setWsOpen] = useState(false);
   const navClick = useNavClick();
+  const city = useCity();
+  const cityConfig = CITIES[city];
+  const navLinks = city === 'suzdal' ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
+  const contacts = city === 'suzdal' ? SUZDAL_CONTACTS : MOSCOW_CONTACTS;
 
   const handleLink = (to: string) => (e: React.MouseEvent) => {
     navClick(to)(e);
@@ -72,7 +68,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
             }`}
           >
         <div className="flex items-center justify-between border-b border-border px-6 py-5">
-          <Link to="/moscow" onClick={handleLink('/moscow')} className="flex items-center">
+          <Link to={cityConfig.path} onClick={handleLink(cityConfig.path)} className="flex items-center">
             <Logo className="h-8" />
           </Link>
           <button
@@ -87,62 +83,76 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {/* CITY SWITCHER */}
           <div className="mb-5 flex overflow-hidden rounded-xl border border-border">
-            <span className="flex flex-1 items-center justify-center gap-1.5 bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary">
-              <Icon name="MapPin" size={15} />
-              Москва
-            </span>
-            <a
-              href={SUZDAL_URL}
-              className="flex flex-1 items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
-            >
-              <Icon name="MapPin" size={15} />
-              Суздаль
-            </a>
+            {Object.values(CITIES).map((c) =>
+              c.key === city ? (
+                <span
+                  key={c.key}
+                  className="flex flex-1 items-center justify-center gap-1.5 bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary"
+                >
+                  <Icon name="MapPin" size={15} />
+                  {c.label}
+                </span>
+              ) : (
+                <Link
+                  key={c.key}
+                  to={c.path}
+                  onClick={() => setOpen(false)}
+                  className="flex flex-1 items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                >
+                  <Icon name="MapPin" size={15} />
+                  {c.label}
+                </Link>
+              ),
+            )}
           </div>
 
           {/* NAV */}
           <nav className="flex flex-col gap-1">
-            {/* Мастер-классы с подпунктами */}
-            <div
-              className={`flex items-center rounded-xl text-lg font-medium transition-colors ${
-                active === '/moscow/workshops' ? 'bg-primary/10 text-primary' : 'text-foreground'
-              }`}
-            >
-              <Link
-                to="/moscow/workshops"
-                onClick={handleLink('/moscow/workshops')}
-                className="flex-1 rounded-l-xl px-4 py-3.5 hover:bg-muted"
-              >
-                Мастер-классы
-              </Link>
-              <button
-                onClick={() => setWsOpen((v) => !v)}
-                aria-label="Показать мастер-классы"
-                className="flex h-full items-center rounded-r-xl px-4 py-3.5 hover:bg-muted"
-              >
-                <Icon
-                  name="ChevronDown"
-                  size={18}
-                  className={`text-muted-foreground transition-transform ${wsOpen ? 'rotate-180' : ''}`}
-                />
-              </button>
-            </div>
-            {wsOpen && (
-              <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
-                {WORKSHOP_LINKS.map((w) => (
+            {city === 'moscow' && (
+              <>
+                {/* Мастер-классы с подпунктами */}
+                <div
+                  className={`flex items-center rounded-xl text-lg font-medium transition-colors ${
+                    active === '/moscow/workshops' ? 'bg-primary/10 text-primary' : 'text-foreground'
+                  }`}
+                >
                   <Link
-                    key={w.to}
-                    to={w.to}
-                    onClick={handleLink(w.to)}
-                    className="rounded-lg px-3 py-2.5 text-base text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                    to="/moscow/workshops"
+                    onClick={handleLink('/moscow/workshops')}
+                    className="flex-1 rounded-l-xl px-4 py-3.5 hover:bg-muted"
                   >
-                    {w.label}
+                    Мастер-классы
                   </Link>
-                ))}
-              </div>
+                  <button
+                    onClick={() => setWsOpen((v) => !v)}
+                    aria-label="Показать мастер-классы"
+                    className="flex h-full items-center rounded-r-xl px-4 py-3.5 hover:bg-muted"
+                  >
+                    <Icon
+                      name="ChevronDown"
+                      size={18}
+                      className={`text-muted-foreground transition-transform ${wsOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                </div>
+                {wsOpen && (
+                  <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
+                    {MOSCOW_WORKSHOP_LINKS.map((w) => (
+                      <Link
+                        key={w.to}
+                        to={w.to}
+                        onClick={handleLink(w.to)}
+                        className="rounded-lg px-3 py-2.5 text-base text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                      >
+                        {w.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
-            {NAV.map((n) => (
+            {navLinks.map((n) => (
               <Link
                 key={n.label}
                 to={n.to}
@@ -178,7 +188,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
               Быстрая связь
             </p>
             <div className="space-y-1">
-              {CONTACTS.map((c) => {
+              {contacts.map((c) => {
                 const inner = (
                   <>
                     <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">

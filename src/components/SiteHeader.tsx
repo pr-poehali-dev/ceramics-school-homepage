@@ -6,6 +6,8 @@ import MobileMenu from '@/components/MobileMenu';
 import CartButton from '@/components/CartButton';
 import CitySwitcher from '@/components/CitySwitcher';
 import { useNavClick } from '@/hooks/useNavClick';
+import { useCity } from '@/hooks/useCity';
+import { CITIES } from '@/lib/cities';
 
 interface SiteHeaderProps {
   active?: string;
@@ -13,21 +15,24 @@ interface SiteHeaderProps {
 
 const SiteHeader = ({ active }: SiteHeaderProps) => {
   const navClick = useNavClick();
+  const city = useCity();
+  const cityConfig = CITIES[city];
+
   return (
   <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
     <div className="container flex h-20 items-center justify-between">
       <div className="flex items-center gap-4">
-        <Link to="/moscow" onClick={navClick('/moscow')} className="flex items-center">
+        <Link to={cityConfig.path} onClick={navClick(cityConfig.path)} className="flex items-center">
           <Logo scale={false} />
         </Link>
         <CitySwitcher />
       </div>
       <DesktopNav active={active} />
       <a
-        href="tel:+79854198903"
+        href={cityConfig.phoneHref}
         className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
       >
-        <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
+        <Icon name="Phone" size={18} className="text-primary" /> {cityConfig.phone}
       </a>
       <div className="flex items-center gap-3">
         <CartButton />

@@ -1,6 +1,5 @@
 import { useLocation } from 'react-router-dom';
-
-export type City = 'moscow' | 'suzdal';
+import { City } from '@/lib/cities';
 
 /** Определяет текущий город по адресу страницы (/moscow или /suzdal). */
 export const useCity = (): City => {

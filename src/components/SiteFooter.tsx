@@ -2,25 +2,12 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
+import { useCity } from '@/hooks/useCity';
+import { CITIES, MOSCOW_WORKSHOP_LINKS, MOSCOW_NAV_LINKS, SUZDAL_NAV_LINKS } from '@/lib/cities';
 
 const SHOP_URL = 'https://dymovceramic.ru/';
 
-const WORKSHOP_LINKS = [
-  { label: 'Лепка из глины', to: '/moscow/workshops/lepka' },
-  { label: 'Гончарный круг', to: '/moscow/workshops/krug' },
-  { label: 'Роспись ангобами', to: '/moscow/workshops/angoby' },
-  { label: 'Роспись акрилом', to: '/moscow/workshops/akril' },
-];
-
-const SECTION_LINKS = [
-  { label: 'Все мастер-классы', to: '/moscow/workshops' },
-  { label: 'Форматы и цены', to: '/moscow/formats' },
-  { label: 'Сертификаты', to: '/moscow/certificates' },
-  { label: 'Отзывы', to: '/moscow/reviews' },
-  { label: 'Контакты', to: '/moscow/contacts' },
-];
-
-const CUSTOMER_LINKS = [
+const MOSCOW_CUSTOMER_LINKS = [
   { label: 'Информация', to: '/moscow/info' },
   { label: 'Публичная оферта', to: '/moscow/offer' },
   { label: 'Политика конфиденциальности', to: '/moscow/privacy' },
@@ -51,7 +38,16 @@ const FooterCol = ({
   </div>
 );
 
-const SiteFooter = () => (
+const SiteFooter = () => {
+  const city = useCity();
+  const cityConfig = CITIES[city];
+  const isSuzdal = city === 'suzdal';
+
+  const sectionLinks = isSuzdal
+    ? SUZDAL_NAV_LINKS
+    : [{ label: 'Все мастер-классы', to: '/moscow/workshops' }, ...MOSCOW_NAV_LINKS];
+
+  return (
   <footer className="mt-16 border-t border-border bg-secondary/40">
     <div className="container py-14">
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
@@ -59,31 +55,33 @@ const SiteFooter = () => (
         <div>
           <Logo className="h-9" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-            Студия керамики на ВДНХ. Мастер-классы по лепке, гончарному кругу и росписи для
-            взрослых и детей с 2003 года.
+            {isSuzdal
+              ? 'Фабрика и школа керамики в Суздале. Мастер-классы, экскурсии и праздники для взрослых и детей.'
+              : 'Студия керамики на ВДНХ. Мастер-классы по лепке, гончарному кругу и росписи для взрослых и детей с 2003 года.'}
           </p>
           <div className="mt-5 space-y-2.5 text-sm">
             <a
-              href="tel:+79854198903"
+              href={cityConfig.phoneHref}
               className="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary"
             >
-              <Icon name="Phone" size={16} className="text-primary" /> +7 (985) 419-89-03
+              <Icon name="Phone" size={16} className="text-primary" /> {cityConfig.phone}
             </a>
             <span className="flex items-center gap-2 text-muted-foreground">
-              <Icon name="MapPin" size={16} className="text-primary" /> ВДНХ, Москва
+              <Icon name="MapPin" size={16} className="text-primary" />{' '}
+              {isSuzdal ? 'Суздаль' : 'ВДНХ, Москва'}
             </span>
           </div>
           <SocialLinks size={18} variant="solid" className="mt-5" />
         </div>
 
-        {/* Workshops */}
-        <FooterCol title="Мастер-классы" links={WORKSHOP_LINKS} />
+        {/* Workshops (только Москва — есть отдельные страницы по видам мастер-классов) */}
+        {!isSuzdal && <FooterCol title="Мастер-классы" links={MOSCOW_WORKSHOP_LINKS} />}
 
         {/* Sections */}
-        <FooterCol title="Разделы" links={SECTION_LINKS} />
+        <FooterCol title="Разделы" links={sectionLinks} />
 
-        {/* Customers */}
-        <FooterCol title="Покупателям" links={CUSTOMER_LINKS} />
+        {/* Customers (только Москва) */}
+        {!isSuzdal && <FooterCol title="Покупателям" links={MOSCOW_CUSTOMER_LINKS} />}
 
         {/* Shop */}
         <div>
@@ -119,6 +117,7 @@ const SiteFooter = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export default SiteFooter;
