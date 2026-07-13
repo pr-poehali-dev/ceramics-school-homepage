@@ -4,6 +4,7 @@ import Logo from '@/components/Logo';
 import DesktopNav from '@/components/DesktopNav';
 import MobileMenu from '@/components/MobileMenu';
 import CartButton from '@/components/CartButton';
+import CitySwitcher from '@/components/CitySwitcher';
 import { useNavClick } from '@/hooks/useNavClick';
 
 interface SiteHeaderProps {
@@ -26,6 +27,7 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
         <Icon name="Phone" size={18} className="text-primary" /> +7 (985) 419-89-03
       </a>
       <div className="flex items-center gap-3">
+        <CitySwitcher />
         <CartButton />
         <MobileMenu active={active} />
       </div>

@@ -7,6 +7,7 @@ import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import { useNavClick } from '@/hooks/useNavClick';
 import { openBooking } from '@/lib/booking';
+import { SUZDAL_URL } from '@/lib/cities';
 
 const NAV = [
   { label: 'Форматы', to: '/moscow/formats' },
@@ -84,6 +85,21 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-6">
+          {/* CITY SWITCHER */}
+          <div className="mb-5 flex overflow-hidden rounded-xl border border-border">
+            <span className="flex flex-1 items-center justify-center gap-1.5 bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary">
+              <Icon name="MapPin" size={15} />
+              Москва
+            </span>
+            <a
+              href={SUZDAL_URL}
+              className="flex flex-1 items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+            >
+              <Icon name="MapPin" size={15} />
+              Суздаль
+            </a>
+          </div>
+
           {/* NAV */}
           <nav className="flex flex-col gap-1">
             {/* Мастер-классы с подпунктами */}
