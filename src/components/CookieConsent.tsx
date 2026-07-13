@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import { useCity } from '@/hooks/useCity';
 
 const STORAGE_KEY = 'cookie-consent';
 
@@ -9,6 +10,8 @@ const CookieConsent = () => {
   const [visible, setVisible] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [analytics, setAnalytics] = useState(true);
+  const city = useCity();
+  const cookiesPath = city === 'suzdal' ? '/suzdal/cookies' : '/moscow/cookies';
 
   useEffect(() => {
     try {
@@ -45,7 +48,7 @@ const CookieConsent = () => {
               Сайт использует файлы cookie, обрабатываемые вашим браузером. Подробнее об этом вы
               можете узнать в{' '}
               <Link
-                to="/moscow/cookies"
+                to={cookiesPath}
                 className="font-semibold text-primary transition-colors hover:underline"
               >
                 Политике cookie

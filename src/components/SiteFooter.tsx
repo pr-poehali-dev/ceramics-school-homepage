@@ -20,6 +20,12 @@ const MOSCOW_CUSTOMER_LINKS = [
   { label: 'Политика cookie', to: '/moscow/cookies' },
 ];
 
+const SUZDAL_CUSTOMER_LINKS = [
+  { label: 'Публичная оферта', to: '/suzdal/offer' },
+  { label: 'Политика конфиденциальности', to: '/suzdal/privacy' },
+  { label: 'Политика cookie', to: '/suzdal/cookies' },
+];
+
 const FooterCol = ({
   title,
   links,
@@ -88,7 +94,10 @@ const SiteFooter = () => {
         <FooterCol title="Разделы" links={sectionLinks} />
 
         {/* Customers */}
-        <FooterCol title="Покупателям" links={MOSCOW_CUSTOMER_LINKS} />
+        <FooterCol
+          title="Покупателям"
+          links={isSuzdal ? SUZDAL_CUSTOMER_LINKS : MOSCOW_CUSTOMER_LINKS}
+        />
 
         {/* Shop */}
         <div>
