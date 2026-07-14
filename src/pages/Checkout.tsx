@@ -75,6 +75,7 @@ const Checkout = () => {
             people: item.booking?.people,
             email: item.booking?.email || email,
             phone: item.booking?.phone || phone,
+            city,
           }),
         });
       }
@@ -109,6 +110,7 @@ const Checkout = () => {
             payment,
             total,
             items: snapshot.lines,
+            city,
           }),
         });
       } catch {

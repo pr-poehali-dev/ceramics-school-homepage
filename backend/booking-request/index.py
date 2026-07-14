@@ -10,8 +10,8 @@ from email.header import Header
 def handler(event: dict, context) -> dict:
     '''
     Отправляет заявку на групповую запись (детская группа, разовый билет, >1 участника)
-    на почту школы керамики hello@dymovceramic.ru.
-    Args: event с httpMethod, body (JSON: name, email, phone, people, comment)
+    на почту сотрудника. Для города Суздаль письмо уходит на отдельный адрес (NOTIFY_EMAIL_SUZDAL).
+    Args: event с httpMethod, body (JSON: name, email, phone, people, comment, city)
           context — объект с request_id
     Returns: HTTP-ответ с результатом отправки
     '''
@@ -47,6 +47,7 @@ def handler(event: dict, context) -> dict:
     phone = (body.get('phone') or '').strip()
     people = body.get('people')
     service = (body.get('service') or 'Детская группа (сб/вс)').strip()
+    city = (body.get('city') or 'moscow').strip()
 
     if not email or not phone:
         return {
@@ -78,7 +79,10 @@ def handler(event: dict, context) -> dict:
     smtp_user = os.environ.get('SMTP_USER')
     smtp_password = os.environ.get('SMTP_PASSWORD')
 
-    recipient = os.environ.get('NOTIFY_EMAIL')
+    if city == 'suzdal':
+        recipient = os.environ.get('NOTIFY_EMAIL_SUZDAL') or os.environ.get('NOTIFY_EMAIL')
+    else:
+        recipient = os.environ.get('NOTIFY_EMAIL')
 
     if not all([smtp_host, smtp_user, smtp_password, recipient]):
         return {

@@ -7,12 +7,18 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 
-def _send_notification(name: str, email: str, phone: str, comment: str, payment: str, total: int, items: list) -> None:
+def _recipient_for_city(city: str) -> str:
+    if city == 'suzdal':
+        return os.environ.get('NOTIFY_EMAIL_SUZDAL') or os.environ.get('NOTIFY_EMAIL') or ''
+    return os.environ.get('NOTIFY_EMAIL') or ''
+
+
+def _send_notification(name: str, email: str, phone: str, comment: str, payment: str, total: int, items: list, city: str) -> None:
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
     smtp_password = os.environ.get('SMTP_PASSWORD')
-    recipient = os.environ.get('NOTIFY_EMAIL')
+    recipient = _recipient_for_city(city)
 
     if not all([smtp_host, smtp_user, smtp_password, recipient]):
         return
@@ -53,7 +59,8 @@ def _send_notification(name: str, email: str, phone: str, comment: str, payment:
 def handler(event: dict, context) -> dict:
     '''
     Сохраняет оформленный на сайте заказ в базу данных и отправляет уведомление сотруднику на почту.
-    Args: event с httpMethod, body (JSON: number, name, email, phone, comment, payment, total, items)
+    Для города Суздаль письмо уходит на отдельный адрес (NOTIFY_EMAIL_SUZDAL).
+    Args: event с httpMethod, body (JSON: number, name, email, phone, comment, payment, total, items, city)
           context — объект с request_id
     Returns: HTTP-ответ с результатом сохранения
     '''
@@ -93,6 +100,7 @@ def handler(event: dict, context) -> dict:
     payment = (body.get('payment') or '').strip()
     total = int(body.get('total') or 0)
     items = body.get('items') or []
+    city = (body.get('city') or 'moscow').strip()
 
     if not name or not email or not phone:
         return {
@@ -115,7 +123,7 @@ def handler(event: dict, context) -> dict:
         conn.close()
 
     try:
-        _send_notification(name, email, phone, comment, payment, total, items)
+        _send_notification(name, email, phone, comment, payment, total, items, city)
     except Exception:
         pass
 

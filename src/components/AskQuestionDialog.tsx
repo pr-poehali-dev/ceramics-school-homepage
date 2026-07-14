@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useCity } from '@/hooks/useCity';
 import func2url from '../../backend/func2url.json';
 
 const AskQuestionDialog = ({ children }: { children: ReactNode }) => {
@@ -22,6 +23,7 @@ const AskQuestionDialog = ({ children }: { children: ReactNode }) => {
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const city = useCity();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ const AskQuestionDialog = ({ children }: { children: ReactNode }) => {
       await fetch(func2url.question, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, phone, comment }),
+        body: JSON.stringify({ email, phone, comment, city }),
       });
       toast({
         title: 'Вопрос отправлен',

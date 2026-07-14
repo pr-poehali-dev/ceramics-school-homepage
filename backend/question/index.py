@@ -10,7 +10,8 @@ from email.header import Header
 def handler(event: dict, context) -> dict:
     '''
     Сохраняет вопрос с сайта (форма "Задать вопрос") и отправляет письмо сотруднику на почту.
-    Args: event с httpMethod, body (JSON: email, phone, comment)
+    Для города Суздаль письмо уходит на отдельный адрес (NOTIFY_EMAIL_SUZDAL).
+    Args: event с httpMethod, body (JSON: email, phone, comment, city)
           context — объект с request_id
     Returns: HTTP-ответ с результатом сохранения и отправки письма
     '''
@@ -45,6 +46,7 @@ def handler(event: dict, context) -> dict:
     email = (body.get('email') or '').strip()
     phone = (body.get('phone') or '').strip()
     comment = (body.get('comment') or '').strip()
+    city = (body.get('city') or 'moscow').strip()
 
     if not email or not phone:
         return {
@@ -68,7 +70,10 @@ def handler(event: dict, context) -> dict:
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
     smtp_password = os.environ.get('SMTP_PASSWORD')
-    recipient = os.environ.get('NOTIFY_EMAIL')
+    if city == 'suzdal':
+        recipient = os.environ.get('NOTIFY_EMAIL_SUZDAL') or os.environ.get('NOTIFY_EMAIL')
+    else:
+        recipient = os.environ.get('NOTIFY_EMAIL')
 
     if not all([smtp_host, smtp_user, smtp_password, recipient]):
         return {
