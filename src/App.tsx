@@ -21,6 +21,7 @@ const Certificates = lazy(() => import("./pages/Certificates"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Checkout = lazy(() => import("./pages/Checkout"));
+const OrderPaymentStatus = lazy(() => import("./pages/checkout/OrderPaymentStatus"));
 const Reviews = lazy(() => import("./pages/Reviews"));
 const Offer = lazy(() => import("./pages/Offer"));
 const Info = lazy(() => import("./pages/Info"));
@@ -71,6 +72,7 @@ const App = () => (
               <Route path="/moscow/contacts" element={<Contacts />} />
               <Route path="/moscow/cart" element={<Cart />} />
               <Route path="/moscow/checkout" element={<Checkout />} />
+              <Route path="/moscow/order-status" element={<OrderPaymentStatus />} />
               <Route path="/moscow/reviews" element={<Reviews />} />
               <Route path="/moscow/offer" element={<Offer />} />
               <Route path="/moscow/info" element={<Info />} />
@@ -88,6 +90,7 @@ const App = () => (
               <Route path="/suzdal/about" element={<SuzdalAbout />} />
               <Route path="/suzdal/cart" element={<Cart />} />
               <Route path="/suzdal/checkout" element={<Checkout />} />
+              <Route path="/suzdal/order-status" element={<OrderPaymentStatus />} />
               <Route path="/suzdal/offer" element={<SuzdalOffer />} />
               <Route path="/suzdal/privacy" element={<SuzdalPrivacy />} />
               <Route path="/suzdal/cookies" element={<SuzdalCookies />} />

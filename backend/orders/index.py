@@ -60,21 +60,62 @@ def handler(event: dict, context) -> dict:
     '''
     Сохраняет оформленный на сайте заказ в базу данных и отправляет уведомление сотруднику на почту.
     Для города Суздаль письмо уходит на отдельный адрес (NOTIFY_EMAIL_SUZDAL).
-    Args: event с httpMethod, body (JSON: number, name, email, phone, comment, payment, total, items, city)
+    GET с параметром number возвращает статус оплаты заказа (для страницы после оплаты ЮKassa).
+    Args: event с httpMethod, body (JSON: number, name, email, phone, comment, payment, total, items, city),
+          queryStringParameters (number) для GET
           context — объект с request_id
-    Returns: HTTP-ответ с результатом сохранения
+    Returns: HTTP-ответ с результатом сохранения или статусом заказа
     '''
     method = event.get('httpMethod', 'GET')
 
     cors_headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': '86400',
     }
 
     if method == 'OPTIONS':
         return {'statusCode': 200, 'headers': cors_headers, 'body': ''}
+
+    if method == 'GET':
+        params = event.get('queryStringParameters') or {}
+        number = (params.get('number') or '').strip()
+        if not number:
+            return {
+                'statusCode': 400,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'number is required'}),
+            }
+        conn = psycopg2.connect(os.environ['DATABASE_URL'])
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT number, customer_name, payment, total, status, paid_at "
+                "FROM orders WHERE number = %s",
+                (number,),
+            )
+            row = cur.fetchone()
+        finally:
+            conn.close()
+        if not row:
+            return {
+                'statusCode': 404,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Order not found'}),
+            }
+        return {
+            'statusCode': 200,
+            'headers': cors_headers,
+            'body': json.dumps({
+                'number': row[0],
+                'name': row[1],
+                'payment': row[2],
+                'total': row[3],
+                'status': row[4] or 'pending',
+                'paid_at': row[5].isoformat() if row[5] else None,
+            }),
+        }
 
     if method != 'POST':
         return {
@@ -109,13 +150,15 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Обязательные поля не заполнены'}),
         }
 
+    order_status = 'pending' if payment == 'online' else 'new'
+
     conn = psycopg2.connect(os.environ['DATABASE_URL'])
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO orders (number, customer_name, email, phone, comment, payment, total, items) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
-            (number, name, email, phone, comment, payment, total, json.dumps(items, ensure_ascii=False)),
+            "INSERT INTO orders (number, customer_name, email, phone, comment, payment, total, items, status) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+            (number, name, email, phone, comment, payment, total, json.dumps(items, ensure_ascii=False), order_status),
         )
         order_id = cur.fetchone()[0]
         conn.commit()

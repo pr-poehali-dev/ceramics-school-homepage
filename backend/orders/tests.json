@@ -23,6 +23,14 @@
       "expectedStatus": 200,
       "expectedBody": {"success": true},
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get order status",
+      "method": "GET",
+      "path": "/?number=123456",
+      "expectedStatus": 200,
+      "expectedBody": {"number": "123456"},
+      "bodyMatcher": "partial"
     }
   ]
 }

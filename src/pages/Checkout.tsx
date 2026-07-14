@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
@@ -24,7 +24,6 @@ const Checkout = () => {
       'Оформите заказ на мастер-класс, сертификат или изделие из керамики «Дымов Керамика». Укажите контакты и способ оплаты — мы свяжемся с вами.',
   });
   const { items, total, count, clear, removeItem } = useCart();
-  const navigate = useNavigate();
   const city = useCity();
   const cityConfig = CITIES[city];
 
@@ -121,6 +120,39 @@ const Checkout = () => {
         });
       } catch {
         // Сохранение заказа не должно срывать оформление.
+      }
+
+      // Онлайн-оплата: создаём платёж в ЮKassa и переводим на страницу оплаты
+      if (payment === 'online') {
+        try {
+          const returnUrl = `${window.location.origin}${cityConfig.path}/order-status?number=${snapshot.number}`;
+          const payResp = await fetch(func2url['yookassa-yookassa'], {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              number: snapshot.number,
+              amount: total,
+              user_email: email,
+              user_name: name,
+              return_url: returnUrl,
+              description: `Заказ №${snapshot.number}`,
+              cart_items: snapshot.lines.map((l) => ({
+                id: l.id,
+                name: l.title,
+                price: l.price,
+                quantity: l.qty,
+              })),
+            }),
+          });
+          const payData = await payResp.json();
+          if (payData.payment_url) {
+            clear();
+            window.location.href = payData.payment_url;
+            return;
+          }
+        } catch {
+          // Если не удалось создать онлайн-платёж — показываем обычное подтверждение заказа.
+        }
       }
 
       clear();

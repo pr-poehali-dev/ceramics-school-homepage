@@ -1,0 +1,8 @@
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS yookassa_payment_id VARCHAR(100);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_url TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS paid_at TIMESTAMP;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'pending';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+CREATE INDEX IF NOT EXISTS idx_orders_payment_id ON orders(yookassa_payment_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
