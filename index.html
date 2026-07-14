@@ -37,66 +37,6 @@
 
     <!-- Jivo online consultant widget -->
     <script src="//code.jivo.ru/widget/QhNire9dF9" async></script>
-    <style>
-      /* Прижимаем виджет Jivo к правому краю и поднимаем над кнопкой "Онлайн-запись" */
-      html body jdiv.globalClass_ind,
-      html body jdiv[class*='wrap_'],
-      html body jdiv[class*='button_'],
-      html body jdiv[id*='jivo'] {
-        left: auto !important;
-        right: 24px !important;
-        bottom: 120px !important;
-      }
-      @media (max-width: 767px) {
-        html body jdiv.globalClass_ind,
-        html body jdiv[class*='wrap_'],
-        html body jdiv[class*='button_'],
-        html body jdiv[id*='jivo'] {
-          left: auto !important;
-          right: 16px !important;
-          bottom: 104px !important;
-        }
-      }
-    </style>
-    <script>
-      /* Jivo пересчитывает позицию через свой JS и может перезаписывать инлайн-стили —
-         постоянно принудительно удерживаем виджет справа над кнопкой "Онлайн-запись". */
-      (function () {
-        function isMobile() {
-          return window.innerWidth <= 767;
-        }
-        function applyPosition(el) {
-          if (!el || !el.style) return;
-          var right = isMobile() ? '16px' : '24px';
-          var bottom = isMobile() ? '104px' : '120px';
-          if (
-            el.style.getPropertyValue('right') === right &&
-            el.style.getPropertyValue('left') === 'auto' &&
-            el.style.getPropertyValue('bottom') === bottom
-          ) {
-            return;
-          }
-          el.style.setProperty('left', 'auto', 'important');
-          el.style.setProperty('right', right, 'important');
-          el.style.setProperty('bottom', bottom, 'important');
-        }
-        function scan() {
-          var els = document.querySelectorAll(
-            "jdiv.globalClass_ind, jdiv[class*='wrap_'], jdiv[class*='button_'], jdiv[id*='jivo']"
-          );
-          for (var i = 0; i < els.length; i++) applyPosition(els[i]);
-        }
-        var observer = new MutationObserver(scan);
-        observer.observe(document.documentElement, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['style', 'class'],
-        });
-        window.addEventListener('resize', scan);
-        scan();
-      })();
-    </script>
   </head>
 
 <body>
