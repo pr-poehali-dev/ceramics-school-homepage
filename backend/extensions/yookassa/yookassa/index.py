@@ -231,7 +231,7 @@ def handler(event: dict, context) -> dict:
         now = datetime.utcnow().isoformat()
 
         # Find the order created earlier via /orders
-        cur.execute(f"SELECT id FROM {S}orders WHERE number = %s", (order_number,))
+        cur.execute(f"SELECT id, city FROM {S}orders WHERE number = %s", (order_number,))
         row = cur.fetchone()
         if not row:
             return {
@@ -239,7 +239,15 @@ def handler(event: dict, context) -> dict:
                 'headers': HEADERS,
                 'body': json.dumps({'error': 'Order not found'})
             }
-        order_id = row[0]
+        order_id, order_city = row
+
+        # Онлайн-оплата ЮKassa доступна только для заказов из Москвы
+        if order_city and order_city != 'moscow':
+            return {
+                'statusCode': 400,
+                'headers': HEADERS,
+                'body': json.dumps({'error': 'Online payment is not available for this city'})
+            }
 
         # Create YooKassa payment
         metadata = {

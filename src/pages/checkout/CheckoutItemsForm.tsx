@@ -22,6 +22,7 @@ interface CheckoutItemsFormProps {
   setComment: (v: string) => void;
   payment: string;
   setPayment: (v: string) => void;
+  showOnlinePayment?: boolean;
 }
 
 const CheckoutItemsForm = ({
@@ -40,6 +41,7 @@ const CheckoutItemsForm = ({
   setComment,
   payment,
   setPayment,
+  showOnlinePayment = true,
 }: CheckoutItemsFormProps) => {
   return (
     <div className="space-y-8">
@@ -172,15 +174,17 @@ const CheckoutItemsForm = ({
             <RadioGroupItem value="cash" id="pay-cash" className="mt-0.5" />
             <span>Оплата наличными на кассе Школы керамики</span>
           </label>
-          <label className="flex cursor-pointer items-start gap-3 text-sm">
-            <RadioGroupItem value="online" id="pay-online" className="mt-0.5" />
-            <span>
-              Онлайн-оплата ЮKassa
-              <span className="mt-0.5 block text-xs text-muted-foreground">
-                Банковские карты, СБП
+          {showOnlinePayment && (
+            <label className="flex cursor-pointer items-start gap-3 text-sm">
+              <RadioGroupItem value="online" id="pay-online" className="mt-0.5" />
+              <span>
+                Онлайн-оплата ЮKassa
+                <span className="mt-0.5 block text-xs text-muted-foreground">
+                  Банковские карты, СБП
+                </span>
               </span>
-            </span>
-          </label>
+            </label>
+          )}
         </RadioGroup>
       </div>
     </div>

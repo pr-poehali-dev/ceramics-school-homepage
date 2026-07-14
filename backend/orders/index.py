@@ -150,15 +150,19 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Обязательные поля не заполнены'}),
         }
 
+    # Онлайн-оплата ЮKassa доступна только для заказов из Москвы
+    if payment == 'online' and city != 'moscow':
+        payment = 'cash'
+
     order_status = 'pending' if payment == 'online' else 'new'
 
     conn = psycopg2.connect(os.environ['DATABASE_URL'])
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO orders (number, customer_name, email, phone, comment, payment, total, items, status) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
-            (number, name, email, phone, comment, payment, total, json.dumps(items, ensure_ascii=False), order_status),
+            "INSERT INTO orders (number, customer_name, email, phone, comment, payment, total, items, status, city) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+            (number, name, email, phone, comment, payment, total, json.dumps(items, ensure_ascii=False), order_status, city),
         )
         order_id = cur.fetchone()[0]
         conn.commit()

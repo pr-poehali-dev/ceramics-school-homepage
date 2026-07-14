@@ -26,6 +26,7 @@ const Checkout = () => {
   const { items, total, count, clear, removeItem } = useCart();
   const city = useCity();
   const cityConfig = CITIES[city];
+  const isMoscow = city === 'moscow';
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -41,6 +42,8 @@ const Checkout = () => {
       toast({ title: 'Заполните обязательные поля', description: 'ФИО, email и телефон обязательны.' });
       return;
     }
+
+    const payment_ = isMoscow ? payment : 'cash';
 
     setLoading(true);
     try {
@@ -90,7 +93,7 @@ const Checkout = () => {
         name,
         email,
         phone,
-        payment,
+        payment: payment_,
         total,
         lines: items.map((i) => ({
           id: i.id,
@@ -112,7 +115,7 @@ const Checkout = () => {
             email,
             phone,
             comment,
-            payment,
+            payment: payment_,
             total,
             items: snapshot.lines,
             city,
@@ -122,8 +125,8 @@ const Checkout = () => {
         // Сохранение заказа не должно срывать оформление.
       }
 
-      // Онлайн-оплата: создаём платёж в ЮKassa и переводим на страницу оплаты
-      if (payment === 'online') {
+      // Онлайн-оплата: создаём платёж в ЮKassa и переводим на страницу оплаты (только Москва)
+      if (isMoscow && payment_ === 'online') {
         try {
           const returnUrl = `${window.location.origin}${cityConfig.path}/order-status?number=${snapshot.number}`;
           const payResp = await fetch(func2url['yookassa-yookassa'], {
@@ -208,6 +211,7 @@ const Checkout = () => {
             setComment={setComment}
             payment={payment}
             setPayment={setPayment}
+            showOnlinePayment={isMoscow}
           />
 
           {/* RIGHT: summary */}
