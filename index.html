@@ -38,19 +38,23 @@
     <!-- Jivo online consultant widget -->
     <script src="//code.jivo.ru/widget/QhNire9dF9" async></script>
     <style>
-      /* Поднимаем виджет Jivo над кнопкой "Онлайн-запись", чтобы они не перекрывались */
-      jdiv.globalClass_ind,
-      jdiv[class*='wrap_'],
-      jdiv[class*='button_'] {
-        bottom: 120px !important;
+      /* Прижимаем виджет Jivo к правому краю и поднимаем над кнопкой "Онлайн-запись" */
+      html body jdiv.globalClass_ind,
+      html body jdiv[class*='wrap_'],
+      html body jdiv[class*='button_'],
+      html body jdiv[id*='jivo'] {
+        left: auto !important;
         right: 24px !important;
+        bottom: 120px !important;
       }
       @media (max-width: 767px) {
-        jdiv.globalClass_ind,
-        jdiv[class*='wrap_'],
-        jdiv[class*='button_'] {
-          bottom: 104px !important;
+        html body jdiv.globalClass_ind,
+        html body jdiv[class*='wrap_'],
+        html body jdiv[class*='button_'],
+        html body jdiv[id*='jivo'] {
+          left: auto !important;
           right: 16px !important;
+          bottom: 104px !important;
         }
       }
     </style>
