@@ -1,7 +1,2 @@
 User-agent: *
-Allow: /
-Disallow: /moscow/cart
-Disallow: /moscow/checkout
-Disallow: /admin
-
-Sitemap: https://dymovceramicschool.ru/sitemap.xml
+Disallow: /

@@ -26,14 +26,16 @@ function setOgTag(property: string, content: string) {
   el.setAttribute('content', content);
 }
 
-export function usePageMeta({ title, description, noindex }: PageMeta) {
+// Индексация сайта временно полностью запрещена — noindex ставится на все страницы,
+// независимо от параметра noindex, переданного конкретной страницей.
+export function usePageMeta({ title, description }: PageMeta) {
   useEffect(() => {
     document.title = title;
     setMetaTag('description', description);
-    setMetaTag('robots', noindex ? 'noindex, nofollow' : 'index, follow');
+    setMetaTag('robots', 'noindex, nofollow');
     setOgTag('og:title', title);
     setOgTag('og:description', description);
-  }, [title, description, noindex]);
+  }, [title, description]);
 }
 
 export default usePageMeta;
