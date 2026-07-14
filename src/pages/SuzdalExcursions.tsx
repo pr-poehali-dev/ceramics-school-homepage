@@ -1,10 +1,22 @@
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import ReviewsGallery from '@/pages/reviews/ReviewsGallery';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const BANNER_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c567306-9774-4e90-ae66-a78ec8eb5977.png';
+
+const EXCURSION_VIDEO = '/video/suzdal-excursion.mp4';
+const EXCURSION_VIDEO_POSTER = '/video/suzdal-excursion-poster.jpg';
+
+const EXCURSION_GALLERY: string[] = [
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg',
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg',
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg',
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg',
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
+];
 
 const SuzdalExcursions = () => {
   usePageMeta({
@@ -62,6 +74,23 @@ const SuzdalExcursions = () => {
                 <Icon name="Clock" size={18} className="shrink-0 text-primary" />
                 По времени программа занимает от 30 до 45 минут.
               </p>
+            </div>
+          </div>
+
+          {/* VIDEO */}
+          <div className="mt-8">
+            <h2 className="flex items-center gap-2 font-display text-2xl font-semibold">
+              <Icon name="Video" size={22} className="text-primary" /> Видео с экскурсии
+            </h2>
+            <div className="mt-4 overflow-hidden rounded-2xl border border-border">
+              <video
+                controls
+                preload="none"
+                poster={EXCURSION_VIDEO_POSTER}
+                className="block w-full"
+              >
+                <source src={EXCURSION_VIDEO} type="video/mp4" />
+              </video>
             </div>
           </div>
 
@@ -135,6 +164,16 @@ const SuzdalExcursions = () => {
               <p className="mt-1 text-sm text-muted-foreground">
                 Владимирская область, г. Суздаль, ул. Васильевская, 41а.
               </p>
+            </div>
+          </div>
+
+          {/* GALLERY */}
+          <div className="mt-8">
+            <h2 className="flex items-center gap-2 font-display text-2xl font-semibold">
+              <Icon name="Images" size={22} className="text-primary" /> Фотографии с производства
+            </h2>
+            <div className="mt-4">
+              <ReviewsGallery images={EXCURSION_GALLERY} />
             </div>
           </div>
 
