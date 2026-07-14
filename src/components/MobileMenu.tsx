@@ -234,15 +234,23 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
         </div>
 
             <div className="border-t border-border p-6">
-              <Button
-                onClick={() => {
-                  setOpen(false);
-                  openBooking();
-                }}
-                className="w-full rounded-full py-6 text-base"
-              >
-                Записаться
-              </Button>
+              {isSuzdal ? (
+                <Link to={workshopsHome} onClick={handleLink(workshopsHome)}>
+                  <Button className="w-full rounded-full py-6 text-base">
+                    Перейти к мастер-классам
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setOpen(false);
+                    openBooking();
+                  }}
+                  className="w-full rounded-full py-6 text-base"
+                >
+                  Записаться
+                </Button>
+              )}
             </div>
           </aside>
         </div>,

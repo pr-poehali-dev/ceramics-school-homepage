@@ -3,7 +3,6 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
-import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
 import { REVIEWS, GALLERY } from './suzdal-reviews/reviewsData';
@@ -68,9 +67,11 @@ const Suzdal = () => {
               преподаватели и настоящая радость творчества. Для взрослых и детей.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Button size="lg" onClick={openBooking} className="rounded-full px-8 text-base">
-                <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
-              </Button>
+              <a href="#workshops">
+                <Button size="lg" className="rounded-full px-8 text-base">
+                  <Icon name="Hammer" size={18} className="mr-2" /> Перейти к мастер-классам
+                </Button>
+              </a>
               <Link to="/suzdal/certificates">
                 <Button
                   size="lg"

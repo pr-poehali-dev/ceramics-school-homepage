@@ -1,11 +1,11 @@
+import { useLocation } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { openBooking } from '@/lib/booking';
-import { useCity } from '@/hooks/useCity';
 
 const OnlineBooking = () => {
-  const city = useCity();
+  const { pathname } = useLocation();
 
-  if (city === 'suzdal') return null;
+  if (!pathname.startsWith('/moscow')) return null;
 
   return (
     <button
