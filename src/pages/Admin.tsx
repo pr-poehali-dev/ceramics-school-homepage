@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import func2url from '../../backend/func2url.json';
 
 interface OrderItem {
@@ -53,6 +54,11 @@ const paymentLabel = (p: string) =>
   p === 'online' ? 'Онлайн (ЮKassa)' : 'Наличными на кассе';
 
 const Admin = () => {
+  usePageMeta({
+    title: 'Админ-панель «Дымов Керамика»',
+    description: 'Служебная страница управления заказами и заявками.',
+    noindex: true,
+  });
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
   const [loading, setLoading] = useState(false);

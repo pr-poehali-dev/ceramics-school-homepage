@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 interface PageMeta {
   title: string;
   description: string;
+  noindex?: boolean;
 }
 
 function setMetaTag(name: string, content: string) {
@@ -25,13 +26,14 @@ function setOgTag(property: string, content: string) {
   el.setAttribute('content', content);
 }
 
-export function usePageMeta({ title, description }: PageMeta) {
+export function usePageMeta({ title, description, noindex }: PageMeta) {
   useEffect(() => {
     document.title = title;
     setMetaTag('description', description);
+    setMetaTag('robots', noindex ? 'noindex, nofollow' : 'index, follow');
     setOgTag('og:title', title);
     setOgTag('og:description', description);
-  }, [title, description]);
+  }, [title, description, noindex]);
 }
 
 export default usePageMeta;

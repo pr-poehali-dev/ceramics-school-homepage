@@ -2,8 +2,14 @@ import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { COOKIES_INTRO, COOKIES_SECTIONS } from './cookies/cookiesData';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Cookies = () => {
+  usePageMeta({
+    title: 'Политика использования cookie — «Дымов Керамика», Москва',
+    description:
+      'Как сайт студии керамики «Дымов Керамика» на ВДНХ использует файлы cookie: какие данные собираются и как их можно отключить в браузере.',
+  });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}

@@ -15,8 +15,14 @@ import EmptyCart from '@/pages/checkout/EmptyCart';
 import CheckoutItemsForm from '@/pages/checkout/CheckoutItemsForm';
 import CheckoutSummary from '@/pages/checkout/CheckoutSummary';
 import { toast } from '@/hooks/use-toast';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Checkout = () => {
+  usePageMeta({
+    title: 'Оформление заказа — «Дымов Керамика»',
+    description:
+      'Оформите заказ на мастер-класс, сертификат или изделие из керамики «Дымов Керамика». Укажите контакты и способ оплаты — мы свяжемся с вами.',
+  });
   const { items, total, count, clear, removeItem } = useCart();
   const navigate = useNavigate();
   const city = useCity();
