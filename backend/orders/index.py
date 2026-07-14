@@ -1,11 +1,58 @@
 import json
 import os
+import smtplib
+import ssl
 import psycopg2
+from email.mime.text import MIMEText
+from email.header import Header
+
+
+def _send_notification(name: str, email: str, phone: str, comment: str, payment: str, total: int, items: list) -> None:
+    smtp_host = os.environ.get('SMTP_HOST')
+    smtp_port = int(os.environ.get('SMTP_PORT') or 465)
+    smtp_user = os.environ.get('SMTP_USER')
+    smtp_password = os.environ.get('SMTP_PASSWORD')
+    recipient = os.environ.get('NOTIFY_EMAIL')
+
+    if not all([smtp_host, smtp_user, smtp_password, recipient]):
+        return
+
+    lines_text = '\n'.join(
+        f"- {i.get('title', '')} x{i.get('qty', 1)} — {i.get('price', 0)} ₽" for i in items
+    )
+    text = (
+        'Новый заказ с сайта.\n\n'
+        f'Имя: {name}\n'
+        f'Email: {email}\n'
+        f'Телефон: {phone}\n'
+        f'Способ оплаты: {payment}\n'
+        f'Комментарий: {comment or "—"}\n'
+        f'Сумма: {total} ₽\n\n'
+        f'Состав заказа:\n{lines_text}'
+    )
+
+    msg = MIMEText(text, 'plain', 'utf-8')
+    msg['Subject'] = Header('Новый заказ с сайта', 'utf-8')
+    msg['From'] = smtp_user
+    msg['To'] = recipient
+    msg['Reply-To'] = email
+
+    context_ssl = ssl.create_default_context()
+
+    if smtp_port == 465:
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, [recipient], msg.as_string())
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls(context=context_ssl)
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, [recipient], msg.as_string())
 
 
 def handler(event: dict, context) -> dict:
     '''
-    Сохраняет оформленный на сайте заказ в базу данных.
+    Сохраняет оформленный на сайте заказ в базу данных и отправляет уведомление сотруднику на почту.
     Args: event с httpMethod, body (JSON: number, name, email, phone, comment, payment, total, items)
           context — объект с request_id
     Returns: HTTP-ответ с результатом сохранения
@@ -66,6 +113,11 @@ def handler(event: dict, context) -> dict:
         conn.commit()
     finally:
         conn.close()
+
+    try:
+        _send_notification(name, email, phone, comment, payment, total, items)
+    except Exception:
+        pass
 
     return {
         'statusCode': 200,

@@ -13,24 +13,38 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import func2url from '../../backend/func2url.json';
 
 const AskQuestionDialog = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [comment, setComment] = useState('');
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: 'Вопрос отправлен',
-      description: 'Мы свяжемся с вами в ближайшее время.',
-    });
-    setEmail('');
-    setPhone('');
-    setComment('');
-    setOpen(false);
+    setLoading(true);
+    try {
+      await fetch(func2url.question, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, phone, comment }),
+      });
+      toast({
+        title: 'Вопрос отправлен',
+        description: 'Мы свяжемся с вами в ближайшее время.',
+      });
+      setEmail('');
+      setPhone('');
+      setComment('');
+      setOpen(false);
+    } catch {
+      toast({ title: 'Не удалось отправить', description: 'Попробуйте ещё раз.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,8 +94,8 @@ const AskQuestionDialog = ({ children }: { children: ReactNode }) => {
             />
           </div>
 
-          <Button type="submit" size="lg" className="w-full rounded-full">
-            <Icon name="Send" size={18} className="mr-2" /> Отправить
+          <Button type="submit" size="lg" className="w-full rounded-full" disabled={loading}>
+            <Icon name="Send" size={18} className="mr-2" /> {loading ? 'Отправка…' : 'Отправить'}
           </Button>
         </form>
       </DialogContent>

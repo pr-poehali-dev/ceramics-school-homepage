@@ -9,17 +9,16 @@ from email.header import Header
 
 def handler(event: dict, context) -> dict:
     '''
-    Отправляет заявку на групповую запись (детская группа, разовый билет, >1 участника)
-    на почту школы керамики hello@dymovceramic.ru.
-    Args: event с httpMethod, body (JSON: name, email, phone, people, comment)
+    Сохраняет вопрос с сайта (форма "Задать вопрос") и отправляет письмо сотруднику на почту.
+    Args: event с httpMethod, body (JSON: email, phone, comment)
           context — объект с request_id
-    Returns: HTTP-ответ с результатом отправки
+    Returns: HTTP-ответ с результатом сохранения и отправки письма
     '''
     method = event.get('httpMethod', 'GET')
 
     cors_headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': '86400',
     }
@@ -45,8 +44,7 @@ def handler(event: dict, context) -> dict:
 
     email = (body.get('email') or '').strip()
     phone = (body.get('phone') or '').strip()
-    people = body.get('people')
-    service = (body.get('service') or 'Детская группа (сб/вс)').strip()
+    comment = (body.get('comment') or '').strip()
 
     if not email or not phone:
         return {
@@ -55,19 +53,12 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Email и телефон обязательны'}),
         }
 
-    people_val = None
-    if people not in (None, ''):
-        try:
-            people_val = int(people)
-        except (TypeError, ValueError):
-            people_val = None
-
     conn = psycopg2.connect(os.environ['DATABASE_URL'])
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO leads (service, people, email, phone) VALUES (%s, %s, %s, %s)",
-            (service, people_val, email, phone),
+            "INSERT INTO questions (email, phone, comment) VALUES (%s, %s, %s)",
+            (email, phone, comment),
         )
         conn.commit()
     finally:
@@ -77,7 +68,6 @@ def handler(event: dict, context) -> dict:
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
     smtp_password = os.environ.get('SMTP_PASSWORD')
-
     recipient = os.environ.get('NOTIFY_EMAIL')
 
     if not all([smtp_host, smtp_user, smtp_password, recipient]):
@@ -88,16 +78,14 @@ def handler(event: dict, context) -> dict:
         }
 
     text = (
-        'Новая заявка на групповую запись с сайта.\n\n'
-        f'Услуга: {service}\n'
-        f'Количество участников: {people}\n'
+        'Новый вопрос с сайта.\n\n'
         f'Email клиента: {email}\n'
-        f'Телефон клиента: {phone}\n\n'
-        'Свяжитесь с клиентом, чтобы уточнить дату посещения.'
+        f'Телефон клиента: {phone}\n'
+        f'Комментарий: {comment or "—"}\n'
     )
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Заявка на групповую запись', 'utf-8')
+    msg['Subject'] = Header('Новый вопрос с сайта', 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = recipient
     msg['Reply-To'] = email
@@ -117,5 +105,5 @@ def handler(event: dict, context) -> dict:
     return {
         'statusCode': 200,
         'headers': cors_headers,
-        'body': json.dumps({'success': True}),
+        'body': json.dumps({'success': True, 'emailSent': True}),
     }

@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Validation error without contacts",
+      "method": "POST",
+      "path": "/",
+      "body": {"comment": "Хочу узнать про мастер-класс"},
+      "expectedStatus": 400,
+      "expectedBody": {"error": "string"},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Wrong method",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 405
+    }
+  ]
+}
