@@ -11,6 +11,7 @@ import OrderSuccess, {
   CertificateResult,
   OrderResult,
 } from '@/pages/checkout/OrderSuccess';
+import OrderPaymentRedirect from '@/pages/checkout/OrderPaymentRedirect';
 import EmptyCart from '@/pages/checkout/EmptyCart';
 import CheckoutItemsForm from '@/pages/checkout/CheckoutItemsForm';
 import CheckoutSummary from '@/pages/checkout/CheckoutSummary';
@@ -35,6 +36,7 @@ const Checkout = () => {
   const [payment, setPayment] = useState('cash');
   const [loading, setLoading] = useState(false);
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
+  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +152,9 @@ const Checkout = () => {
           const payData = await payResp.json();
           if (payData.payment_url) {
             clear();
-            window.location.href = payData.payment_url;
+            setOrderResult(snapshot);
+            setPaymentUrl(payData.payment_url);
+            window.scrollTo({ top: 0 });
             return;
           }
         } catch {
@@ -167,6 +171,10 @@ const Checkout = () => {
       setLoading(false);
     }
   };
+
+  if (orderResult && paymentUrl) {
+    return <OrderPaymentRedirect orderResult={orderResult} paymentUrl={paymentUrl} />;
+  }
 
   if (orderResult) {
     return <OrderSuccess orderResult={orderResult} />;
