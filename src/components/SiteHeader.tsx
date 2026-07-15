@@ -22,7 +22,7 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
   <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
     <div className="container flex h-20 items-center justify-between">
       <div className="flex items-center gap-4">
-        <Link to={cityConfig.path} onClick={navClick(cityConfig.path)} className="flex items-center">
+        <Link to="/" onClick={navClick('/')} className="flex items-center">
           <Logo scale={false} />
         </Link>
         <CitySwitcher />

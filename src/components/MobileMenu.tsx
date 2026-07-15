@@ -77,7 +77,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
             }`}
           >
         <div className="flex items-center justify-between border-b border-border px-6 py-5">
-          <Link to={cityConfig.path} onClick={handleLink(cityConfig.path)} className="flex items-center">
+          <Link to="/" onClick={handleLink('/')} className="flex items-center">
             <Logo className="h-8" />
           </Link>
           <button
