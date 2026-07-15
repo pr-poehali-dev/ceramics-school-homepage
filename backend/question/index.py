@@ -7,6 +7,9 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 
+EXTRA_RECIPIENT = 'uxdesign30@gmail.com'
+
+
 def handler(event: dict, context) -> dict:
     '''
     Сохраняет вопрос с сайта (форма "Задать вопрос") и отправляет письмо сотруднику на почту.
@@ -89,6 +92,8 @@ def handler(event: dict, context) -> dict:
         f'Комментарий: {comment or "—"}\n'
     )
 
+    recipients = [recipient, EXTRA_RECIPIENT]
+
     msg = MIMEText(text, 'plain', 'utf-8')
     msg['Subject'] = Header('Новый вопрос с сайта', 'utf-8')
     msg['From'] = smtp_user
@@ -100,12 +105,12 @@ def handler(event: dict, context) -> dict:
     if smtp_port == 465:
         with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [recipient], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
     else:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
             server.starttls(context=context_ssl)
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [recipient], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
 
     return {
         'statusCode': 200,

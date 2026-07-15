@@ -7,6 +7,9 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 
+EXTRA_RECIPIENT = 'uxdesign30@gmail.com'
+
+
 def handler(event: dict, context) -> dict:
     '''
     Отправляет заявку на групповую запись (детская группа, разовый билет, >1 участника)
@@ -100,6 +103,8 @@ def handler(event: dict, context) -> dict:
         'Свяжитесь с клиентом, чтобы уточнить дату посещения.'
     )
 
+    recipients = [recipient, EXTRA_RECIPIENT]
+
     msg = MIMEText(text, 'plain', 'utf-8')
     msg['Subject'] = Header('Заявка на групповую запись', 'utf-8')
     msg['From'] = smtp_user
@@ -111,12 +116,12 @@ def handler(event: dict, context) -> dict:
     if smtp_port == 465:
         with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [recipient], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
     else:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
             server.starttls(context=context_ssl)
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [recipient], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
 
     return {
         'statusCode': 200,

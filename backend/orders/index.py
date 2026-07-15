@@ -7,6 +7,9 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 
+EXTRA_RECIPIENT = 'uxdesign30@gmail.com'
+
+
 def _recipient_for_city(city: str) -> str:
     if city == 'suzdal':
         return os.environ.get('NOTIFY_EMAIL_SUZDAL') or os.environ.get('NOTIFY_EMAIL') or ''
@@ -22,6 +25,8 @@ def _send_notification(name: str, email: str, phone: str, comment: str, payment:
 
     if not all([smtp_host, smtp_user, smtp_password, recipient]):
         return
+
+    recipients = [recipient, EXTRA_RECIPIENT]
 
     lines_text = '\n'.join(
         f"- {i.get('title', '')} x{i.get('qty', 1)} — {i.get('price', 0)} ₽" for i in items
@@ -48,12 +53,12 @@ def _send_notification(name: str, email: str, phone: str, comment: str, payment:
     if smtp_port == 465:
         with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [recipient], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
     else:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
             server.starttls(context=context_ssl)
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [recipient], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
 
 
 def handler(event: dict, context) -> dict:
