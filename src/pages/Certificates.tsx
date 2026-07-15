@@ -161,11 +161,10 @@ const Certificates = () => {
           </div>
 
           {/* PERKS */}
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
+          <div className="mt-10 grid gap-3 sm:grid-cols-2">
             {[
               { icon: 'Download', text: 'Отправим на e-mail сразу после оплаты' },
               { icon: 'CalendarDays', text: 'Действует 6 месяцев с момента покупки' },
-              { icon: 'RefreshCcw', text: 'Можно использовать на любой мастер-класс' },
             ].map((p) => (
               <div key={p.text} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
