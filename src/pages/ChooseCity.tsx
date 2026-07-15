@@ -4,11 +4,10 @@ import Logo from '@/components/Logo';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { REVIEWS as MOSCOW_REVIEWS } from './reviews/reviewsData';
 import { REVIEWS as SUZDAL_REVIEWS } from './suzdal-reviews/reviewsData';
+import SUZDAL_IMG from '@/assets/suzdal/school-facade.jpg';
 
 const MOSCOW_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/260e7e60-766b-4577-b0ce-5dd058cede6b.jpg';
-const SUZDAL_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0e9903bd-b9bd-4836-873c-fc3dab4623f7.jpg';
 
 const TOTAL_REVIEWS = MOSCOW_REVIEWS.length + SUZDAL_REVIEWS.length;
 const ALL_RATINGS = [...MOSCOW_REVIEWS, ...SUZDAL_REVIEWS];
