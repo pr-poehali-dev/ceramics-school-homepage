@@ -36,6 +36,7 @@ const PageNotFound = () => {
   usePageMeta({
     title: 'Страница не найдена | «Дымов Керамика»',
     description: 'Такой страницы не существует или она была перемещена.',
+    noindex: true,
   });
 
   useEffect(() => {
