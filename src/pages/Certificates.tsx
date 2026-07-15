@@ -124,7 +124,7 @@ const Certificates = () => {
             <div className="relative mt-8 border-t border-white/20 pt-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
-                  <Icon name="Clock" size={15} /> Срок действия: 12 месяцев
+                  <Icon name="Clock" size={15} /> Срок действия: 6 месяцев
                 </div>
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
                   <Icon name="Sparkles" size={15} /> Все мастер-классы студии
@@ -164,7 +164,7 @@ const Certificates = () => {
           <div className="mt-10 grid gap-3 sm:grid-cols-3">
             {[
               { icon: 'Download', text: 'Отправим на e-mail сразу после оплаты' },
-              { icon: 'CalendarDays', text: 'Действует 12 месяцев с момента покупки' },
+              { icon: 'CalendarDays', text: 'Действует 6 месяцев с момента покупки' },
               { icon: 'RefreshCcw', text: 'Можно использовать на любой мастер-класс' },
             ].map((p) => (
               <div key={p.text} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
