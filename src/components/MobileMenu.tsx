@@ -15,6 +15,7 @@ import {
   SUZDAL_WORKSHOP_LINKS,
   SUZDAL_NAV_LINKS,
 } from '@/lib/cities';
+import { reachGoal, GOALS } from '@/lib/metrika';
 
 const MOSCOW_CONTACTS = [
   { icon: 'Phone', label: 'Телефон', value: '+7 (985) 419-89-03', href: 'tel:+79854198903' },
@@ -205,10 +206,15 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
                     </span>
                   </>
                 );
+                const handleContactClick = () => {
+                  if (c.icon === 'Phone') reachGoal(GOALS.PHONE_CLICK, { city });
+                  if (c.icon === 'MessageCircle') reachGoal(GOALS.WHATSAPP_CLICK, { city });
+                };
                 return c.href ? (
                   <a
                     key={c.label}
                     href={c.href}
+                    onClick={handleContactClick}
                     target={c.href.startsWith('http') ? '_blank' : undefined}
                     rel="noreferrer"
                     className="flex items-start gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-muted"

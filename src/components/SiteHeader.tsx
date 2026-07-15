@@ -8,6 +8,7 @@ import CitySwitcher from '@/components/CitySwitcher';
 import { useNavClick } from '@/hooks/useNavClick';
 import { useCity } from '@/hooks/useCity';
 import { CITIES } from '@/lib/cities';
+import { reachGoal, GOALS } from '@/lib/metrika';
 
 interface SiteHeaderProps {
   active?: string;
@@ -30,6 +31,7 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
       <DesktopNav active={active} />
       <a
         href={cityConfig.phoneHref}
+        onClick={() => reachGoal(GOALS.PHONE_CLICK, { city: city })}
         className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
       >
         <Icon name="Phone" size={18} className="text-primary" /> {cityConfig.phone}

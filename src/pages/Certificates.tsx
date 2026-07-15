@@ -7,6 +7,7 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { reachGoal, GOALS } from '@/lib/metrika';
 
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
@@ -42,6 +43,7 @@ const Certificates = () => {
       details: `Номинал ${formatNum(activeAmount)}`,
       price: activeAmount,
     });
+    reachGoal(GOALS.CERTIFICATE_ADD, { amount: activeAmount, city: 'moscow' });
     toast({
       title: 'Сертификат добавлен в корзину',
       description: 'Перейдите к оформлению, чтобы завершить покупку.',

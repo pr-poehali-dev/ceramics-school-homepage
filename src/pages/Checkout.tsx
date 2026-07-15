@@ -17,6 +17,7 @@ import CheckoutItemsForm from '@/pages/checkout/CheckoutItemsForm';
 import CheckoutSummary from '@/pages/checkout/CheckoutSummary';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { reachGoal, GOALS } from '@/lib/metrika';
 
 const Checkout = () => {
   usePageMeta({
@@ -151,6 +152,7 @@ const Checkout = () => {
           });
           const payData = await payResp.json();
           if (payData.payment_url) {
+            reachGoal(GOALS.PAYMENT_START, { order_number: snapshot.number, amount: total });
             clear();
             setOrderResult(snapshot);
             setPaymentUrl(payData.payment_url);
@@ -162,6 +164,7 @@ const Checkout = () => {
         }
       }
 
+      reachGoal(GOALS.ORDER_SUBMIT, { order_number: snapshot.number, amount: total, payment: payment_ });
       clear();
       setOrderResult(snapshot);
       window.scrollTo({ top: 0 });

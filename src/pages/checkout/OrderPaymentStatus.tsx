@@ -6,6 +6,7 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { useCity } from '@/hooks/useCity';
 import { CITIES } from '@/lib/cities';
+import { reachGoal, GOALS } from '@/lib/metrika';
 import func2url from '../../../backend/func2url.json';
 
 interface OrderStatus {
@@ -54,6 +55,10 @@ const OrderPaymentStatus = () => {
         if (cancelled) return;
         setOrder(data);
         setLoading(false);
+
+        if (data.status === 'paid') {
+          reachGoal(GOALS.PAYMENT_SUCCESS, { order_number: data.number, amount: data.total });
+        }
 
         attempts += 1;
         if (data.status === 'pending' && attempts < MAX_POLLS) {

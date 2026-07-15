@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useCity } from '@/hooks/useCity';
+import { reachGoal, GOALS } from '@/lib/metrika';
 import func2url from '../../backend/func2url.json';
 
 const AskQuestionDialog = ({ children }: { children: ReactNode }) => {
@@ -34,6 +35,7 @@ const AskQuestionDialog = ({ children }: { children: ReactNode }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, phone, comment, city }),
       });
+      reachGoal(GOALS.QUESTION_SUBMIT, { city });
       toast({
         title: 'Вопрос отправлен',
         description: 'Мы свяжемся с вами в ближайшее время.',
