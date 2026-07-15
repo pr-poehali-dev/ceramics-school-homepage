@@ -6,6 +6,7 @@ import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
 import { REVIEWS, GALLERY } from './suzdal-reviews/reviewsData';
+import SCHOOL_FACADE_IMG from '@/assets/suzdal/school-facade.jpg';
 
 const HERO_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/c6f10822-9087-43b5-af4a-0d27b8ec6a9b.jpg';
@@ -119,6 +120,32 @@ const Suzdal = () => {
               <Icon name="ArrowRight" size={18} className="ml-2" />
             </Button>
           </Link>
+        </div>
+      </section>
+
+      {/* ABOUT SCHOOL BUILDING */}
+      <section className="container py-16 md:py-24">
+        <div className="overflow-hidden rounded-[2rem] border border-border bg-card md:grid md:grid-cols-2 md:items-center">
+          <div className="p-8 md:order-2 md:p-12">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+              <Icon name="Building2" size={16} /> Наша школа
+            </span>
+            <h2 className="mt-5 font-display text-3xl font-semibold md:text-4xl">
+              Собственное здание фабрики в Суздале
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Мы создали для вас уютное пространство в самом сердце Суздаля —
+              с современными мастерскими, светлыми классами и настоящей
+              атмосферой гончарного ремесла.
+            </p>
+          </div>
+          <div className="aspect-[4/3] overflow-hidden md:order-1 md:aspect-auto md:h-full">
+            <img
+              src={SCHOOL_FACADE_IMG}
+              alt="Здание фабрики и школы керамики «Дымов Керамика» в Суздале"
+              className="h-full w-full object-cover"
+            />
+          </div>
         </div>
       </section>
 
