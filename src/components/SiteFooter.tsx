@@ -77,7 +77,7 @@ const SiteFooter = () => {
           <div className="mt-5 space-y-2.5 text-sm">
             <a
               href={cityConfig.phoneHref}
-              onClick={() => reachGoal(GOALS.PHONE_CLICK, { city })}
+              onClick={() => reachGoal(GOALS.PHONE_CLICK, city)}
               className="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary"
             >
               <Icon name="Phone" size={16} className="text-primary" /> {cityConfig.phone}

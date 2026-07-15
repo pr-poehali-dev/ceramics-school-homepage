@@ -207,8 +207,8 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
                   </>
                 );
                 const handleContactClick = () => {
-                  if (c.icon === 'Phone') reachGoal(GOALS.PHONE_CLICK, { city });
-                  if (c.icon === 'MessageCircle') reachGoal(GOALS.WHATSAPP_CLICK, { city });
+                  if (c.icon === 'Phone') reachGoal(GOALS.PHONE_CLICK, city);
+                  if (c.icon === 'MessageCircle') reachGoal(GOALS.WHATSAPP_CLICK, city);
                 };
                 return c.href ? (
                   <a

@@ -1,3 +1,5 @@
+import { City } from '@/lib/cities';
+
 declare global {
   interface Window {
     ym?: (counterId: number, action: string, goal: string, params?: Record<string, unknown>) => void;
@@ -6,7 +8,7 @@ declare global {
 
 const METRIKA_COUNTER_ID = 48787754;
 
-/** Ключевые цели, которые отслеживаются в Яндекс.Метрике. */
+/** Базовые названия целей — к каждой при отправке добавляется город: _moscow или _suzdal. */
 export const GOALS = {
   ORDER_SUBMIT: 'order_submit',
   PAYMENT_START: 'payment_start',
@@ -18,10 +20,13 @@ export const GOALS = {
   WHATSAPP_CLICK: 'whatsapp_click',
 } as const;
 
-/** Отправляет цель в Яндекс.Метрику (если счётчик загружен на странице). */
-export const reachGoal = (goal: string, params?: Record<string, unknown>) => {
+/**
+ * Отправляет цель в Яндекс.Метрику с учётом города — итоговая цель будет
+ * называться `<goal>_moscow` или `<goal>_suzdal`.
+ */
+export const reachGoal = (goal: string, city: City, params?: Record<string, unknown>) => {
   try {
-    window.ym?.(METRIKA_COUNTER_ID, 'reachGoal', goal, params);
+    window.ym?.(METRIKA_COUNTER_ID, 'reachGoal', `${goal}_${city}`, params);
   } catch {
     // Метрика не должна ломать пользовательский флоу.
   }

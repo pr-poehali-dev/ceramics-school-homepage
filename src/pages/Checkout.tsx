@@ -152,7 +152,7 @@ const Checkout = () => {
           });
           const payData = await payResp.json();
           if (payData.payment_url) {
-            reachGoal(GOALS.PAYMENT_START, { order_number: snapshot.number, amount: total });
+            reachGoal(GOALS.PAYMENT_START, city, { order_number: snapshot.number, amount: total });
             clear();
             setOrderResult(snapshot);
             setPaymentUrl(payData.payment_url);
@@ -164,7 +164,7 @@ const Checkout = () => {
         }
       }
 
-      reachGoal(GOALS.ORDER_SUBMIT, { order_number: snapshot.number, amount: total, payment: payment_ });
+      reachGoal(GOALS.ORDER_SUBMIT, city, { order_number: snapshot.number, amount: total, payment: payment_ });
       clear();
       setOrderResult(snapshot);
       window.scrollTo({ top: 0 });

@@ -38,7 +38,7 @@ const SuzdalCertificates = () => {
       details: `Номинал ${formatNum(activeAmount)}`,
       price: activeAmount,
     });
-    reachGoal(GOALS.CERTIFICATE_ADD, { amount: activeAmount, city: 'suzdal' });
+    reachGoal(GOALS.CERTIFICATE_ADD, 'suzdal', { amount: activeAmount });
     toast({
       title: 'Сертификат добавлен в корзину',
       description: 'Перейдите к оформлению, чтобы завершить покупку.',

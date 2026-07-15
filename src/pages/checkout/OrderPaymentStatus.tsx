@@ -57,7 +57,7 @@ const OrderPaymentStatus = () => {
         setLoading(false);
 
         if (data.status === 'paid') {
-          reachGoal(GOALS.PAYMENT_SUCCESS, { order_number: data.number, amount: data.total });
+          reachGoal(GOALS.PAYMENT_SUCCESS, city, { order_number: data.number, amount: data.total });
         }
 
         attempts += 1;

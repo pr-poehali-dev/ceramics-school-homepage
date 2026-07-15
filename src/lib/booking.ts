@@ -4,9 +4,9 @@ export const YCLIENTS_URL = 'https://n248670.yclients.com/';
 
 const BOOKING_EVENT = 'open-booking';
 
-/** Открывает панель онлайн-записи (drawer справа). */
+/** Открывает панель онлайн-записи (drawer справа). Доступна только в Москве. */
 export const openBooking = () => {
-  reachGoal(GOALS.BOOKING_CLICK);
+  reachGoal(GOALS.BOOKING_CLICK, 'moscow');
   window.dispatchEvent(new CustomEvent(BOOKING_EVENT));
 };
 

@@ -43,7 +43,7 @@ const Certificates = () => {
       details: `Номинал ${formatNum(activeAmount)}`,
       price: activeAmount,
     });
-    reachGoal(GOALS.CERTIFICATE_ADD, { amount: activeAmount, city: 'moscow' });
+    reachGoal(GOALS.CERTIFICATE_ADD, 'moscow', { amount: activeAmount });
     toast({
       title: 'Сертификат добавлен в корзину',
       description: 'Перейдите к оформлению, чтобы завершить покупку.',

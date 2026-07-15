@@ -35,7 +35,7 @@ const AskQuestionDialog = ({ children }: { children: ReactNode }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, phone, comment, city }),
       });
-      reachGoal(GOALS.QUESTION_SUBMIT, { city });
+      reachGoal(GOALS.QUESTION_SUBMIT, city);
       toast({
         title: 'Вопрос отправлен',
         description: 'Мы свяжемся с вами в ближайшее время.',

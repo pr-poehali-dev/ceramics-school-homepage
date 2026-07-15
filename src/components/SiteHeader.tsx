@@ -31,7 +31,7 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
       <DesktopNav active={active} />
       <a
         href={cityConfig.phoneHref}
-        onClick={() => reachGoal(GOALS.PHONE_CLICK, { city: city })}
+        onClick={() => reachGoal(GOALS.PHONE_CLICK, city)}
         className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
       >
         <Icon name="Phone" size={18} className="text-primary" /> {cityConfig.phone}
