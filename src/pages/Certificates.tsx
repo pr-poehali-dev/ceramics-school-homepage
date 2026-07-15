@@ -12,14 +12,14 @@ const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
 
 const PRESETS = [
-  { value: 1900, label: '1 900 ₽', popular: false },
-  { value: 2100, label: '2 100 ₽', popular: false },
-  { value: 2900, label: '2 900 ₽', popular: false },
-  { value: 5000, label: '5 000 ₽', popular: true },
-  { value: 7000, label: '7 000 ₽', popular: false },
-  { value: 9000, label: '9 000 ₽', popular: false },
-  { value: 10000, label: '10 000 ₽', popular: false },
-  { value: 13000, label: '13 000 ₽', popular: false },
+  { value: 1900, label: '1 900 ₽', popular: false, hint: 'Детская группа (сб/вс)' },
+  { value: 2100, label: '2 100 ₽', popular: false, hint: 'Роспись ангобами' },
+  { value: 2900, label: '2 900 ₽', popular: false, hint: 'Лепка / гончарный круг' },
+  { value: 5000, label: '5 000 ₽', popular: true, hint: 'Тематический мастер-класс' },
+  { value: 7000, label: '7 000 ₽', popular: false, hint: 'Свидание в мастерской' },
+  { value: 9000, label: '9 000 ₽', popular: false, hint: 'Тематический мастер-класс' },
+  { value: 10000, label: '10 000 ₽', popular: false, hint: 'На несколько занятий' },
+  { value: 13000, label: '13 000 ₽', popular: false, hint: 'На несколько занятий' },
 ];
 
 
@@ -138,12 +138,12 @@ const Certificates = () => {
             <p className="mb-4 text-sm font-medium uppercase tracking-[0.15em] text-muted-foreground">
               Готовые номиналы
             </p>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {PRESETS.map((p) => (
                 <button
                   key={p.value}
                   onClick={() => handlePreset(p.value)}
-                  className={`relative rounded-xl border py-4 text-center text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                  className={`relative flex flex-col items-center gap-1 rounded-xl border px-2 py-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md ${
                     selected === p.value
                       ? 'border-primary bg-primary text-primary-foreground shadow-md'
                       : 'border-border bg-card hover:border-primary/50'
@@ -154,7 +154,14 @@ const Certificates = () => {
                       Популярный
                     </span>
                   )}
-                  {p.label}
+                  <span className="text-sm font-semibold">{p.label}</span>
+                  <span
+                    className={`text-xs font-normal leading-tight ${
+                      selected === p.value ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                    }`}
+                  >
+                    {p.hint}
+                  </span>
                 </button>
               ))}
             </div>
