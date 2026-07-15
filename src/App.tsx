@@ -38,7 +38,7 @@ const SuzdalOffer = lazy(() => import("./pages/SuzdalOffer"));
 const SuzdalPrivacy = lazy(() => import("./pages/SuzdalPrivacy"));
 const SuzdalCookies = lazy(() => import("./pages/SuzdalCookies"));
 const SuzdalReviews = lazy(() => import("./pages/SuzdalReviews"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 
 const queryClient = new QueryClient();
 
@@ -111,7 +111,7 @@ const App = () => (
               <Route path="/cookies" element={<Navigate to="/moscow/cookies" replace />} />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
           <OnlineBooking />
