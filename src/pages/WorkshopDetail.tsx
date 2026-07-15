@@ -187,9 +187,20 @@ const WorkshopDetail = () => {
               ))}
             </div>
 
-            <Button size="lg" onClick={openBooking} className="mt-7 w-fit rounded-full px-10 text-base">
-              <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
-            </Button>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button size="lg" onClick={openBooking} className="w-fit rounded-full px-10 text-base">
+                <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
+              </Button>
+              <Link to="/moscow/certificates">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-fit rounded-full border-white/40 bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white hover:text-foreground"
+                >
+                  <Icon name="Gift" size={18} className="mr-2" /> Приобрести сертификат на услугу
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
 
