@@ -8,10 +8,30 @@ import { useCity } from '@/hooks/useCity';
 import { CITIES } from '@/lib/cities';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
+interface QuickLink {
+  label: string;
+  to: string;
+  icon: string;
+}
+
+const QUICK_LINKS: Record<'moscow' | 'suzdal', QuickLink[]> = {
+  moscow: [
+    { label: 'Мастер-классы', to: '/moscow/workshops', icon: 'Palette' },
+    { label: 'Сертификаты', to: '/moscow/certificates', icon: 'Gift' },
+    { label: 'Форматы', to: '/moscow/formats', icon: 'Layers' },
+  ],
+  suzdal: [
+    { label: 'Мастер-классы', to: '/suzdal/workshops', icon: 'Palette' },
+    { label: 'Сертификаты', to: '/suzdal/certificates', icon: 'Gift' },
+    { label: 'Экскурсии', to: '/suzdal/excursions', icon: 'MapPin' },
+  ],
+};
+
 const PageNotFound = () => {
   const location = useLocation();
   const city = useCity();
   const cityConfig = CITIES[city];
+  const quickLinks = QUICK_LINKS[city];
 
   usePageMeta({
     title: 'Страница не найдена | «Дымов Керамика»',
@@ -57,6 +77,23 @@ const PageNotFound = () => {
                 <Icon name="MessageCircle" size={18} className="mr-2" /> Связаться с нами
               </Link>
             </Button>
+          </div>
+
+          <div className="mt-10 border-t border-border pt-8">
+            <p className="text-sm font-medium text-muted-foreground">
+              Возможно, вас заинтересует
+            </p>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+              {quickLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  <Icon name={link.icon} size={16} /> {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>
