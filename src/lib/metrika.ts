@@ -34,6 +34,8 @@ export const GOALS = {
   CERTIFICATE_ADD: 'certificate_add',
   QUESTION_SUBMIT: 'question_submit',
   BOOKING_CLICK: 'booking_click',
+  BOOKING_WIDGET_LOADED: 'booking_widget_loaded',
+  BOOKING_WIDGET_CLOSED: 'booking_widget_closed',
   PHONE_CLICK: 'phone_click',
   WHATSAPP_CLICK: 'whatsapp_click',
 } as const;

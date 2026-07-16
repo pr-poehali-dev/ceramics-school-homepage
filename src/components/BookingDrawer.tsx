@@ -1,16 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Icon from '@/components/ui/icon';
 import { YCLIENTS_URL, BOOKING_EVENT_NAME } from '@/lib/booking';
+import { reachGoal, GOALS } from '@/lib/metrika';
 
 const BookingDrawer = () => {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [iframeReady, setIframeReady] = useState(false);
+  const openedAt = useRef<number | null>(null);
 
   useEffect(() => {
     const handler = () => {
       setLoaded(true);
       setOpen(true);
+      openedAt.current = Date.now();
     };
     window.addEventListener(BOOKING_EVENT_NAME, handler);
     return () => window.removeEventListener(BOOKING_EVENT_NAME, handler);
@@ -23,11 +26,20 @@ const BookingDrawer = () => {
     };
   }, [open]);
 
+  const handleClose = () => {
+    if (openedAt.current) {
+      const seconds = Math.round((Date.now() - openedAt.current) / 1000);
+      reachGoal(GOALS.BOOKING_WIDGET_CLOSED, 'moscow', { seconds_open: seconds });
+      openedAt.current = null;
+    }
+    setOpen(false);
+  };
+
   return (
     <>
       {/* OVERLAY */}
       <div
-        onClick={() => setOpen(false)}
+        onClick={handleClose}
         className={`fixed inset-0 z-[130] bg-black/50 backdrop-blur-sm transition-opacity ${
           open ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
@@ -44,7 +56,7 @@ const BookingDrawer = () => {
             <Icon name="CalendarCheck" size={20} className="text-primary" /> Онлайн-запись
           </span>
           <button
-            onClick={() => setOpen(false)}
+            onClick={handleClose}
             aria-label="Закрыть"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
           >
@@ -65,7 +77,10 @@ const BookingDrawer = () => {
               title="Онлайн-запись Дымов Керамика"
               className="h-full w-full border-0"
               allow="payment; clipboard-write"
-              onLoad={() => setIframeReady(true)}
+              onLoad={() => {
+                setIframeReady(true);
+                reachGoal(GOALS.BOOKING_WIDGET_LOADED, 'moscow');
+              }}
             />
           )}
         </div>
