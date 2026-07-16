@@ -2,11 +2,29 @@ import { City } from '@/lib/cities';
 
 declare global {
   interface Window {
-    ym?: (counterId: number, action: string, goal: string, params?: Record<string, unknown>) => void;
+    ym?: (
+      counterId: number,
+      action: string,
+      goalOrUrl?: string | Record<string, unknown>,
+      params?: Record<string, unknown>,
+    ) => void;
   }
 }
 
 const METRIKA_COUNTER_ID = 48787754;
+
+/**
+ * Отправляет просмотр страницы (hit) в Яндекс.Метрику при переходах внутри SPA.
+ * Тег в index.html фиксирует только первую загрузку — при смене маршрута
+ * React Router не перезагружает страницу, поэтому переходы нужно отправлять вручную.
+ */
+export const trackPageview = (url: string) => {
+  try {
+    window.ym?.(METRIKA_COUNTER_ID, 'hit', url, { referer: document.referrer });
+  } catch {
+    // Метрика не должна ломать пользовательский флоу.
+  }
+};
 
 /** Базовые названия целей — к каждой при отправке добавляется город: _moscow или _suzdal. */
 export const GOALS = {
