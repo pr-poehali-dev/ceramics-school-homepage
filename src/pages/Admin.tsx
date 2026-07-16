@@ -59,6 +59,20 @@ const paymentLabel = (p: string) =>
 
 const cityLabel = (c: string) => (c === 'suzdal' ? 'Суздаль' : 'Москва');
 
+const cityBadge = (c: string) => {
+  const isSuzdal = c === 'suzdal';
+  return (
+    <span
+      className={`flex items-center gap-1 rounded-full px-3 py-0.5 text-xs font-medium ${
+        isSuzdal ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'
+      }`}
+    >
+      <Icon name="MapPin" size={12} />
+      {cityLabel(c)}
+    </span>
+  );
+};
+
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   new: { label: 'Новый', className: 'bg-primary/10 text-primary' },
   pending: { label: 'Ожидает оплаты', className: 'bg-amber-100 text-amber-700' },
@@ -303,9 +317,7 @@ const Admin = () => {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-display text-lg font-semibold">Заказ № {o.number}</span>
                     {statusBadge(o.status)}
-                    <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-medium text-muted-foreground">
-                      {cityLabel(o.city)}
-                    </span>
+                    {cityBadge(o.city)}
                   </div>
                   <span className="text-sm text-muted-foreground">{fmtDate(o.created_at)}</span>
                 </div>
