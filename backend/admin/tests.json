@@ -7,7 +7,7 @@
       "expectedStatus": 200
     },
     {
-      "name": "Unauthorized without password",
+      "name": "Unauthorized without token",
       "method": "GET",
       "path": "/",
       "expectedStatus": 401,

@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import func2url from '../../backend/func2url.json';
+
+const SESSION_KEY = 'manager-session-token';
 
 interface OrderItem {
   id?: string;
@@ -25,6 +27,8 @@ interface Order {
   total: number;
   items: OrderItem[];
   created_at: string;
+  status: string;
+  city: string;
 }
 
 interface Lead {
@@ -53,27 +57,57 @@ const fmtDate = (s: string) => {
 const paymentLabel = (p: string) =>
   p === 'online' ? 'Онлайн (ЮKassa)' : 'Наличными на кассе';
 
+const cityLabel = (c: string) => (c === 'suzdal' ? 'Суздаль' : 'Москва');
+
+const STATUS_LABELS: Record<string, { label: string; className: string }> = {
+  new: { label: 'Новый', className: 'bg-primary/10 text-primary' },
+  pending: { label: 'Ожидает оплаты', className: 'bg-amber-100 text-amber-700' },
+  paid: { label: 'Оплачен', className: 'bg-emerald-100 text-emerald-700' },
+  completed: { label: 'Выполнен', className: 'bg-emerald-100 text-emerald-700' },
+  canceled: { label: 'Отменён', className: 'bg-red-100 text-red-700' },
+  booked: { label: 'Записан на МК', className: 'bg-blue-100 text-blue-700' },
+  pickup: { label: 'Самовывоз', className: 'bg-secondary text-muted-foreground' },
+};
+
+const statusBadge = (status: string) => {
+  const s = STATUS_LABELS[status] || { label: status, className: 'bg-secondary text-muted-foreground' };
+  return (
+    <span className={`rounded-full px-3 py-0.5 text-xs font-medium ${s.className}`}>
+      {s.label}
+    </span>
+  );
+};
+
 const Admin = () => {
   usePageMeta({
     title: 'Админ-панель «Дымов Керамика»',
     description: 'Служебная страница управления заказами и заявками.',
     noindex: true,
   });
+
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [token, setToken] = useState<string | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [authed, setAuthed] = useState(false);
+  const [managerName, setManagerName] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [tab, setTab] = useState<'orders' | 'leads'>('orders');
 
-  const load = async (pwd: string) => {
+  const loadData = async (sessionToken: string) => {
     setLoading(true);
     try {
       const resp = await fetch(func2url.admin, {
-        headers: { 'X-Admin-Password': pwd },
+        headers: { 'X-Session-Token': sessionToken },
       });
       if (resp.status === 401) {
-        toast({ title: 'Неверный пароль' });
+        localStorage.removeItem(SESSION_KEY);
+        setToken(null);
+        setAuthed(false);
+        toast({ title: 'Сессия истекла', description: 'Войдите снова.' });
         return;
       }
       if (!resp.ok) throw new Error('fail');
@@ -88,7 +122,75 @@ const Admin = () => {
     }
   };
 
-  if (!authed) {
+  useEffect(() => {
+    const saved = localStorage.getItem(SESSION_KEY);
+    if (!saved) {
+      setCheckingSession(false);
+      return;
+    }
+    (async () => {
+      try {
+        const resp = await fetch(func2url['manager-auth'], {
+          headers: { 'X-Session-Token': saved },
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          setToken(saved);
+          setManagerName(data.name || data.email);
+          await loadData(saved);
+        } else {
+          localStorage.removeItem(SESSION_KEY);
+        }
+      } catch {
+        localStorage.removeItem(SESSION_KEY);
+      } finally {
+        setCheckingSession(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const login = async () => {
+    setLoginLoading(true);
+    try {
+      const resp = await fetch(func2url['manager-auth'], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        toast({ title: data.error || 'Не удалось войти' });
+        return;
+      }
+      localStorage.setItem(SESSION_KEY, data.token);
+      setToken(data.token);
+      setManagerName(data.name || data.email);
+      await loadData(data.token);
+    } catch {
+      toast({ title: 'Ошибка входа', description: 'Попробуйте позже.' });
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem(SESSION_KEY);
+    setToken(null);
+    setAuthed(false);
+    setOrders([]);
+    setLeads([]);
+  };
+
+  if (checkingSession) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!authed || !token) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8">
@@ -98,25 +200,37 @@ const Admin = () => {
             </span>
             <h1 className="mt-5 font-display text-2xl font-semibold">Панель управления</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Введите пароль для доступа к заказам и заявкам
+              Войдите, чтобы увидеть заказы и заявки
             </p>
           </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              load(password);
+              login();
             }}
             className="mt-6 space-y-3"
           >
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              autoFocus
+              autoComplete="username"
+            />
             <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Пароль"
-              autoFocus
+              autoComplete="current-password"
             />
-            <Button type="submit" className="w-full rounded-full" disabled={loading || !password}>
-              {loading ? 'Проверяем…' : 'Войти'}
+            <Button
+              type="submit"
+              className="w-full rounded-full"
+              disabled={loginLoading || !email || !password}
+            >
+              {loginLoading ? 'Проверяем…' : 'Войти'}
             </Button>
           </form>
         </div>
@@ -128,16 +242,26 @@ const Admin = () => {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container py-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="font-display text-3xl font-semibold">Заказы и заявки</h1>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full"
-            onClick={() => load(password)}
-            disabled={loading}
-          >
-            <Icon name="RefreshCcw" size={15} className="mr-2" /> Обновить
-          </Button>
+          <div>
+            <h1 className="font-display text-3xl font-semibold">Заказы и заявки</h1>
+            {managerName && (
+              <p className="mt-1 text-sm text-muted-foreground">Вы вошли как {managerName}</p>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+              onClick={() => token && loadData(token)}
+              disabled={loading}
+            >
+              <Icon name="RefreshCcw" size={15} className="mr-2" /> Обновить
+            </Button>
+            <Button variant="ghost" size="sm" className="rounded-full" onClick={logout}>
+              <Icon name="LogOut" size={15} className="mr-2" /> Выйти
+            </Button>
+          </div>
         </div>
 
         <div className="mt-6 flex gap-2">
@@ -167,13 +291,19 @@ const Admin = () => {
             {orders.map((o) => (
               <div key={o.id} className="rounded-2xl border border-border bg-card p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-display text-lg font-semibold">Заказ № {o.number}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-display text-lg font-semibold">Заказ № {o.number}</span>
+                    {statusBadge(o.status)}
+                    <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-medium text-muted-foreground">
+                      {cityLabel(o.city)}
+                    </span>
+                  </div>
                   <span className="text-sm text-muted-foreground">{fmtDate(o.created_at)}</span>
                 </div>
                 <div className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
                   <p><span className="text-muted-foreground">Клиент:</span> {o.name}</p>
                   <p><span className="text-muted-foreground">Телефон:</span> {o.phone}</p>
-                  <p><span className="text-muted-foreground">Email:</span> {o.email}</p>
+                  {o.email && <p><span className="text-muted-foreground">Email:</span> {o.email}</p>}
                   <p><span className="text-muted-foreground">Оплата:</span> {paymentLabel(o.payment)}</p>
                 </div>
                 {o.comment && (

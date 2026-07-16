@@ -6,9 +6,10 @@ import psycopg2
 def handler(event: dict, context) -> dict:
     '''
     Возвращает список заказов и заявок для админ-панели.
-    Доступ защищён паролем: заголовок X-Admin-Password должен совпадать с секретом ADMIN_PASSWORD.
-    Args: event с httpMethod, headers (X-Admin-Password)
-          context — объект с request_id
+    Доступ защищён сессионным токеном менеджера: заголовок X-Session-Token должен
+    соответствовать активной записи в таблице manager_sessions.
+    Args: event с httpMethod, headers (X-Session-Token)
+          context - объект с request_id
     Returns: HTTP-ответ со списками orders и leads
     '''
     method = event.get('httpMethod', 'GET')
@@ -16,7 +17,7 @@ def handler(event: dict, context) -> dict:
     cors_headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password',
+        'Access-Control-Allow-Headers': 'Content-Type, X-Session-Token',
         'Access-Control-Max-Age': '86400',
     }
 
@@ -31,21 +32,33 @@ def handler(event: dict, context) -> dict:
         }
 
     headers = event.get('headers') or {}
-    provided = headers.get('X-Admin-Password') or headers.get('x-admin-password') or ''
-    expected = os.environ.get('ADMIN_PASSWORD') or ''
+    token = headers.get('X-Session-Token') or headers.get('x-session-token') or ''
 
-    if not expected or provided != expected:
+    if not token:
         return {
             'statusCode': 401,
             'headers': cors_headers,
-            'body': json.dumps({'error': 'Неверный пароль'}),
+            'body': json.dumps({'error': 'Требуется авторизация'}),
         }
 
     conn = psycopg2.connect(os.environ['DATABASE_URL'])
     try:
         cur = conn.cursor()
+
         cur.execute(
-            "SELECT id, number, customer_name, email, phone, comment, payment, total, items, created_at "
+            "SELECT manager_id FROM manager_sessions WHERE token = %s AND expires_at > NOW()",
+            (token,),
+        )
+        if not cur.fetchone():
+            return {
+                'statusCode': 401,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Сессия истекла, войдите снова'}),
+            }
+
+        cur.execute(
+            "SELECT id, number, customer_name, email, phone, comment, payment, total, items, "
+            "created_at, status, city "
             "FROM orders ORDER BY created_at DESC LIMIT 500"
         )
         orders = []
@@ -61,6 +74,8 @@ def handler(event: dict, context) -> dict:
                 'total': r[7],
                 'items': r[8],
                 'created_at': r[9].isoformat() if r[9] else None,
+                'status': r[10],
+                'city': r[11],
             })
 
         cur.execute(
