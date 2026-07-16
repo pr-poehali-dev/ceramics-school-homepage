@@ -1,20 +1,39 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import AskQuestionDialog from '@/components/AskQuestionDialog';
+import { useCart } from '@/context/CartContext';
+import { toast } from '@/hooks/use-toast';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
 
 const WORKSHOPS = Object.values(SUZDAL_WORKSHOP_DETAILS);
 
 const SuzdalWorkshops = () => {
+  const { addItem } = useCart();
+  const navigate = useNavigate();
+
   usePageMeta({
     title: 'Мастер-классы по гончарному мастерству в Суздале',
     description:
       'Гончарные мастер-классы для детей и взрослых в школе «Дымов Керамика». Обучение гончарному делу. Курсы гончарного мастерства.',
   });
+
+  const handleAddToCart = (e: React.MouseEvent, w: (typeof WORKSHOPS)[number]) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id: `suzdal-${w.slug}`,
+      title: w.title,
+      details: 'Билет «Разовый»',
+      price: w.price,
+      qty: 1,
+    });
+    toast({ title: 'Добавлено в корзину', description: w.title });
+    navigate('/suzdal/checkout');
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
@@ -55,15 +74,9 @@ const SuzdalWorkshops = () => {
                   />
                 </div>
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                      <h2 className="font-display text-3xl font-semibold">{w.title}</h2>
-                      <p className="mt-1 text-muted-foreground">{w.subtitle}</p>
-                    </div>
-                    <Button variant="outline" className="rounded-full">
-                      Подробнее
-                      <Icon name="ArrowRight" size={16} className="ml-2" />
-                    </Button>
+                  <div>
+                    <h2 className="font-display text-3xl font-semibold">{w.title}</h2>
+                    <p className="mt-1 text-muted-foreground">{w.subtitle}</p>
                   </div>
 
                   <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
@@ -74,6 +87,19 @@ const SuzdalWorkshops = () => {
                     <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-medium text-secondary-foreground">
                       {w.age}
                     </span>
+                  </div>
+
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <Button
+                      onClick={(e) => handleAddToCart(e, w)}
+                      className="rounded-full"
+                    >
+                      <Icon name="ShoppingCart" size={16} className="mr-2" /> В корзину
+                    </Button>
+                    <Button variant="outline" className="rounded-full">
+                      Подробнее
+                      <Icon name="ArrowRight" size={16} className="ml-2" />
+                    </Button>
                   </div>
                 </div>
               </div>

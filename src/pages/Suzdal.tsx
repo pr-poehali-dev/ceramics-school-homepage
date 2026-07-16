@@ -1,9 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useCart } from '@/context/CartContext';
+import { toast } from '@/hooks/use-toast';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
 import { REVIEWS, GALLERY } from './suzdal-reviews/reviewsData';
 
@@ -34,11 +36,29 @@ const initials = (name: string) =>
     .join('');
 
 const Suzdal = () => {
+  const { addItem } = useCart();
+  const navigate = useNavigate();
+
   usePageMeta({
     title: 'Фабрика и школа керамики в Суздале «Дымов Керамика»',
     description:
       'Гончарная мастерская в Суздале ждет в гости детей и взрослых! Мастер-классы на гончарном круге, ручной лепке и росписи. Экскурсии.',
   });
+
+  const handleAddToCart = (e: React.MouseEvent, w: (typeof HOME_WORKSHOPS)[number]) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id: `suzdal-${w.slug}`,
+      title: w.title,
+      details: 'Билет «Разовый»',
+      price: w.price,
+      qty: 1,
+    });
+    toast({ title: 'Добавлено в корзину', description: w.title });
+    navigate('/suzdal/checkout');
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       <SiteHeader />
@@ -108,6 +128,13 @@ const Suzdal = () => {
                 <p className="mt-4 text-lg font-semibold text-primary">
                   от {w.price.toLocaleString('ru-RU')} ₽
                 </p>
+                <Button
+                  onClick={(e) => handleAddToCart(e, w)}
+                  className="mt-4 w-full rounded-full"
+                  size="sm"
+                >
+                  <Icon name="ShoppingCart" size={15} className="mr-2" /> В корзину
+                </Button>
               </div>
             </Link>
           ))}

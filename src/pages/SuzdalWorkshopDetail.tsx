@@ -322,6 +322,14 @@ const SuzdalWorkshopDetail = () => {
                 <Icon name="Star" size={16} /> {data.age}
               </span>
             </div>
+
+            <Button
+              onClick={handleAddToCart}
+              size="lg"
+              className="mt-7 w-fit rounded-full px-8 text-base"
+            >
+              <Icon name="ShoppingCart" size={18} className="mr-2" /> Добавить в корзину
+            </Button>
           </div>
         </div>
 
