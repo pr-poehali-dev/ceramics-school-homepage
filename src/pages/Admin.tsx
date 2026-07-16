@@ -96,6 +96,8 @@ const Admin = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [tab, setTab] = useState<'orders' | 'leads'>('orders');
+  const [ordersPage, setOrdersPage] = useState(1);
+  const ORDERS_PER_PAGE = 10;
 
   const loadData = async (sessionToken: string) => {
     setLoading(true);
@@ -114,6 +116,7 @@ const Admin = () => {
       const data = await resp.json();
       setOrders(data.orders || []);
       setLeads(data.leads || []);
+      setOrdersPage(1);
       setAuthed(true);
     } catch {
       toast({ title: 'Ошибка загрузки', description: 'Попробуйте позже.' });
@@ -181,6 +184,12 @@ const Admin = () => {
     setOrders([]);
     setLeads([]);
   };
+
+  const totalOrdersPages = Math.max(1, Math.ceil(orders.length / ORDERS_PER_PAGE));
+  const paginatedOrders = orders.slice(
+    (ordersPage - 1) * ORDERS_PER_PAGE,
+    ordersPage * ORDERS_PER_PAGE,
+  );
 
   if (checkingSession) {
     return (
@@ -288,7 +297,7 @@ const Admin = () => {
             {orders.length === 0 && (
               <p className="text-sm text-muted-foreground">Заказов пока нет.</p>
             )}
-            {orders.map((o) => (
+            {paginatedOrders.map((o) => (
               <div key={o.id} className="rounded-2xl border border-border bg-card p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-2">
@@ -329,6 +338,32 @@ const Admin = () => {
                 </p>
               </div>
             ))}
+
+            {orders.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setOrdersPage((p) => Math.max(1, p - 1))}
+                  disabled={ordersPage <= 1}
+                >
+                  <Icon name="ChevronLeft" size={15} />
+                </Button>
+                <span className="px-3 text-sm text-muted-foreground">
+                  Страница {ordersPage} из {totalOrdersPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setOrdersPage((p) => Math.min(totalOrdersPages, p + 1))}
+                  disabled={ordersPage >= totalOrdersPages}
+                >
+                  <Icon name="ChevronRight" size={15} />
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
