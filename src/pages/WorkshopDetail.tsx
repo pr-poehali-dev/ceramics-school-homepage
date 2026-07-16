@@ -197,7 +197,7 @@ const WorkshopDetail = () => {
                   variant="outline"
                   className="w-fit rounded-full border-white/40 bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white hover:text-foreground"
                 >
-                  <Icon name="Gift" size={18} className="mr-2" /> Приобрести сертификат на услугу
+                  <Icon name="Gift" size={18} className="mr-2" /> Купить сертификат
                 </Button>
               </Link>
             </div>
