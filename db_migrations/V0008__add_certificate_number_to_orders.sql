@@ -1,0 +1,2 @@
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS certificate_number VARCHAR(50);
+COMMENT ON COLUMN orders.certificate_number IS 'Номер сертификата, проданного клиенту по этому заказу (вводится менеджером вручную)';

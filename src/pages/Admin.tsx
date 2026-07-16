@@ -29,6 +29,7 @@ interface Order {
   created_at: string;
   status: string;
   city: string;
+  certificate_number: string | null;
 }
 
 interface Lead {
@@ -112,6 +113,8 @@ const Admin = () => {
   const [tab, setTab] = useState<'orders' | 'leads'>('orders');
   const [ordersPage, setOrdersPage] = useState(1);
   const ORDERS_PER_PAGE = 10;
+  const [certDrafts, setCertDrafts] = useState<Record<number, string>>({});
+  const [savingCertId, setSavingCertId] = useState<number | null>(null);
 
   const loadData = async (sessionToken: string) => {
     setLoading(true);
@@ -128,14 +131,40 @@ const Admin = () => {
       }
       if (!resp.ok) throw new Error('fail');
       const data = await resp.json();
-      setOrders(data.orders || []);
+      const loadedOrders: Order[] = data.orders || [];
+      setOrders(loadedOrders);
       setLeads(data.leads || []);
       setOrdersPage(1);
+      setCertDrafts(
+        Object.fromEntries(loadedOrders.map((o) => [o.id, o.certificate_number || ''])),
+      );
       setAuthed(true);
     } catch {
       toast({ title: 'Ошибка загрузки', description: 'Попробуйте позже.' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveCertificateNumber = async (orderId: number) => {
+    if (!token) return;
+    const value = (certDrafts[orderId] || '').trim();
+    setSavingCertId(orderId);
+    try {
+      const resp = await fetch(func2url.admin, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ order_id: orderId, certificate_number: value }),
+      });
+      if (!resp.ok) throw new Error('fail');
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, certificate_number: value || null } : o)),
+      );
+      toast({ title: 'Номер сертификата сохранён' });
+    } catch {
+      toast({ title: 'Не удалось сохранить', description: 'Попробуйте позже.' });
+    } finally {
+      setSavingCertId(null);
     }
   };
 
@@ -348,6 +377,34 @@ const Admin = () => {
                 <p className="mt-3 text-right font-semibold text-primary">
                   Итого: {o.total.toLocaleString('ru-RU')} ₽
                 </p>
+
+                <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
+                  <label className="text-sm text-muted-foreground shrink-0">
+                    Номер сертификата:
+                  </label>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={certDrafts[o.id] ?? ''}
+                    onChange={(e) =>
+                      setCertDrafts((prev) => ({
+                        ...prev,
+                        [o.id]: e.target.value.replace(/\D/g, ''),
+                      }))
+                    }
+                    placeholder="Введите номер"
+                    className="h-9 w-40 rounded-full"
+                  />
+                  <Button
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => saveCertificateNumber(o.id)}
+                    disabled={savingCertId === o.id}
+                  >
+                    {savingCertId === o.id ? 'Сохраняем…' : 'Сохранить'}
+                  </Button>
+                </div>
               </div>
             ))}
 

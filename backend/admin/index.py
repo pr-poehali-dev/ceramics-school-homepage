@@ -5,18 +5,19 @@ import psycopg2
 
 def handler(event: dict, context) -> dict:
     '''
-    Возвращает список заказов и заявок для админ-панели.
+    Возвращает список заказов и заявок для админ-панели, либо сохраняет номер
+    сертификата, проданного клиенту по заказу (POST).
     Доступ защищён сессионным токеном менеджера: заголовок X-Session-Token должен
     соответствовать активной записи в таблице manager_sessions.
-    Args: event с httpMethod, headers (X-Session-Token)
+    Args: event с httpMethod, headers (X-Session-Token), body (для POST: order_id, certificate_number)
           context - объект с request_id
-    Returns: HTTP-ответ со списками orders и leads
+    Returns: HTTP-ответ со списками orders и leads, либо результатом сохранения
     '''
     method = event.get('httpMethod', 'GET')
 
     cors_headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, X-Session-Token',
         'Access-Control-Max-Age': '86400',
     }
@@ -24,7 +25,7 @@ def handler(event: dict, context) -> dict:
     if method == 'OPTIONS':
         return {'statusCode': 200, 'headers': cors_headers, 'body': ''}
 
-    if method != 'GET':
+    if method not in ('GET', 'POST'):
         return {
             'statusCode': 405,
             'headers': cors_headers,
@@ -56,9 +57,33 @@ def handler(event: dict, context) -> dict:
                 'body': json.dumps({'error': 'Сессия истекла, войдите снова'}),
             }
 
+        if method == 'POST':
+            body = json.loads(event.get('body') or '{}')
+            order_id = body.get('order_id')
+            certificate_number = (body.get('certificate_number') or '').strip()
+
+            if not order_id:
+                return {
+                    'statusCode': 400,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'Не указан заказ'}),
+                }
+
+            cur.execute(
+                "UPDATE orders SET certificate_number = %s WHERE id = %s",
+                (certificate_number or None, order_id),
+            )
+            conn.commit()
+
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'ok': True, 'certificate_number': certificate_number}),
+            }
+
         cur.execute(
             "SELECT id, number, customer_name, email, phone, comment, payment, total, items, "
-            "created_at, status, city "
+            "created_at, status, city, certificate_number "
             "FROM orders ORDER BY created_at DESC LIMIT 500"
         )
         orders = []
@@ -76,6 +101,7 @@ def handler(event: dict, context) -> dict:
                 'created_at': r[9].isoformat() if r[9] else None,
                 'status': r[10],
                 'city': r[11],
+                'certificate_number': r[12],
             })
 
         cur.execute(

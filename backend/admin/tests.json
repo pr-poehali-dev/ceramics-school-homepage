@@ -13,6 +13,15 @@
       "expectedStatus": 401,
       "expectedBody": {"error": "string"},
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "Unauthorized POST without token",
+      "method": "POST",
+      "path": "/",
+      "body": {"order_id": 1, "certificate_number": "123456"},
+      "expectedStatus": 401,
+      "expectedBody": {"error": "string"},
+      "bodyMatcher": "partial"
     }
   ]
 }
