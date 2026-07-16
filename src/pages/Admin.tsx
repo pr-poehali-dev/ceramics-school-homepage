@@ -113,6 +113,7 @@ const Admin = () => {
   const [tab, setTab] = useState<'orders' | 'leads'>('orders');
   const [ordersPage, setOrdersPage] = useState(1);
   const ORDERS_PER_PAGE = 10;
+  const [cityFilter, setCityFilter] = useState<'moscow' | 'suzdal' | 'all'>('moscow');
   const [certDrafts, setCertDrafts] = useState<Record<number, string>>({});
   const [savingCertId, setSavingCertId] = useState<number | null>(null);
 
@@ -228,8 +229,10 @@ const Admin = () => {
     setLeads([]);
   };
 
-  const totalOrdersPages = Math.max(1, Math.ceil(orders.length / ORDERS_PER_PAGE));
-  const paginatedOrders = orders.slice(
+  const filteredOrders =
+    cityFilter === 'all' ? orders : orders.filter((o) => o.city === cityFilter);
+  const totalOrdersPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PER_PAGE));
+  const paginatedOrders = filteredOrders.slice(
     (ordersPage - 1) * ORDERS_PER_PAGE,
     ordersPage * ORDERS_PER_PAGE,
   );
@@ -336,8 +339,30 @@ const Admin = () => {
         </div>
 
         {tab === 'orders' && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {(['moscow', 'suzdal', 'all'] as const).map((c) => (
+              <button
+                key={c}
+                onClick={() => {
+                  setCityFilter(c);
+                  setOrdersPage(1);
+                }}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  cityFilter === c
+                    ? 'bg-foreground text-background'
+                    : 'bg-secondary text-muted-foreground'
+                }`}
+              >
+                {c === 'moscow' ? 'Москва' : c === 'suzdal' ? 'Суздаль' : 'Все города'}
+                {' '}({(c === 'all' ? orders : orders.filter((o) => o.city === c)).length})
+              </button>
+            ))}
+          </div>
+        )}
+
+        {tab === 'orders' && (
           <div className="mt-6 space-y-4">
-            {orders.length === 0 && (
+            {filteredOrders.length === 0 && (
               <p className="text-sm text-muted-foreground">Заказов пока нет.</p>
             )}
             {paginatedOrders.map((o) => (
@@ -408,7 +433,7 @@ const Admin = () => {
               </div>
             ))}
 
-            {orders.length > 0 && (
+            {filteredOrders.length > 0 && (
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
                 <Button
                   variant="outline"
