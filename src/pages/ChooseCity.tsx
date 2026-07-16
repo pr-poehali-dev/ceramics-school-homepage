@@ -37,7 +37,7 @@ const ChooseCity = () => {
       </div>
 
       {/* CHOICE BLOCKS */}
-      <div className="container">
+      <div className="container pb-14 md:pb-16">
         <div className="grid gap-6 md:grid-cols-2">
           {/* MOSCOW */}
           <Link
