@@ -55,6 +55,7 @@ interface UseYookassaReturn {
  * Open payment page (new tab on mobile, same tab on desktop)
  */
 export function openPaymentPage(url: string): void {
+  if (typeof window === "undefined") return;
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (isMobile) {
     window.open(url, "_blank");

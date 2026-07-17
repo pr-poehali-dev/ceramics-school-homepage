@@ -96,7 +96,7 @@ async function main() {
       ok++;
     } catch (err) {
       failed++;
-      console.error(`[prerender] Ошибка на ${route.path}:`, err.message);
+      console.error(`[prerender] Ошибка на ${route.path}:`, err.stack || err.message);
     }
   }
 

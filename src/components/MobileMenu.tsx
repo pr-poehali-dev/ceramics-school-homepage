@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
@@ -37,7 +37,12 @@ interface MobileMenuProps {
 const MobileMenu = ({ active }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
   const [wsOpen, setWsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const navClick = useNavClick();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const city = useCity();
   const cityConfig = CITIES[city];
   const isSuzdal = city === 'suzdal';
@@ -61,7 +66,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
         <Icon name="Menu" size={22} />
       </button>
 
-      {createPortal(
+      {mounted && createPortal(
         <div className="md:hidden">
           {/* OVERLAY */}
           <div
