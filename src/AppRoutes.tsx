@@ -1,6 +1,5 @@
 import { lazy, Suspense } from "react";
-import { useParams } from "react-router-dom";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ChooseCity from "./pages/ChooseCity";
 import Index from "./pages/Index";
 import Suzdal from "./pages/Suzdal";
@@ -30,11 +29,6 @@ const SuzdalPrivacy = lazy(() => import("./pages/SuzdalPrivacy"));
 const SuzdalCookies = lazy(() => import("./pages/SuzdalCookies"));
 const SuzdalReviews = lazy(() => import("./pages/SuzdalReviews"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
-
-const RedirectWorkshop = () => {
-  const { slug } = useParams();
-  return <Navigate to={`/moscow/workshops/${slug}`} replace />;
-};
 
 export const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-background">
@@ -77,20 +71,6 @@ const AppRoutes = () => (
       <Route path="/suzdal/privacy" element={<SuzdalPrivacy />} />
       <Route path="/suzdal/cookies" element={<SuzdalCookies />} />
       <Route path="/suzdal/reviews" element={<SuzdalReviews />} />
-
-      {/* Redirects for old flat routes */}
-      <Route path="/workshops" element={<Navigate to="/moscow/workshops" replace />} />
-      <Route path="/workshops/:slug" element={<RedirectWorkshop />} />
-      <Route path="/formats" element={<Navigate to="/moscow/formats" replace />} />
-      <Route path="/certificates" element={<Navigate to="/moscow/certificates" replace />} />
-      <Route path="/contacts" element={<Navigate to="/moscow/contacts" replace />} />
-      <Route path="/cart" element={<Navigate to="/moscow/cart" replace />} />
-      <Route path="/checkout" element={<Navigate to="/moscow/checkout" replace />} />
-      <Route path="/reviews" element={<Navigate to="/moscow/reviews" replace />} />
-      <Route path="/offer" element={<Navigate to="/moscow/offer" replace />} />
-      <Route path="/info" element={<Navigate to="/moscow/info" replace />} />
-      <Route path="/privacy" element={<Navigate to="/moscow/privacy" replace />} />
-      <Route path="/cookies" element={<Navigate to="/moscow/cookies" replace />} />
 
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<PageNotFound />} />
