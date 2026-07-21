@@ -262,7 +262,7 @@ const SuzdalWorkshopDetail = () => {
   });
 
   if (!data) {
-    return <Navigate to="/suzdal/workshops" replace />;
+    return <Navigate to="/suzdal/master-klassy" replace />;
   }
 
   const handleAddToCart = () => {
@@ -282,12 +282,12 @@ const SuzdalWorkshopDetail = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
-      <SiteHeader active="/suzdal/workshops" />
+      <SiteHeader active="/suzdal/master-klassy" />
 
       <div className="container py-10 md:py-14">
         {/* BACK */}
         <Link
-          to="/suzdal/workshops"
+          to="/suzdal/master-klassy"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
         >
           <Icon name="ArrowLeft" size={16} /> Назад к мастер-классам
