@@ -2,6 +2,8 @@ import json
 import os
 import psycopg2
 
+SCHEMA = 't_p90609946_ceramics_school_home'
+
 
 def handler(event: dict, context) -> dict:
     '''
@@ -59,6 +61,26 @@ def handler(event: dict, context) -> dict:
 
         if method == 'POST':
             body = json.loads(event.get('body') or '{}')
+
+            if 'banner' in body:
+                banner = body.get('banner') or {}
+                value = {
+                    'enabled': bool(banner.get('enabled', False)),
+                    'text': str(banner.get('text', '')),
+                }
+                cur.execute(
+                    f"INSERT INTO {SCHEMA}.site_settings (key, value, updated_at) "
+                    "VALUES ('announcement_banner', %s, NOW()) "
+                    "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()",
+                    (json.dumps(value),),
+                )
+                conn.commit()
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'ok': True, 'banner': value}, ensure_ascii=False),
+                }
+
             order_id = body.get('order_id')
             certificate_number = (body.get('certificate_number') or '').strip()
 
@@ -118,11 +140,22 @@ def handler(event: dict, context) -> dict:
                 'phone': r[4],
                 'created_at': r[5].isoformat() if r[5] else None,
             })
+
+        banner = {'enabled': False, 'text': ''}
+        cur.execute(
+            f"SELECT value FROM {SCHEMA}.site_settings WHERE key = 'announcement_banner'"
+        )
+        brow = cur.fetchone()
+        if brow and brow[0]:
+            banner = {
+                'enabled': bool(brow[0].get('enabled', False)),
+                'text': str(brow[0].get('text', '')),
+            }
     finally:
         conn.close()
 
     return {
         'statusCode': 200,
         'headers': cors_headers,
-        'body': json.dumps({'orders': orders, 'leads': leads}, ensure_ascii=False),
+        'body': json.dumps({'orders': orders, 'leads': leads, 'banner': banner}, ensure_ascii=False),
     }

@@ -5,6 +5,7 @@ import DesktopNav from '@/components/DesktopNav';
 import MobileMenu from '@/components/MobileMenu';
 import CartButton from '@/components/CartButton';
 import CitySwitcher from '@/components/CitySwitcher';
+import AnnouncementBanner from '@/components/AnnouncementBanner';
 import { useNavClick } from '@/hooks/useNavClick';
 import { useCity } from '@/hooks/useCity';
 import { CITIES } from '@/lib/cities';
@@ -20,6 +21,8 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
   const cityConfig = CITIES[city];
 
   return (
+  <>
+  <AnnouncementBanner />
   <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
     <div className="container flex h-20 items-center justify-between">
       <div className="flex items-center gap-4">
@@ -42,6 +45,7 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
       </div>
     </div>
   </header>
+  </>
   );
 };
 

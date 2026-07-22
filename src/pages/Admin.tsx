@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import func2url from '../../backend/func2url.json';
@@ -116,6 +118,9 @@ const Admin = () => {
   const [cityFilter, setCityFilter] = useState<'moscow' | 'suzdal' | 'all'>('moscow');
   const [certDrafts, setCertDrafts] = useState<Record<number, string>>({});
   const [savingCertId, setSavingCertId] = useState<number | null>(null);
+  const [bannerEnabled, setBannerEnabled] = useState(false);
+  const [bannerText, setBannerText] = useState('');
+  const [savingBanner, setSavingBanner] = useState(false);
 
   const loadData = async (sessionToken: string) => {
     setLoading(true);
@@ -139,6 +144,10 @@ const Admin = () => {
       setCertDrafts(
         Object.fromEntries(loadedOrders.map((o) => [o.id, o.certificate_number || ''])),
       );
+      if (data.banner) {
+        setBannerEnabled(Boolean(data.banner.enabled));
+        setBannerText(data.banner.text || '');
+      }
       setAuthed(true);
     } catch {
       toast({ title: 'Ошибка загрузки', description: 'Попробуйте позже.' });
@@ -166,6 +175,26 @@ const Admin = () => {
       toast({ title: 'Не удалось сохранить', description: 'Попробуйте позже.' });
     } finally {
       setSavingCertId(null);
+    }
+  };
+
+  const saveBanner = async () => {
+    if (!token) return;
+    setSavingBanner(true);
+    try {
+      const resp = await fetch(func2url.admin, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({
+          banner: { enabled: bannerEnabled, text: bannerText.trim() },
+        }),
+      });
+      if (!resp.ok) throw new Error('fail');
+      toast({ title: 'Плашка сохранена' });
+    } catch {
+      toast({ title: 'Не удалось сохранить', description: 'Попробуйте позже.' });
+    } finally {
+      setSavingBanner(false);
     }
   };
 
@@ -315,6 +344,42 @@ const Admin = () => {
             </Button>
             <Button variant="ghost" size="sm" className="rounded-full" onClick={logout}>
               <Icon name="LogOut" size={15} className="mr-2" /> Выйти
+            </Button>
+          </div>
+        </div>
+
+        {/* УПРАВЛЕНИЕ ПЛАШКОЙ */}
+        <div className="mt-6 rounded-2xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Icon name="Megaphone" size={18} className="text-primary" />
+              <h2 className="font-display text-lg font-semibold">Информационная плашка</h2>
+            </div>
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <Switch checked={bannerEnabled} onCheckedChange={setBannerEnabled} />
+              <span className={bannerEnabled ? 'font-medium text-primary' : 'text-muted-foreground'}>
+                {bannerEnabled ? 'Показывается на сайте' : 'Скрыта'}
+              </span>
+            </label>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Текст выводится узкой полосой над шапкой на всех страницах сайта.
+          </p>
+          <Textarea
+            value={bannerText}
+            onChange={(e) => setBannerText(e.target.value)}
+            placeholder="Например: Уважаемые покупатели! В период с 8.01 по 10.01 школа работает только на приём заказов через корзину…"
+            rows={3}
+            className="mt-3 resize-y"
+          />
+          <div className="mt-3 flex justify-end">
+            <Button
+              size="sm"
+              className="rounded-full"
+              onClick={saveBanner}
+              disabled={savingBanner}
+            >
+              {savingBanner ? 'Сохраняем…' : 'Сохранить плашку'}
             </Button>
           </div>
         </div>

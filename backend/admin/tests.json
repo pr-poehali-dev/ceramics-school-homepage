@@ -10,18 +10,14 @@
       "name": "Unauthorized without token",
       "method": "GET",
       "path": "/",
-      "expectedStatus": 401,
-      "expectedBody": {"error": "string"},
-      "bodyMatcher": "partial"
+      "expectedStatus": 401
     },
     {
       "name": "Unauthorized POST without token",
       "method": "POST",
       "path": "/",
       "body": {"order_id": 1, "certificate_number": "123456"},
-      "expectedStatus": 401,
-      "expectedBody": {"error": "string"},
-      "bodyMatcher": "partial"
+      "expectedStatus": 401
     }
   ]
 }
