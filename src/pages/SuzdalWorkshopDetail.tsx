@@ -258,9 +258,9 @@ const SuzdalWorkshopDetail = () => {
   const c = usePageContent(`suzdal-workshops-${slug || 'goncharnoe-remeslo'}`);
 
   usePageMeta({
-    title: data?.metaTitle || 'Мастер-классы «Дымов Керамика» в Суздале',
+    title: c.metaTitle || data?.metaTitle || 'Мастер-классы «Дымов Керамика» в Суздале',
     description:
-      data?.metaDescription || 'Мастер-классы по керамике на фабрике «Дымов Керамика» в Суздале.',
+      c.metaDescription || data?.metaDescription || 'Мастер-классы по керамике на фабрике «Дымов Керамика» в Суздале.',
   });
 
   if (!data) {
@@ -277,6 +277,21 @@ const SuzdalWorkshopDetail = () => {
   const displayExtraServicePrice = c.extraServicePrice || data.extraServices[0]?.price;
   const displayBookingPhone = c.bookingPhone || '+7 (915) 157-64-85';
   const displayAgeNoteText = c.ageNoteText || `Рассчитан для ${data.age.toLowerCase()}. Продолжительность занятия — ${data.duration}.`;
+  const displayExtraServiceNote =
+    c.extraServiceNote ||
+    'Выполнение дополнительных услуг занимает (в зависимости от вида и размера изделия) от 60 дней.';
+  const displayPickupAddressText =
+    c.pickupAddressText ||
+    'В мастерской «Дымов Керамика» в Москве на ВДНХ, Проспект Мира, д. 119, стр. 186, пн–пт с 11:00 до 19:00 (бесплатная доставка), контактный телефон +7 (495) 500-01-71.';
+  const displayPickupDeliveryText =
+    c.pickupDeliveryText ||
+    'Воспользовавшись услугами транспортной компании. Отправка осуществляется за счёт получателя (клиента).';
+  const displayPickupNotifyText =
+    c.pickupNotifyText ||
+    'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.';
+  const displayPickupStorageText =
+    c.pickupStorageText ||
+    'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!';
 
   const handleAddToCart = () => {
     addItem({
@@ -377,8 +392,7 @@ const SuzdalWorkshopDetail = () => {
                 </li>
               </ul>
               <p className="mt-3 text-sm text-muted-foreground">
-                Выполнение дополнительных услуг занимает (в зависимости от вида и размера изделия)
-                от 60 дней.
+                {displayExtraServiceNote}
               </p>
             </div>
 
@@ -391,31 +405,18 @@ const SuzdalWorkshopDetail = () => {
               <ul className="mt-3 space-y-3 text-sm text-muted-foreground">
                 <li className="flex gap-2">
                   <Icon name="MapPin" size={16} className="mt-0.5 shrink-0 text-primary" />
-                  <span>
-                    В мастерской «Дымов Керамика» в Москве на ВДНХ, Проспект Мира, д. 119, стр.
-                    186, пн–пт с 11:00 до 19:00 (бесплатная доставка), контактный телефон{' '}
-                    <a href="tel:+74955000171" className="font-medium text-foreground hover:text-primary">
-                      +7 (495) 500-01-71
-                    </a>
-                    .
-                  </span>
+                  <span>{displayPickupAddressText}</span>
                 </li>
                 <li className="flex gap-2">
                   <Icon name="Truck" size={16} className="mt-0.5 shrink-0 text-primary" />
-                  <span>
-                    Воспользовавшись услугами транспортной компании. Отправка осуществляется за счёт
-                    получателя (клиента).
-                  </span>
+                  <span>{displayPickupDeliveryText}</span>
                 </li>
               </ul>
               <p className="mt-3 text-sm text-muted-foreground">
-                Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете
-                оповещены по телефону.
+                {displayPickupNotifyText}
               </p>
               <p className="mt-3 text-sm text-muted-foreground">
-                Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении
-                этого срока мы оставляем за собой право утилизовать их, либо передать на
-                благотворительную ярмарку. Не забывайте забирать свои работы!
+                {displayPickupStorageText}
               </p>
             </div>
           </div>
