@@ -16,20 +16,20 @@
       "bodyMatcher": "partial"
     },
     {
-      "name": "Save order",
+      "name": "Save order (номер генерируется сервером)",
       "method": "POST",
       "path": "/",
-      "body": {"number": "123456", "name": "Тест Тестов", "email": "test@example.com", "phone": "+79990000000", "payment": "cash", "total": 1900, "items": [{"title": "Сертификат", "qty": 1, "price": 1900}]},
+      "body": {"name": "Тест Тестов", "email": "test@example.com", "phone": "+79990000000", "payment": "cash", "total": 1900, "items": [{"title": "Сертификат", "qty": 1, "price": 1900}]},
       "expectedStatus": 200,
       "expectedBody": {"success": true},
       "bodyMatcher": "partial"
     },
     {
-      "name": "Get order status",
+      "name": "Get order status by number",
       "method": "GET",
-      "path": "/?number=123456",
+      "path": "/?number=2607/1",
       "expectedStatus": 200,
-      "expectedBody": {"number": "123456"},
+      "expectedBody": {"number": "2607/1"},
       "bodyMatcher": "partial"
     }
   ]

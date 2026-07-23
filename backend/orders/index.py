@@ -2,12 +2,26 @@ import json
 import os
 import smtplib
 import ssl
+from datetime import datetime
 import psycopg2
 from email.mime.text import MIMEText
 from email.header import Header
 
 
 EXTRA_RECIPIENT = 'uxdesign30@gmail.com'
+
+
+def _generate_order_number(cur) -> str:
+    """Атомарно генерирует следующий номер заказа в формате ГГММ/N (сквозной за месяц)."""
+    year_month = datetime.utcnow().strftime('%y%m')
+    cur.execute(
+        "INSERT INTO order_number_counters (year_month, counter) VALUES (%s, 1) "
+        "ON CONFLICT (year_month) DO UPDATE SET counter = order_number_counters.counter + 1 "
+        "RETURNING counter",
+        (year_month,),
+    )
+    counter = cur.fetchone()[0]
+    return f"{year_month}/{counter}"
 
 
 def _recipient_for_city(city: str) -> str:
@@ -64,9 +78,11 @@ def _send_notification(name: str, email: str, phone: str, comment: str, payment:
 def handler(event: dict, context) -> dict:
     '''
     Сохраняет оформленный на сайте заказ в базу данных и отправляет уведомление сотруднику на почту.
+    Номер заказа генерируется на сервере атомарно в формате ГГММ/N (год, месяц, сквозной
+    порядковый номер за месяц), например "2607/22".
     Для города Суздаль письмо уходит на отдельный адрес (NOTIFY_EMAIL_SUZDAL).
     GET с параметром number возвращает статус оплаты заказа (для страницы после оплаты ЮKassa).
-    Args: event с httpMethod, body (JSON: number, name, email, phone, comment, payment, total, items, city),
+    Args: event с httpMethod, body (JSON: name, email, phone, comment, payment, total, items, city),
           queryStringParameters (number) для GET
           context — объект с request_id
     Returns: HTTP-ответ с результатом сохранения или статусом заказа
@@ -138,7 +154,6 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Invalid JSON'}),
         }
 
-    number = str(body.get('number') or '')
     name = (body.get('name') or '').strip()
     email = (body.get('email') or '').strip()
     phone = (body.get('phone') or '').strip()
@@ -164,6 +179,7 @@ def handler(event: dict, context) -> dict:
     conn = psycopg2.connect(os.environ['DATABASE_URL'])
     try:
         cur = conn.cursor()
+        number = _generate_order_number(cur)
         cur.execute(
             "INSERT INTO orders (number, customer_name, email, phone, comment, payment, total, items, status, city) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
@@ -182,5 +198,5 @@ def handler(event: dict, context) -> dict:
     return {
         'statusCode': 200,
         'headers': cors_headers,
-        'body': json.dumps({'success': True, 'id': order_id}),
+        'body': json.dumps({'success': True, 'id': order_id, 'number': number}),
     }

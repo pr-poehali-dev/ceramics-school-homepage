@@ -91,42 +91,52 @@ const Checkout = () => {
         });
       }
 
-      const snapshot: OrderResult = {
-        number: String(Math.floor(100000 + Math.random() * 900000)),
-        name,
-        email,
-        phone,
-        payment: payment_,
-        total,
-        lines: items.map((i) => ({
-          id: i.id,
-          title: i.title,
-          details: i.details,
-          qty: i.qty,
-          price: i.price,
-        })),
-        certificates: results,
-      };
+      const lines = items.map((i) => ({
+        id: i.id,
+        title: i.title,
+        details: i.details,
+        qty: i.qty,
+        price: i.price,
+      }));
 
+      let orderNumber = '';
       try {
-        await fetch(func2url.orders, {
+        const orderResp = await fetch(func2url.orders, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            number: snapshot.number,
             name,
             email,
             phone,
             comment,
             payment: payment_,
             total,
-            items: snapshot.lines,
+            items: lines,
             city,
           }),
         });
+        const orderData = await orderResp.json();
+        orderNumber = orderData.number || '';
       } catch {
         // Сохранение заказа не должно срывать оформление.
       }
+
+      if (!orderNumber) {
+        toast({ title: 'Не удалось оформить заказ', description: 'Попробуйте ещё раз.' });
+        setLoading(false);
+        return;
+      }
+
+      const snapshot: OrderResult = {
+        number: orderNumber,
+        name,
+        email,
+        phone,
+        payment: payment_,
+        total,
+        lines,
+        certificates: results,
+      };
 
       // Онлайн-оплата: создаём платёж в ЮKassa и переводим на страницу оплаты (только Москва)
       if (isMoscow && payment_ === 'online') {
