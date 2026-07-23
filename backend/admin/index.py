@@ -1,8 +1,33 @@
 import json
 import os
+import base64
+from datetime import datetime
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 import psycopg2
 
 SCHEMA = 't_p90609946_ceramics_school_home'
+YOOKASSA_API_URL = "https://api.yookassa.ru/v3/payments"
+
+
+def _check_yookassa_payment(payment_id: str) -> dict | None:
+    """Запрашивает у ЮKassa реальный статус платежа по его id."""
+    shop_id = os.environ.get('YOOKASSA_SHOP_ID', '')
+    secret_key = os.environ.get('YOOKASSA_SECRET_KEY', '')
+    if not shop_id or not secret_key or not payment_id:
+        return None
+
+    auth_bytes = base64.b64encode(f"{shop_id}:{secret_key}".encode()).decode()
+    request = Request(
+        f"{YOOKASSA_API_URL}/{payment_id}",
+        headers={'Authorization': f'Basic {auth_bytes}', 'Content-Type': 'application/json'},
+        method='GET',
+    )
+    try:
+        with urlopen(request, timeout=10) as response:
+            return json.loads(response.read().decode())
+    except (HTTPError, Exception):
+        return None
 
 
 def handler(event: dict, context) -> dict:
@@ -62,6 +87,73 @@ def handler(event: dict, context) -> dict:
         if method == 'POST':
             body = json.loads(event.get('body') or '{}')
 
+            if body.get('action') == 'check_payment':
+                order_id = body.get('order_id')
+                if not order_id:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не указан заказ'}),
+                    }
+
+                cur.execute(
+                    "SELECT status, yookassa_payment_id FROM orders WHERE id = %s",
+                    (order_id,),
+                )
+                row = cur.fetchone()
+                if not row:
+                    return {
+                        'statusCode': 404,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Заказ не найден'}),
+                    }
+
+                current_status, payment_id = row
+                if not payment_id:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'У заказа нет привязанного платежа ЮKassa'}),
+                    }
+
+                payment = _check_yookassa_payment(payment_id)
+                if not payment:
+                    return {
+                        'statusCode': 502,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не удалось получить статус от ЮKassa'}),
+                    }
+
+                yk_status = payment.get('status', '')
+                new_status = current_status
+                now = datetime.utcnow().isoformat()
+
+                if yk_status == 'succeeded' and current_status != 'paid':
+                    cur.execute(
+                        "UPDATE orders SET status = 'paid', paid_at = %s, updated_at = %s WHERE id = %s",
+                        (now, now, order_id),
+                    )
+                    conn.commit()
+                    new_status = 'paid'
+                elif yk_status == 'canceled' and current_status not in ('paid', 'canceled'):
+                    cur.execute(
+                        "UPDATE orders SET status = 'canceled', updated_at = %s WHERE id = %s",
+                        (now, order_id),
+                    )
+                    conn.commit()
+                    new_status = 'canceled'
+
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({
+                        'ok': True,
+                        'order_id': order_id,
+                        'yookassa_status': yk_status,
+                        'status': new_status,
+                    }, ensure_ascii=False),
+                }
+
             if 'banner' in body:
                 banner = body.get('banner') or {}
                 value = {
@@ -105,7 +197,7 @@ def handler(event: dict, context) -> dict:
 
         cur.execute(
             "SELECT id, number, customer_name, email, phone, comment, payment, total, items, "
-            "created_at, status, city, certificate_number "
+            "created_at, status, city, certificate_number, yookassa_payment_id "
             "FROM orders ORDER BY created_at DESC LIMIT 500"
         )
         orders = []
@@ -124,6 +216,7 @@ def handler(event: dict, context) -> dict:
                 'status': r[10],
                 'city': r[11],
                 'certificate_number': r[12],
+                'yookassa_payment_id': r[13],
             })
 
         cur.execute(

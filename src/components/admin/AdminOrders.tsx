@@ -16,6 +16,8 @@ interface Props {
   setCertDrafts: (updater: (prev: Record<number, string>) => Record<number, string>) => void;
   savingCertId: number | null;
   onSaveCertificateNumber: (orderId: number) => void;
+  checkingPaymentId: number | null;
+  onCheckPayment: (orderId: number) => void;
 }
 
 const AdminOrders = ({
@@ -31,6 +33,8 @@ const AdminOrders = ({
   setCertDrafts,
   savingCertId,
   onSaveCertificateNumber,
+  checkingPaymentId,
+  onCheckPayment,
 }: Props) => {
   return (
     <>
@@ -65,6 +69,22 @@ const AdminOrders = ({
                 <span className="font-display text-lg font-semibold">Заказ № {o.number}</span>
                 {statusBadge(o.status)}
                 {cityBadge(o.city)}
+                {o.payment === 'online' && o.status === 'pending' && o.yookassa_payment_id && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 rounded-full px-3 text-xs"
+                    onClick={() => onCheckPayment(o.id)}
+                    disabled={checkingPaymentId === o.id}
+                  >
+                    <Icon
+                      name="RefreshCcw"
+                      size={12}
+                      className={`mr-1.5 ${checkingPaymentId === o.id ? 'animate-spin' : ''}`}
+                    />
+                    {checkingPaymentId === o.id ? 'Проверяем…' : 'Проверить оплату'}
+                  </Button>
+                )}
               </div>
               <span className="text-sm text-muted-foreground">{fmtDate(o.created_at)}</span>
             </div>

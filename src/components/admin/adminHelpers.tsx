@@ -22,6 +22,7 @@ export interface Order {
   status: string;
   city: string;
   certificate_number: string | null;
+  yookassa_payment_id?: string | null;
 }
 
 export interface Lead {

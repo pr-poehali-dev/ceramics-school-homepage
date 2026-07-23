@@ -36,6 +36,7 @@ const Admin = () => {
   const [cityFilter, setCityFilter] = useState<'moscow' | 'suzdal' | 'all'>('moscow');
   const [certDrafts, setCertDrafts] = useState<Record<number, string>>({});
   const [savingCertId, setSavingCertId] = useState<number | null>(null);
+  const [checkingPaymentId, setCheckingPaymentId] = useState<number | null>(null);
   const [bannerEnabled, setBannerEnabled] = useState(false);
   const [bannerText, setBannerText] = useState('');
   const [savingBanner, setSavingBanner] = useState(false);
@@ -93,6 +94,37 @@ const Admin = () => {
       toast({ title: 'Не удалось сохранить', description: 'Попробуйте позже.' });
     } finally {
       setSavingCertId(null);
+    }
+  };
+
+  const checkPayment = async (orderId: number) => {
+    if (!token) return;
+    setCheckingPaymentId(orderId);
+    try {
+      const resp = await fetch(func2url.admin, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ action: 'check_payment', order_id: orderId }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        toast({ title: data.error || 'Не удалось проверить оплату' });
+        return;
+      }
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, status: data.status } : o)),
+      );
+      if (data.status === 'paid') {
+        toast({ title: 'Оплата подтверждена', description: 'Статус заказа обновлён на «Оплачен».' });
+      } else if (data.status === 'canceled') {
+        toast({ title: 'Платёж отменён', description: 'Статус заказа обновлён на «Отменён».' });
+      } else {
+        toast({ title: 'Платёж пока не завершён', description: `Статус в ЮKassa: ${data.yookassa_status || 'неизвестен'}` });
+      }
+    } catch {
+      toast({ title: 'Ошибка проверки', description: 'Попробуйте позже.' });
+    } finally {
+      setCheckingPaymentId(null);
     }
   };
 
@@ -284,6 +316,8 @@ const Admin = () => {
             setCertDrafts={setCertDrafts}
             savingCertId={savingCertId}
             onSaveCertificateNumber={saveCertificateNumber}
+            checkingPaymentId={checkingPaymentId}
+            onCheckPayment={checkPayment}
           />
         )}
 
