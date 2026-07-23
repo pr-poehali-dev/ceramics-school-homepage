@@ -10,9 +10,6 @@ import { toast } from '@/hooks/use-toast';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
 import { REVIEWS, GALLERY } from './suzdal-reviews/reviewsData';
 
-const EXCURSION_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c567306-9774-4e90-ae66-a78ec8eb5977.png';
-
 const WORKSHOP_SLUGS = [
   'goncharnoe-remeslo',
   'rospis-keramicheskix-tarelok',
@@ -75,7 +72,7 @@ const Suzdal = () => {
         <div className="container relative flex min-h-[75vh] items-center py-20 md:min-h-[85vh]">
           <div className="max-w-2xl animate-fade-in text-white">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur">
-              <Icon name="MapPin" size={16} /> Фабрика и школа керамики в Суздале
+              <Icon name="MapPin" size={16} /> {c.heroBadge}
             </span>
             <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] md:text-7xl">
               {c.heroTitle}
@@ -86,7 +83,7 @@ const Suzdal = () => {
             <div className="mt-8 flex flex-wrap gap-4">
               <a href="#workshops">
                 <Button size="lg" className="rounded-full px-8 text-base">
-                  <Icon name="Hammer" size={18} className="mr-2" /> Перейти к мастер-классам
+                  <Icon name="Hammer" size={18} className="mr-2" /> {c.heroButton1Text}
                 </Button>
               </a>
               <Link to="/suzdal/certificates">
@@ -95,7 +92,7 @@ const Suzdal = () => {
                   variant="outline"
                   className="rounded-full border-white/40 bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white hover:text-foreground"
                 >
-                  <Icon name="Gift" size={18} className="mr-2" /> Подарить сертификат
+                  <Icon name="Gift" size={18} className="mr-2" /> {c.heroButton2Text}
                 </Button>
               </Link>
             </div>
@@ -105,7 +102,7 @@ const Suzdal = () => {
 
       {/* WORKSHOPS */}
       <section id="workshops" className="container py-16 md:py-24">
-        <SectionTitle eyebrow="Наши услуги" title="Мастер-классы" />
+        <SectionTitle eyebrow={c.workshopsEyebrow} title={c.workshopsTitle} />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {HOME_WORKSHOPS.map((w) => (
             <Link
@@ -139,7 +136,7 @@ const Suzdal = () => {
         <div className="mt-10 text-center">
           <Link to="/suzdal/workshops">
             <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
-              Все мастер-классы
+              {c.workshopsButtonText}
               <Icon name="ArrowRight" size={18} className="ml-2" />
             </Button>
           </Link>
@@ -152,33 +149,32 @@ const Suzdal = () => {
           <div className="overflow-hidden rounded-[2rem] border border-border bg-card md:grid md:grid-cols-2 md:items-center">
             <div className="aspect-[4/3] overflow-hidden md:aspect-auto md:h-full">
               <img
-                src={EXCURSION_IMG}
+                src={c.excursionsImg}
                 alt="Экскурсия по фабрике «Дымов Керамика» в Суздале"
                 className="h-full w-full object-cover"
               />
             </div>
             <div className="p-8 md:p-12">
               <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-                <Icon name="Factory" size={16} /> Экскурсии
+                <Icon name="Factory" size={16} /> {c.excursionsBadge}
               </span>
               <h2 className="mt-5 font-display text-3xl font-semibold md:text-4xl">
-                Загляните за кулисы производства
+                {c.excursionsTitle}
               </h2>
               <p className="mt-4 text-muted-foreground">
-                Полный цикл создания керамики — от массозаготовки до обжига, росписи и
-                упаковки. Экскурсия длится от 30 до 45 минут и подходит для взрослых и детей от 5 лет.
+                {c.excursionsText}
               </p>
               <div className="mt-6 flex flex-wrap gap-4 text-sm">
                 <span className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 font-medium">
-                  <Icon name="User" size={16} className="text-primary" /> Взрослый — 1 000 ₽
+                  <Icon name="User" size={16} className="text-primary" /> Взрослый — {c.excursionsPriceAdult}
                 </span>
                 <span className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 font-medium">
-                  <Icon name="Baby" size={16} className="text-primary" /> Детский — 600 ₽
+                  <Icon name="Baby" size={16} className="text-primary" /> Детский — {c.excursionsPriceKid}
                 </span>
               </div>
               <Link to="/suzdal/excursions">
                 <Button size="lg" className="mt-8 rounded-full px-8 text-base">
-                  Подробнее об экскурсии
+                  {c.excursionsButtonText}
                   <Icon name="ArrowRight" size={18} className="ml-2" />
                 </Button>
               </Link>
@@ -189,7 +185,7 @@ const Suzdal = () => {
 
       {/* REVIEWS */}
       <section id="reviews" className="container py-16 md:py-24">
-        <SectionTitle eyebrow="Отзывы" title="Нам доверяют" />
+        <SectionTitle eyebrow={c.reviewsEyebrow} title={c.reviewsTitle} />
 
         <div className="mx-auto mt-6 flex w-fit items-center gap-3 rounded-2xl border border-border bg-card px-6 py-3">
           <span className="font-display text-3xl font-semibold text-primary">{REVIEW_AVG}</span>
@@ -251,7 +247,7 @@ const Suzdal = () => {
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <Link to="/suzdal/reviews">
             <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
-              Все отзывы и работы
+              {c.reviewsButtonText}
               <Icon name="ArrowRight" size={18} className="ml-2" />
             </Button>
           </Link>
