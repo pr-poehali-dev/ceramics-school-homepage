@@ -8,17 +8,18 @@ import { REVIEWS } from './reviews/reviewsData';
 import ReviewCard from './reviews/ReviewCard';
 import ReviewsGallery from './reviews/ReviewsGallery';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const STEP = 24;
 const AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
 
 const Reviews = () => {
   const [visible, setVisible] = useState(STEP);
+  const c = usePageContent('moscow-reviews');
 
   usePageMeta({
-    title: 'Отзывы о студии керамики Дымов Керамика | ВДНХ, Москва',
-    description:
-      'Честные отзывы гостей о мастер-классах в студии керамики «Дымов Керамика» на ВДНХ. 101+ отзыв, средняя оценка 5.0. Узнайте, что говорят участники о лепке, гончарном круге и росписи керамики.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
 
   return (
@@ -33,10 +34,10 @@ const Reviews = () => {
             <Icon name="MessageSquareHeart" size={16} /> Отзывы
           </span>
           <h1 className="mt-5 font-display text-5xl font-semibold md:text-6xl">
-            Что говорят <span className="text-primary italic">наши гости</span>
+            Что говорят <span className="text-primary italic">{c.h1}</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-            Тёплые слова участников мастер-классов и работы, созданные их руками.
+            {c.subtitle}
           </p>
 
           {/* RATING */}

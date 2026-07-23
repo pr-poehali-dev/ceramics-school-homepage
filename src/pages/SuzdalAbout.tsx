@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const FACTORY_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/149adc21-4153-494c-a82b-0489b3754fe0.jpg';
 
 const SuzdalAbout = () => {
+  const c = usePageContent('suzdal-about');
   usePageMeta({
-    title: 'Гончарная школа в Суздале «Дымов Керамика»',
-    description:
-      'Мы рады пригласить вас на курсы керамики и гончарного мастерства в Суздале. Лучшие мастера. Мастер-классы и экскурсии. Действуют скидки для групп! Звоните!',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
 
   return (
@@ -33,7 +34,7 @@ const SuzdalAbout = () => {
             <Icon name="Factory" size={16} /> С 2003 года в Суздале
           </span>
           <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
-            О фабрике
+            {c.h1}
           </h1>
         </div>
       </section>

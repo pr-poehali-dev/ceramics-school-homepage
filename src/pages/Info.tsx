@@ -2,6 +2,7 @@ import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const SECTIONS = [
   { id: 'delivery', label: 'Доставка', icon: 'Truck' },
@@ -9,11 +10,12 @@ const SECTIONS = [
 ];
 
 const Info = () => {
+  const c = usePageContent('moscow-info');
   usePageMeta({
-    title: 'Информация о доставке и выдаче изделий | Дымов Керамика',
-    description:
-      'Информация о доставке готовых изделий по Москве и условиях выдачи керамики после мастер-класса в студии «Дымов Керамика» на ВДНХ. Стоимость доставки уточняется у администратора по телефону +7 (985) 419-89-03.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
+  const phoneHref = `tel:${(c.phone || '+79854198903').replace(/[^\d+]/g, '')}`;
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}
@@ -27,7 +29,7 @@ const Info = () => {
               <Icon name="Info" size={16} /> Информация
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold md:text-5xl">
-              Полезная <span className="text-primary italic">информация</span>
+              {c.h1}
             </h1>
             <p className="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
               Доставка готовых изделий и условия их выдачи после мастер-класса.
@@ -62,8 +64,8 @@ const Info = () => {
               </p>
               <p>
                 Стоимость доставки уточняется у администратора по номеру{' '}
-                <a href="tel:+79854198903" className="font-semibold text-primary hover:underline">
-                  +7 (985) 419-89-03
+                <a href={phoneHref} className="font-semibold text-primary hover:underline">
+                  {c.phone}
                 </a>{' '}
                 и зависит от адреса, по которому будет доставлена ваша посылка.
               </p>
@@ -104,11 +106,11 @@ const Info = () => {
                   <span>
                     Готовое изделие можно забрать через 15 дней по адресу:{' '}
                     <span className="font-medium text-foreground">
-                      ВДНХ, проспект Мира, 119, строение 186
+                      {c.address}
                     </span>
-                    . Ежедневно с 11:00 до 20:00. Телефон:{' '}
-                    <a href="tel:+79854198903" className="font-semibold text-primary hover:underline">
-                      8 (985) 419-89-03
+                    . {c.workHours}. Телефон:{' '}
+                    <a href={phoneHref} className="font-semibold text-primary hover:underline">
+                      {c.phone}
                     </a>
                     .
                   </span>

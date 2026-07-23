@@ -7,6 +7,7 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 import { reachGoal, GOALS } from '@/lib/metrika';
 
 const CERTIFICATE_IMG =
@@ -25,10 +26,10 @@ const PRESETS = [
 
 
 const Certificates = () => {
+  const c = usePageContent('moscow-certificates');
   usePageMeta({
-    title: 'Сертификаты в гончарную мастерскую «Дымов Керамика» в Москве на ВДНХ',
-    description:
-      'Подарочные сертификаты на уроки гончарного мастерства. Сертификаты на гончарные мастер-классы для детей и взрослых в Москве.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
   const { addItem } = useCart();
   const navigate = useNavigate();
@@ -74,12 +75,11 @@ const Certificates = () => {
                 <Icon name="Gift" size={16} /> Подарочные сертификаты
               </span>
               <h1 className="mt-5 font-display text-4xl font-semibold leading-tight md:text-5xl">
-                Подарите впечатления,<br />
-                <span className="text-primary italic">а не вещи</span>
+                {c.h1Line1}<br />
+                <span className="text-primary italic">{c.h1Line2}</span>
               </h1>
               <p className="mt-4 max-w-md text-lg text-muted-foreground">
-                Сертификат на мастер-класс по керамике — подарок, который запомнится. Выберите
-                готовый номинал или укажите свою сумму.
+                {c.subtitle}
               </p>
             </div>
             <div className="relative flex h-full items-center justify-center p-8 md:justify-end md:p-12">

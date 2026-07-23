@@ -7,6 +7,7 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 import { reachGoal, GOALS } from '@/lib/metrika';
 
 const CERTIFICATE_IMG =
@@ -20,10 +21,10 @@ const PRESETS = [
 ];
 
 const SuzdalCertificates = () => {
+  const c = usePageContent('suzdal-certificates');
   usePageMeta({
-    title: 'Сертификаты в гончарную мастерскую «Дымов Керамика» в Суздале',
-    description:
-      'Подарочные сертификаты на уроки гончарного мастерства. Сертификаты на гончарные мастер-классы для детей и взрослых в Суздале.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
   const { addItem } = useCart();
   const navigate = useNavigate();
@@ -68,11 +69,10 @@ const SuzdalCertificates = () => {
                 <Icon name="Gift" size={16} /> Сертификат в школу
               </span>
               <h1 className="mt-5 font-display text-4xl font-semibold leading-tight md:text-5xl">
-                Сертификат <span className="text-primary italic">в школу</span>
+                Сертификат <span className="text-primary italic">{c.h1}</span>
               </h1>
               <p className="mt-4 max-w-md text-lg text-muted-foreground">
-                Сертификат в школу «Дымов Керамика» в Суздале — подарок, который запомнится.
-                Выберите номинал и оформите заказ.
+                {c.subtitle}
               </p>
             </div>
             <div className="relative flex h-full items-center justify-center p-8 md:justify-end md:p-12">

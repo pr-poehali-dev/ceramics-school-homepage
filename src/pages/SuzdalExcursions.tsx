@@ -3,6 +3,7 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import ReviewsGallery from '@/pages/reviews/ReviewsGallery';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const BANNER_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c567306-9774-4e90-ae66-a78ec8eb5977.png';
@@ -19,10 +20,10 @@ const EXCURSION_GALLERY: string[] = [
 ];
 
 const SuzdalExcursions = () => {
+  const c = usePageContent('suzdal-excursions');
   usePageMeta({
-    title: 'Экскурсии по производству «Дымов Керамика» в Суздале',
-    description:
-      'Мы приглашаем индивидуальные и организованные группы на экскурсию по фабрике «Дымов Керамика» в Суздале. Экскурсию можно посетить ежедневно с 9.00 до 18.00 Звоните!',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
 
   return (
@@ -48,7 +49,7 @@ const SuzdalExcursions = () => {
               <Icon name="Factory" size={16} /> Экскурсии
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold md:text-5xl">
-              Экскурсии по производству <span className="text-primary italic">«Дымов Керамика»</span>
+              {c.h1}
             </h1>
           </div>
 
@@ -103,7 +104,7 @@ const SuzdalExcursions = () => {
                 </span>
                 <p className="font-medium text-foreground">Взрослый билет</p>
               </div>
-              <p className="mt-4 font-display text-3xl font-semibold text-primary">1 000 ₽</p>
+              <p className="mt-4 font-display text-3xl font-semibold text-primary">{c.priceAdult}</p>
             </div>
             <div className="rounded-2xl border border-border bg-card p-6">
               <div className="flex items-center gap-3">
@@ -112,7 +113,7 @@ const SuzdalExcursions = () => {
                 </span>
                 <p className="font-medium text-foreground">Детский билет</p>
               </div>
-              <p className="mt-4 font-display text-3xl font-semibold text-primary">600 ₽</p>
+              <p className="mt-4 font-display text-3xl font-semibold text-primary">{c.priceKid}</p>
             </div>
           </div>
 
@@ -123,7 +124,7 @@ const SuzdalExcursions = () => {
             <div>
               <p className="text-sm font-semibold text-foreground">Возрастные ограничения</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                От 5 лет. Будет очень интересно и взрослым, и детям.
+                {c.ageNote}
               </p>
             </div>
           </div>

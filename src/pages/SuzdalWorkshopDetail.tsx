@@ -7,6 +7,7 @@ import SiteFooter from '@/components/SiteFooter';
 import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 interface SuzdalWorkshopData {
   slug: string;
@@ -254,6 +255,7 @@ const SuzdalWorkshopDetail = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [qty, setQty] = useState(1);
+  const c = usePageContent(`suzdal-workshops-${slug || 'goncharnoe-remeslo'}`);
 
   usePageMeta({
     title: data?.metaTitle || 'Мастер-классы «Дымов Керамика» в Суздале',
@@ -265,17 +267,22 @@ const SuzdalWorkshopDetail = () => {
     return <Navigate to="/suzdal/master-klassy" replace />;
   }
 
+  const displayTitle = c.title || data.title;
+  const displaySubtitle = c.subtitle || data.subtitle;
+  const displayImg = c.img || data.img;
+  const displayPrice = c.price ? Number(c.price) || data.price : data.price;
+
   const handleAddToCart = () => {
     addItem({
       id: `suzdal-${data.slug}`,
-      title: data.title,
+      title: displayTitle,
       details: 'Билет «Разовый»',
-      price: data.price,
+      price: displayPrice,
       qty,
     });
     toast({
       title: 'Добавлено в корзину',
-      description: `${data.title} × ${qty} шт.`,
+      description: `${displayTitle} × ${qty} шт.`,
     });
     navigate('/suzdal/checkout');
   };
@@ -296,8 +303,8 @@ const SuzdalWorkshopDetail = () => {
         {/* HERO */}
         <div className="relative mt-8 animate-scale-in overflow-hidden rounded-[2rem] shadow-xl">
           <img
-            src={data.img}
-            alt={data.title}
+            src={displayImg}
+            alt={displayTitle}
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/25" />
@@ -307,13 +314,13 @@ const SuzdalWorkshopDetail = () => {
               <Icon name={data.badgeIcon} size={16} /> Мастер-класс
             </span>
             <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
-              {data.title}
+              {displayTitle}
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-white/85 md:text-xl">{data.subtitle}</p>
+            <p className="mt-4 max-w-xl text-lg text-white/85 md:text-xl">{displaySubtitle}</p>
 
             <div className="mt-7 flex flex-wrap gap-3">
               <span className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-                <Icon name="Tag" size={16} /> {data.price.toLocaleString('ru-RU')} руб.
+                <Icon name="Tag" size={16} /> {displayPrice.toLocaleString('ru-RU')} руб.
               </span>
               <span className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
                 <Icon name="Clock" size={16} /> {data.duration}
@@ -440,7 +447,7 @@ const SuzdalWorkshopDetail = () => {
               <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-4">
                 <span className="text-sm font-semibold text-foreground">Стоимость</span>
                 <span className="font-display text-2xl font-semibold text-primary">
-                  {(data.price * qty).toLocaleString('ru-RU')} руб.
+                  {(displayPrice * qty).toLocaleString('ru-RU')} руб.
                 </span>
               </div>
 

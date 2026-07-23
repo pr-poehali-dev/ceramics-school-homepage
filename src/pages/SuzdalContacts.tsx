@@ -2,13 +2,16 @@ import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const SuzdalContacts = () => {
+  const content = usePageContent('suzdal-contacts');
   usePageMeta({
-    title: 'Контакты гончарной мастерской «Дымов Керамика» в Суздале',
-    description:
-      'Школа керамики и гончарного мастерства «Дымов Керамика», город Суздаль, улица Васильеская, дом 41а. График работы пн-вс с 9:00 до 18:00.',
+    title: content.metaTitle,
+    description: content.metaDescription,
   });
+  const addressLines = content.address ? content.address.split(',').map((s) => s.trim()) : ['Владимирская область, г. Суздаль,', 'ул. Васильевская, 41а'];
+  const workHoursLines = content.workHours ? content.workHours.split(',').map((s) => s.trim()) : ['Понедельник – Воскресенье', '9:00 – 18:00'];
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
@@ -21,10 +24,10 @@ const SuzdalContacts = () => {
             <Icon name="MapPin" size={16} /> Контакты
           </span>
           <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
-            Мы в <span className="text-primary italic">Суздале</span>
+            Мы в <span className="text-primary italic">{content.h1}</span>
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
-            Фабрика и школа «Дымов Керамика». Приходите лепить — будем рады!
+            {content.subtitle}
           </p>
         </div>
 
@@ -34,8 +37,8 @@ const SuzdalContacts = () => {
             {
               icon: 'Phone',
               label: 'Телефон',
-              lines: ['+7 (915) 157-64-85'],
-              href: 'tel:+79151576485',
+              lines: [content.phone || '+7 (915) 157-64-85'],
+              href: `tel:${(content.phone || '+79151576485').replace(/[^\d+]/g, '')}`,
             },
             {
               icon: 'Send',
@@ -46,19 +49,19 @@ const SuzdalContacts = () => {
             {
               icon: 'Mail',
               label: 'E-mail',
-              lines: ['mk@dymovceramicschool.ru'],
-              href: 'mailto:mk@dymovceramicschool.ru',
+              lines: [content.email || 'mk@dymovceramicschool.ru'],
+              href: `mailto:${content.email || 'mk@dymovceramicschool.ru'}`,
             },
             {
               icon: 'MapPin',
               label: 'Адрес',
-              lines: ['Владимирская область, г. Суздаль,', 'ул. Васильевская, 41а'],
+              lines: addressLines,
               href: 'https://yandex.ru/maps/?text=Суздаль, улица Васильевская, 41а',
             },
             {
               icon: 'Clock',
               label: 'График работы',
-              lines: ['Понедельник – Воскресенье', '9:00 – 18:00'],
+              lines: workHoursLines,
               href: null,
             },
           ].map((c) => (

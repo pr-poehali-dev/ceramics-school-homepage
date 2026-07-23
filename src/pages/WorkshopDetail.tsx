@@ -7,6 +7,7 @@ import UtilBlock from '@/pages/workshop-detail/UtilBlock';
 import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const WORKSHOP_META: Record<string, { title: string; description: string }> = {
   krug: {
@@ -131,6 +132,7 @@ const WorkshopDetail = () => {
   const { slug } = useParams();
   const data = slug ? WORKSHOP_DETAILS[slug] : undefined;
   const meta = slug ? WORKSHOP_META[slug] : undefined;
+  const c = usePageContent(`moscow-workshops-${slug || 'lepka'}`);
 
   usePageMeta({
     title: meta?.title || 'Мастер-классы «Дымов Керамика» в Москве',
@@ -160,8 +162,8 @@ const WorkshopDetail = () => {
         {/* HERO */}
         <div className="relative mt-8 animate-scale-in overflow-hidden rounded-[2rem] shadow-xl">
           <img
-            src={data.img}
-            alt={data.title}
+            src={c.img || data.img}
+            alt={c.title || data.title}
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/25" />
@@ -171,18 +173,18 @@ const WorkshopDetail = () => {
               <Icon name={data.badgeIcon} size={16} /> Мастер-класс
             </span>
             <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
-              {data.title}
+              {c.title || data.title}
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-white/85 md:text-xl">{data.subtitle}</p>
+            <p className="mt-4 max-w-xl text-lg text-white/85 md:text-xl">{c.subtitle || data.subtitle}</p>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              {data.stats.map((s) => (
+              {data.stats.map((s, i) => (
                 <span
                   key={s.text}
                   className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur"
                 >
                   <Icon name={s.icon} size={16} className="text-white" />
-                  {s.text}
+                  {i === 0 && c.price ? c.price : s.text}
                 </span>
               ))}
             </div>

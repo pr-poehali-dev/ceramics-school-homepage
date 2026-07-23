@@ -4,21 +4,34 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
 
-const WORKSHOPS = Object.values(SUZDAL_WORKSHOP_DETAILS);
+const WORKSHOPS_BASE = Object.values(SUZDAL_WORKSHOP_DETAILS);
 
 const SuzdalWorkshops = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
+  const c = usePageContent('suzdal-workshops');
 
   usePageMeta({
-    title: 'Мастер-классы по гончарному мастерству в Суздале',
-    description:
-      'Гончарные мастер-классы для детей и взрослых в школе «Дымов Керамика». Обучение гончарному делу. Курсы гончарного мастерства.',
+    title: c.metaTitle,
+    description: c.metaDescription,
+  });
+
+  const WORKSHOPS = WORKSHOPS_BASE.map((w) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const wc = usePageContent(`suzdal-workshops-${w.slug}`);
+    return {
+      ...w,
+      title: wc.title || w.title,
+      subtitle: wc.subtitle || w.subtitle,
+      img: wc.img || w.img,
+      price: wc.price ? Number(wc.price) || w.price : w.price,
+    };
   });
 
   const handleAddToCart = (e: React.MouseEvent, w: (typeof WORKSHOPS)[number]) => {
@@ -47,10 +60,10 @@ const SuzdalWorkshops = () => {
             <Icon name="Sparkles" size={16} /> Мастер-классы
           </span>
           <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] md:text-6xl">
-            Наши <span className="text-primary italic">мастер-классы</span>
+            Наши <span className="text-primary italic">{c.h1}</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-            Гончарное ремесло, лепка и роспись керамики на фабрике «Дымов Керамика» в Суздале.
+            {c.subtitle}
           </p>
         </div>
       </section>

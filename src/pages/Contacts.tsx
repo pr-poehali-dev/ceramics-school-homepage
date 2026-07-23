@@ -2,13 +2,16 @@ import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const Contacts = () => {
+  const content = usePageContent('moscow-contacts');
   usePageMeta({
-    title: 'Контакты гончарной мастерской «Дымов Керамика» в Москве',
-    description:
-      'Школа керамики и гончарного мастерства «Дымов Керамика», город Москва, проспект Мира, дом 119 строение 186. График работы пн-вс с 11:00 до 20:00.',
+    title: content.metaTitle,
+    description: content.metaDescription,
   });
+  const addressLines = content.address ? content.address.split(',').map((s) => s.trim()) : ['г. Москва, проспект Мира,', 'д. 119, стр. 186'];
+  const workHoursLines = content.workHours ? content.workHours.split(',').map((s) => s.trim()) : ['Пн – Вс', '11:00 – 20:00'];
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       <SiteHeader active="/moscow/contacts" />
@@ -20,10 +23,10 @@ const Contacts = () => {
             <Icon name="MapPin" size={16} /> Контакты
           </span>
           <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
-            Мы на <span className="text-primary italic">ВДНХ</span>
+            Мы на <span className="text-primary italic">{content.h1}</span>
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
-            Студия керамики в сердце ВДНХ. Приходите лепить — будем рады!
+            {content.subtitle}
           </p>
         </div>
 
@@ -33,25 +36,25 @@ const Contacts = () => {
             {
               icon: 'Phone',
               label: 'Телефон',
-              lines: ['+7 (985) 419-89-03'],
-              href: 'tel:+79854198903',
+              lines: [content.phone || '+7 (985) 419-89-03'],
+              href: `tel:${(content.phone || '+79854198903').replace(/[^\d+]/g, '')}`,
             },
             {
               icon: 'Mail',
               label: 'E-mail',
-              lines: ['hello@dymovceramic.ru'],
-              href: 'mailto:hello@dymovceramic.ru',
+              lines: [content.email || 'hello@dymovceramic.ru'],
+              href: `mailto:${content.email || 'hello@dymovceramic.ru'}`,
             },
             {
               icon: 'MapPin',
               label: 'Адрес',
-              lines: ['г. Москва, проспект Мира,', 'д. 119, стр. 186'],
+              lines: addressLines,
               href: 'https://yandex.ru/maps/?text=Москва, проспект Мира, 119с186',
             },
             {
               icon: 'Clock',
               label: 'График работы',
-              lines: ['Пн – Вс', '11:00 – 20:00'],
+              lines: workHoursLines,
               href: null,
             },
           ].map((c) => (

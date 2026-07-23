@@ -8,12 +8,13 @@ import FormatsFilters from './formats/FormatsFilters';
 import FormatsResults from './formats/FormatsResults';
 import FormatsCta from './formats/FormatsCta';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const Formats = () => {
+  const c = usePageContent('moscow-formats');
   usePageMeta({
-    title: 'Форматы мастер-классов в «Дымов Керамика» | Выбрать занятие на ВДНХ',
-    description:
-      'Выберите формат мастер-класса по керамике в студии на ВДНХ: классические, детские, тематические, свидания, выездные. Подберём вариант под любой возраст и бюджет',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
   const [searchParams] = useSearchParams();
   const openAction = searchParams.get('open');
@@ -74,10 +75,10 @@ const Formats = () => {
             <Icon name="LayoutGrid" size={16} /> Форматы занятий
           </span>
           <h1 className="mt-5 font-display text-5xl font-semibold md:text-6xl">
-            Выберите подходящий <span className="text-primary italic">формат</span>
+            {c.h1}
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-            Фильтруйте по времени, возрасту и месту — найдите идеальный вариант для себя.
+            {c.subtitle}
           </p>
         </div>
 

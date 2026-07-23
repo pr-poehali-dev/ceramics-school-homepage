@@ -5,9 +5,11 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
-const WORKSHOPS = [
+const WORKSHOPS_BASE = [
   {
+    contentKey: 'moscow-workshops-lepka',
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
     title: 'Лепка',
     desc: 'Создание изделий руками из глины. От фигурки до посуды.',
@@ -19,6 +21,7 @@ const WORKSHOPS = [
     note: null as null | { icon: string; text: string; tone: 'warn' | 'fast' },
   },
   {
+    contentKey: 'moscow-workshops-krug',
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/ab36a67f-4ea0-4d3a-8ebe-21e8a9dfb891.png',
     title: 'Гончарный круг',
     desc: 'Работа за гончарным кругом. Создайте посуду своими руками.',
@@ -30,6 +33,7 @@ const WORKSHOPS = [
     note: { icon: 'TriangleAlert', text: 'Нет кругов вт / ср / чт', tone: 'warn' as const },
   },
   {
+    contentKey: 'moscow-workshops-angoby',
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
     title: 'Роспись ангобами',
     desc: 'Роспись изделий специальными керамическими красками.',
@@ -41,6 +45,7 @@ const WORKSHOPS = [
     note: null,
   },
   {
+    contentKey: 'moscow-workshops-akril',
     img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
     title: 'Роспись акрилом',
     desc: 'Яркая роспись акрилом. Забираете изделие сразу!',
@@ -54,11 +59,34 @@ const WORKSHOPS = [
 ];
 
 const Workshops = () => {
+  const c = usePageContent('moscow-workshops');
+  const lepka = usePageContent('moscow-workshops-lepka');
+  const krug = usePageContent('moscow-workshops-krug');
+  const angoby = usePageContent('moscow-workshops-angoby');
+  const akril = usePageContent('moscow-workshops-akril');
+  const CONTENT_BY_KEY: Record<string, Record<string, string>> = {
+    'moscow-workshops-lepka': lepka,
+    'moscow-workshops-krug': krug,
+    'moscow-workshops-angoby': angoby,
+    'moscow-workshops-akril': akril,
+  };
+
   usePageMeta({
-    title: 'Мастер-классы по гончарному мастерству в Москве на ВДНХ',
-    description:
-      'Мастер-классы по керамике и гончарному делу для детей и взрослых в школе «Дымов Керамика». Уроки гончарного мастерства.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
+
+  const WORKSHOPS = WORKSHOPS_BASE.map((w) => {
+    const wc = CONTENT_BY_KEY[w.contentKey] || {};
+    return {
+      ...w,
+      title: wc.title || w.title,
+      desc: wc.subtitle || w.desc,
+      price: wc.price ? `от ${wc.price}` : w.price,
+      img: wc.img || w.img,
+    };
+  });
+
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}
@@ -71,11 +99,10 @@ const Workshops = () => {
             <Icon name="Sparkles" size={16} /> Наши мастер-классы
           </span>
           <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] md:text-6xl">
-            Выберите, что хотите <span className="text-primary italic">создавать</span>
+            {c.h1}
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-            Каждый мастер-класс — это час в тёплой атмосфере мастерской и своё
-            изделие из глины на память.
+            {c.subtitle}
           </p>
         </div>
       </section>

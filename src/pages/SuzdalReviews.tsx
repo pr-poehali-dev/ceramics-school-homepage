@@ -8,17 +8,18 @@ import { REVIEWS, GALLERY } from './suzdal-reviews/reviewsData';
 import ReviewCard from './reviews/ReviewCard';
 import ReviewsGallery from './reviews/ReviewsGallery';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const STEP = 24;
 const AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
 
 const SuzdalReviews = () => {
   const [visible, setVisible] = useState(STEP);
+  const c = usePageContent('suzdal-reviews');
 
   usePageMeta({
-    title: 'Отзывы о фабрике и школе керамики «Дымов Керамика» в Суздале',
-    description:
-      'Честные отзывы гостей о мастер-классах и экскурсиях на фабрике «Дымов Керамика» в Суздале. Узнайте, что говорят участники о гончарном ремесле, лепке и росписи керамики.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
 
   return (
@@ -33,10 +34,10 @@ const SuzdalReviews = () => {
             <Icon name="MessageSquareHeart" size={16} /> Отзывы
           </span>
           <h1 className="mt-5 font-display text-5xl font-semibold md:text-6xl">
-            Что говорят <span className="text-primary italic">наши гости</span>
+            Что говорят <span className="text-primary italic">{c.h1}</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-            Тёплые слова участников мастер-классов и экскурсий на фабрике в Суздале.
+            {c.subtitle}
           </p>
 
           {/* RATING */}
