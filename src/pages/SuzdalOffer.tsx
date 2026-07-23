@@ -1,14 +1,15 @@
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
-import { OFFER_INTRO, OFFER_SECTIONS } from './suzdal-offer/offerData';
+import LegalDocument from '@/components/LegalDocument';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const SuzdalOffer = () => {
+  const c = usePageContent('suzdal-offer');
   usePageMeta({
-    title: 'Публичная оферта | Дымов Керамика Суздаль',
-    description:
-      'Публичная оферта студии керамики «Дымов Керамика Суздаль». Условия оказания услуг, проведения мастер-классов, продажи товаров и возврата. Официальные документы.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
@@ -23,36 +24,14 @@ const SuzdalOffer = () => {
               <Icon name="FileText" size={16} /> Документы
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold md:text-5xl">
-              Публичная оферта Суздаль
+              {c.h1}
             </h1>
-            <p className="mt-3 text-muted-foreground">Договор</p>
+            <p className="mt-3 text-muted-foreground">{c.subtitle}</p>
           </div>
 
-          {/* INTRO */}
-          <div className="mt-10 space-y-3">
-            {OFFER_INTRO.map((p, i) => (
-              <p key={i} className="text-sm leading-relaxed text-muted-foreground">
-                {p}
-              </p>
-            ))}
-          </div>
-
-          {/* SECTIONS */}
-          <div className="mt-8 space-y-8">
-            {OFFER_SECTIONS.map((s) => (
-              <section key={s.heading}>
-                {s.heading && (
-                  <h2 className="mb-3 font-display text-xl font-semibold">{s.heading}</h2>
-                )}
-                <div className="space-y-3">
-                  {s.paragraphs.map((p, i) => (
-                    <p key={i} className="text-sm leading-relaxed text-muted-foreground">
-                      {p}
-                    </p>
-                  ))}
-                </div>
-              </section>
-            ))}
+          {/* DOCUMENT */}
+          <div className="mt-10">
+            <LegalDocument text={c.documentText} />
           </div>
 
           <p className="mt-12 border-t border-border pt-6 text-center text-sm text-muted-foreground">

@@ -1,14 +1,15 @@
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
-import { PRIVACY_INTRO, PRIVACY_SECTIONS } from './privacy/privacyData';
+import LegalDocument from '@/components/LegalDocument';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 
 const Privacy = () => {
+  const c = usePageContent('moscow-privacy');
   usePageMeta({
-    title: 'Политика конфиденциальности | Дымов Керамика',
-    description:
-      'Политика конфиденциальности и обработки персональных данных ООО «ТД «Дымов Керамика». Условия сбора, хранения и защиты персональной информации пользователей сайта и услуг студии керамики на ВДНХ.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
@@ -23,30 +24,16 @@ const Privacy = () => {
               <Icon name="ShieldCheck" size={16} /> Документы
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold md:text-5xl">
-              Политика конфиденциальности
+              {c.h1}
             </h1>
             <p className="mt-3 text-muted-foreground">
-              Политика в отношении обработки персональных данных
+              {c.subtitle}
             </p>
           </div>
 
-          {/* INTRO */}
-          <p className="mt-10 text-sm leading-relaxed text-muted-foreground">{PRIVACY_INTRO}</p>
-
-          {/* SECTIONS */}
-          <div className="mt-8 space-y-8">
-            {PRIVACY_SECTIONS.map((s) => (
-              <section key={s.heading}>
-                <h2 className="mb-3 font-display text-xl font-semibold">{s.heading}</h2>
-                <div className="space-y-3">
-                  {s.paragraphs.map((p, i) => (
-                    <p key={i} className="text-sm leading-relaxed text-muted-foreground">
-                      {p}
-                    </p>
-                  ))}
-                </div>
-              </section>
-            ))}
+          {/* DOCUMENT */}
+          <div className="mt-10">
+            <LegalDocument text={c.documentText} />
           </div>
 
           <p className="mt-12 border-t border-border pt-6 text-center text-sm text-muted-foreground">
