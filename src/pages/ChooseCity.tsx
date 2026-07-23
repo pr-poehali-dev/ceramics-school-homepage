@@ -24,16 +24,16 @@ const STATS = [
 
 const ChooseCity = () => {
   usePageMeta({
-    title: 'Гончарная школа «Дымов Керамика» в Москве и Суздале',
+    title: 'Гончарные мастер-классы в Москве и Суздале | Дымов Керамика',
     description:
-      'Ждем вас в нашей школе гончарных искусств «Дымов Керамика» в Москве и Суздале! Мастер-классы и уроки для детей и взрослых. Экскурсии, праздники. Выгодные предложения. Звоните!',
+      'Мастерская «Дымов Керамика»: мастер-классы по лепке, работа на гончарном круге, роспись акрилом. Уроки для детей и взрослых в Москве и Суздале. Скидки, абонементы, сертификаты!',
   });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* LOGO */}
       <div className="flex flex-col items-center pt-12 pb-8 md:pt-16">
         <Logo className="h-14 origin-center md:h-16" />
-        <h1 className="mt-5 text-center font-display text-2xl font-semibold md:text-3xl">Одна из старейших гончарных школ — выберите город</h1>
+        <h1 className="mt-5 text-center font-display text-2xl font-semibold md:text-3xl">Выберите город: гончарные мастер-классы «Дымов Керамика» в Москве или Суздале</h1>
       </div>
 
       {/* CHOICE BLOCKS */}
