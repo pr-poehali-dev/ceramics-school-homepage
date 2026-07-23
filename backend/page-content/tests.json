@@ -1,0 +1,29 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "GET list of pages (public)",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "GET one page by key (public)",
+      "method": "GET",
+      "path": "/?key=home",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Unauthorized POST without token",
+      "method": "POST",
+      "path": "/",
+      "body": {"key": "home", "title": "Главная", "fields": {}},
+      "expectedStatus": 401
+    }
+  ]
+}

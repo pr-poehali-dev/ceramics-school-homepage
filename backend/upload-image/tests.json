@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Unauthorized without token",
+      "method": "POST",
+      "path": "/",
+      "body": {"fileData": "aGVsbG8=", "contentType": "image/png"},
+      "expectedStatus": 401
+    }
+  ]
+}

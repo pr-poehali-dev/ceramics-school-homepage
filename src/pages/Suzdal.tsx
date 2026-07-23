@@ -4,13 +4,11 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
 import { REVIEWS, GALLERY } from './suzdal-reviews/reviewsData';
-
-const HERO_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/c6f10822-9087-43b5-af4a-0d27b8ec6a9b.jpg';
 
 const EXCURSION_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c567306-9774-4e90-ae66-a78ec8eb5977.png';
@@ -38,11 +36,11 @@ const initials = (name: string) =>
 const Suzdal = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
+  const c = usePageContent('suzdal-home');
 
   usePageMeta({
-    title: 'Фабрика и школа керамики в Суздале «Дымов Керамика»',
-    description:
-      'Гончарная мастерская в Суздале ждет в гости детей и взрослых! Мастер-классы на гончарном круге, ручной лепке и росписи. Экскурсии.',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
 
   const handleAddToCart = (e: React.MouseEvent, w: (typeof HOME_WORKSHOPS)[number]) => {
@@ -67,7 +65,7 @@ const Suzdal = () => {
       <section className="relative overflow-hidden">
         {/* Background image */}
         <img
-          src={HERO_IMG}
+          src={c.heroImg}
           alt="Фабрика и школа керамики в Суздале"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -80,11 +78,10 @@ const Suzdal = () => {
               <Icon name="MapPin" size={16} /> Фабрика и школа керамики в Суздале
             </span>
             <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] md:text-7xl">
-              Создайте изделие из&nbsp;глины <span className="text-primary-foreground italic underline decoration-primary decoration-4 underline-offset-8">своими руками</span>
+              {c.heroTitle}
             </h1>
             <p className="mt-6 max-w-md text-lg text-white/85">
-              Тёплая атмосфера мастерской в самом сердце Суздаля, опытные
-              преподаватели и настоящая радость творчества. Для взрослых и детей.
+              {c.heroSubtitle}
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a href="#workshops">

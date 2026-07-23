@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 import { REVIEWS as MOSCOW_REVIEWS } from './reviews/reviewsData';
 import { REVIEWS as SUZDAL_REVIEWS } from './suzdal-reviews/reviewsData';
 import SUZDAL_IMG from '@/assets/suzdal/school-facade.jpg';
@@ -23,17 +24,17 @@ const STATS = [
 ];
 
 const ChooseCity = () => {
+  const c = usePageContent('home');
   usePageMeta({
-    title: 'Гончарные мастер-классы в Москве и Суздале | Дымов Керамика',
-    description:
-      'Мастерская «Дымов Керамика»: мастер-классы по лепке, работа на гончарном круге, роспись акрилом. Уроки для детей и взрослых в Москве и Суздале. Скидки, абонементы, сертификаты!',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* LOGO */}
       <div className="flex flex-col items-center pt-12 pb-8 md:pt-16">
         <Logo className="h-14 origin-center md:h-16" />
-        <h1 className="mt-5 text-center font-display text-2xl font-semibold md:text-3xl">Гончарные мастер-классы в Москве или Суздале — выберите город</h1>
+        <h1 className="mt-5 text-center font-display text-2xl font-semibold md:text-3xl">{c.h1}</h1>
       </div>
 
       {/* CHOICE BLOCKS */}

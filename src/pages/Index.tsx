@@ -5,45 +5,15 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
-
-const HERO_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/15712126-3d2f-4720-9917-7fe580f849d4.jpg';
 
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
 
-const SERVICES = [
-  {
-    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
-    title: 'Лепка',
-    desc: 'Ручная работа с глиной',
-    price: 'от 1900₽',
-    href: '/moscow/workshops/lepka',
-  },
-  {
-    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/ab36a67f-4ea0-4d3a-8ebe-21e8a9dfb891.png',
-    title: 'Гончарный круг',
-    desc: 'Создание на круге',
-    price: 'от 2900₽',
-    href: '/moscow/workshops/krug',
-  },
-  {
-    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/7f664b40-fac2-4114-b0ad-70fc8524f908.png',
-    title: 'Ангобы',
-    desc: 'Роспись цветной глиной',
-    price: 'от 1900₽',
-    href: '/moscow/workshops/angoby',
-  },
-  {
-    img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/0bce1c46-ce6d-45d4-9a78-fc97b423975d.jpg',
-    title: 'Акрил',
-    desc: 'Роспись готовых изделий',
-    price: 'от 1500₽',
-    href: '/moscow/workshops/akril',
-  },
-];
+const SHOP_IMG =
+  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/15712126-3d2f-4720-9917-7fe580f849d4.jpg';
 
 const REVIEW_AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
 const HOME_REVIEWS = REVIEWS.slice(0, 3);
@@ -58,11 +28,19 @@ const initials = (name: string) =>
     .join('');
 
 const Index = () => {
+  const c = usePageContent('moscow-home');
   usePageMeta({
-    title: 'Школа керамики в Москве «Дымов Керамика»',
-    description:
-      'Гончарная мастерская в Москве ждет в гости детей и взрослых! Мастер-классы, курсы, праздники, аренда зала. Действуют скидки для пенсионеров и многодетных семей!',
+    title: c.metaTitle,
+    description: c.metaDescription,
   });
+
+  const SERVICES = [
+    { img: c.service1Img, title: c.service1Title, desc: c.service1Desc, price: c.service1Price, href: '/moscow/workshops/lepka' },
+    { img: c.service2Img, title: c.service2Title, desc: c.service2Desc, price: c.service2Price, href: '/moscow/workshops/krug' },
+    { img: c.service3Img, title: c.service3Title, desc: c.service3Desc, price: c.service3Price, href: '/moscow/workshops/angoby' },
+    { img: c.service4Img, title: c.service4Title, desc: c.service4Desc, price: c.service4Price, href: '/moscow/workshops/akril' },
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       <SiteHeader />
@@ -71,7 +49,7 @@ const Index = () => {
       <section className="relative overflow-hidden">
         {/* Background image */}
         <img
-          src={HERO_IMG}
+          src={c.heroImg}
           alt="Мастерская керамики"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -84,11 +62,10 @@ const Index = () => {
               <Icon name="MapPin" size={16} /> Студия керамики на ВДНХ
             </span>
             <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] md:text-7xl">
-              Создайте изделие из&nbsp;глины <span className="text-primary-foreground italic underline decoration-primary decoration-4 underline-offset-8">своими руками</span>
+              {c.heroTitle}
             </h1>
             <p className="mt-6 max-w-md text-lg text-white/85">
-              Тёплая атмосфера мастерской, опытные преподаватели и настоящая
-              радость творчества. Для взрослых и детей.
+              {c.heroSubtitle}
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Button size="lg" onClick={openBooking} className="rounded-full px-8 text-base">
@@ -349,7 +326,7 @@ const Index = () => {
             </div>
             <div className="relative hidden h-full min-h-[18rem] md:block">
               <img
-                src={HERO_IMG}
+                src={SHOP_IMG}
                 alt="Керамика ручной работы"
                 className="absolute inset-0 h-full w-full object-cover"
               />

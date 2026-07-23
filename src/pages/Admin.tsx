@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import PageContentEditor from '@/components/admin/PageContentEditor';
 import func2url from '../../backend/func2url.json';
 
 const SESSION_KEY = 'manager-session-token';
@@ -112,7 +113,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [tab, setTab] = useState<'orders' | 'leads'>('orders');
+  const [tab, setTab] = useState<'orders' | 'leads' | 'content'>('orders');
   const [ordersPage, setOrdersPage] = useState(1);
   const ORDERS_PER_PAGE = 10;
   const [cityFilter, setCityFilter] = useState<'moscow' | 'suzdal' | 'all'>('moscow');
@@ -401,7 +402,17 @@ const Admin = () => {
           >
             Заявки ({leads.length})
           </button>
+          <button
+            onClick={() => setTab('content')}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+              tab === 'content' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+            }`}
+          >
+            Контент страниц
+          </button>
         </div>
+
+        {tab === 'content' && token && <PageContentEditor token={token} />}
 
         {tab === 'orders' && (
           <div className="mt-4 flex flex-wrap gap-2">
