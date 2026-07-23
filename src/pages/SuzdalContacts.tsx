@@ -109,18 +109,20 @@ const SuzdalContacts = () => {
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Icon name="Factory" size={22} />
             </span>
-            <h2 className="font-display text-2xl font-semibold">Экскурсии</h2>
+            <h2 className="font-display text-2xl font-semibold">{content.excursionsTitle}</h2>
           </div>
           <div className="mt-5 space-y-3 text-sm leading-relaxed text-muted-foreground">
             <p className="flex gap-2">
               <Icon name="TriangleAlert" size={16} className="mt-0.5 shrink-0 text-primary" />
-              Внимание! Экскурсии проводятся по адресу: Владимирская область, г. Суздаль, ул.
-              Васильевская, 41а.
+              {content.excursionsWarning}
             </p>
             <p>
-              Запись и вся информация по телефону:{' '}
-              <a href="tel:+79151576485" className="font-semibold text-primary hover:underline">
-                +7 (915) 157-64-85
+              {content.excursionsPhoneText}{' '}
+              <a
+                href={`tel:${(content.excursionsPhone || '').replace(/[^\d+]/g, '')}`}
+                className="font-semibold text-primary hover:underline"
+              >
+                {content.excursionsPhone}
               </a>
               .
             </p>
@@ -130,7 +132,7 @@ const SuzdalContacts = () => {
         {/* SOCIALS */}
         <div className="mx-auto mt-8 max-w-4xl flex flex-wrap gap-4">
           <a
-            href="https://vk.com/dymovceramicschool"
+            href={content.vkUrl}
             target="_blank"
             rel="noreferrer"
             className="flex flex-1 items-center justify-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 font-medium transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5"
@@ -139,7 +141,7 @@ const SuzdalContacts = () => {
             ВКонтакте
           </a>
           <a
-            href="https://t.me/dymovceramicschool"
+            href={content.telegramUrl}
             target="_blank"
             rel="noreferrer"
             className="flex flex-1 items-center justify-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 font-medium transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5"

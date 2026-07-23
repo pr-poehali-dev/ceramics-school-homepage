@@ -1225,6 +1225,12 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'email', label: 'E-mail', type: 'text' },
       { key: 'address', label: 'Адрес', type: 'textarea' },
       { key: 'workHours', label: 'График работы', type: 'text' },
+      { key: 'excursionsTitle', label: 'Блок «Экскурсии» — заголовок', type: 'text' },
+      { key: 'excursionsWarning', label: 'Блок «Экскурсии» — предупреждение об адресе', type: 'textarea' },
+      { key: 'excursionsPhoneText', label: 'Блок «Экскурсии» — текст перед телефоном', type: 'text' },
+      { key: 'excursionsPhone', label: 'Блок «Экскурсии» — телефон', type: 'text' },
+      { key: 'vkUrl', label: 'Соцсети — ссылка ВКонтакте', type: 'text' },
+      { key: 'telegramUrl', label: 'Соцсети — ссылка Telegram', type: 'text' },
     ],
     defaults: {
       metaTitle: 'Контакты гончарной мастерской «Дымов Керамика» в Суздале',
@@ -1236,6 +1242,13 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       email: 'mk@dymovceramicschool.ru',
       address: 'Владимирская область, г. Суздаль, ул. Васильевская, 41а',
       workHours: 'Понедельник – Воскресенье, 9:00 – 18:00',
+      excursionsTitle: 'Экскурсии',
+      excursionsWarning:
+        'Внимание! Экскурсии проводятся по адресу: Владимирская область, г. Суздаль, ул. Васильевская, 41а.',
+      excursionsPhoneText: 'Запись и вся информация по телефону:',
+      excursionsPhone: '+7 (915) 157-64-85',
+      vkUrl: 'https://vk.com/dymovceramicschool',
+      telegramUrl: 'https://t.me/dymovceramicschool',
     },
   },
   {
