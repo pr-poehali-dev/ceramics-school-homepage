@@ -191,7 +191,7 @@ const WorkshopDetail = () => {
 
             <div className="mt-7 flex flex-wrap gap-3">
               <Button size="lg" onClick={openBooking} className="w-fit rounded-full px-10 text-base">
-                <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
+                <Icon name="CalendarCheck" size={18} className="mr-2" /> {c.bookButtonText}
               </Button>
               <Link to="/moscow/certificates">
                 <Button
@@ -199,7 +199,7 @@ const WorkshopDetail = () => {
                   variant="outline"
                   className="w-fit rounded-full border-white/40 bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white hover:text-foreground"
                 >
-                  <Icon name="Gift" size={18} className="mr-2" /> Купить сертификат
+                  <Icon name="Gift" size={18} className="mr-2" /> {c.certificateButtonText}
                 </Button>
               </Link>
             </div>
@@ -217,33 +217,40 @@ const WorkshopDetail = () => {
               О мастер-классе
             </h2>
 
-            {/* Первый абзац — вводный, крупнее */}
-            <p className="mt-5 text-lg leading-relaxed text-foreground/90 md:text-xl">
-              {data.paragraphs[0]}
-            </p>
-
-            {/* Остальные абзацы */}
-            {data.paragraphs.length > 1 && (
-              <div className="mt-6 space-y-4 border-t border-border/60 pt-6">
-                {data.paragraphs.slice(1).map((p, i) => (
-                  <p key={i} className="leading-relaxed text-muted-foreground">
-                    {p}
+            {(() => {
+              const paragraphs = (c.description || '').split('\n').filter(Boolean);
+              return (
+                <>
+                  {/* Первый абзац — вводный, крупнее */}
+                  <p className="mt-5 text-lg leading-relaxed text-foreground/90 md:text-xl">
+                    {paragraphs[0]}
                   </p>
-                ))}
-              </div>
-            )}
+
+                  {/* Остальные абзацы */}
+                  {paragraphs.length > 1 && (
+                    <div className="mt-6 space-y-4 border-t border-border/60 pt-6">
+                      {paragraphs.slice(1).map((p, i) => (
+                        <p key={i} className="leading-relaxed text-muted-foreground">
+                          {p}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
 
           {/* NOTES — правая колонка */}
           <div className="space-y-4 lg:sticky lg:top-24">
-            {data.benefit && (
+            {c.benefit && (
               <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/15 p-5">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
                   <Icon name="Baby" size={18} />
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-foreground">Дети на мастер-классе</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{data.benefit}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{c.benefit}</p>
                 </div>
               </div>
             )}
@@ -255,21 +262,19 @@ const WorkshopDetail = () => {
               <div>
                 <p className="text-sm font-semibold text-foreground">Льготникам — скидка</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Социальная скидка для пенсионеров, студентов, именинников в день рождения, членов
-                  многодетных семей и инвалидов всех групп. Не распространяется на мастер-класс
-                  «Детская группа». Скидки не суммируются, действуют при предъявлении документа.
+                  {c.discountText}
                 </p>
               </div>
             </div>
 
             {/* Мини-CTA записаться */}
             <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 text-center">
-              <p className="text-sm font-semibold text-foreground">Готовы попробовать?</p>
+              <p className="text-sm font-semibold text-foreground">{c.miniCtaTitle}</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Запишитесь на удобное время — поможем с выбором.
+                {c.miniCtaText}
               </p>
               <Button onClick={openBooking} className="mt-4 w-full rounded-full">
-                <Icon name="CalendarCheck" size={16} className="mr-2" /> Записаться
+                <Icon name="CalendarCheck" size={16} className="mr-2" /> {c.bookButtonText}
               </Button>
             </div>
           </div>
@@ -286,12 +291,12 @@ const WorkshopDetail = () => {
             className="pointer-events-none absolute -left-8 -top-8 opacity-10"
           />
           <div className="relative">
-            <h3 className="font-display text-3xl font-semibold md:text-4xl">Остались вопросы?</h3>
+            <h3 className="font-display text-3xl font-semibold md:text-4xl">{c.ctaTitle}</h3>
             <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
-              Поможем выбрать удобное время, уточним расписание и ответим на любые вопросы.
+              {c.ctaText}
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-4">
-              <a href="tel:+79854198903">
+              <a href={`tel:${(c.ctaPhone || '').replace(/[^\d+]/g, '')}`}>
                 <Button size="lg" variant="secondary" className="rounded-full px-8">
                   <Icon name="Phone" size={18} className="mr-2" /> Позвонить
                 </Button>
