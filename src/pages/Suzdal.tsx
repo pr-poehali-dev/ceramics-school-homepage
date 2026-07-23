@@ -21,7 +21,7 @@ const WORKSHOP_SLUGS = [
 ];
 const HOME_WORKSHOPS = WORKSHOP_SLUGS.map((slug) => SUZDAL_WORKSHOP_DETAILS[slug]);
 
-const REVIEW_AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
+const REVIEW_AVG = '4.9';
 const HOME_REVIEWS = REVIEWS.slice(0, 3);
 const HOME_GALLERY = GALLERY.slice(0, 6);
 

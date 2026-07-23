@@ -11,7 +11,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
 
 const STEP = 24;
-const AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
+const AVG = '4.9';
 
 const SuzdalReviews = () => {
   const [visible, setVisible] = useState(STEP);

@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CartItem } from '@/context/CartContext';
 import { itemImage } from '@/lib/itemImage';
+import { formatPhoneInput } from '@/lib/phoneMask';
 
 interface CheckoutItemsFormProps {
   items: CartItem[];
@@ -146,8 +147,8 @@ const CheckoutItemsForm = ({
               id="phone"
               type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Телефон"
+              onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
+              placeholder="+7 (___) ___-__-__"
               className="mt-1.5"
               required
             />
