@@ -1,6 +1,7 @@
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Order, fmtDate, paymentLabel, cityBadge, statusBadge } from './adminHelpers';
 
 interface Props {
@@ -117,8 +118,18 @@ const AdminOrders = ({
             </p>
 
             <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
-              <label className="text-sm text-muted-foreground shrink-0">
+              <label className="flex items-center gap-1.5 text-sm text-muted-foreground shrink-0">
                 Номер сертификата:
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex cursor-help text-muted-foreground/70">
+                      <Icon name="Info" size={14} />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Можно ввести через запятую до 3 номеров сертификатов
+                  </TooltipContent>
+                </Tooltip>
               </label>
               <Input
                 type="text"
