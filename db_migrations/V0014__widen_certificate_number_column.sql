@@ -1,0 +1,1 @@
+ALTER TABLE t_p90609946_ceramics_school_home.orders ALTER COLUMN certificate_number TYPE VARCHAR(255);

@@ -123,16 +123,16 @@ const AdminOrders = ({
               <Input
                 type="text"
                 inputMode="numeric"
-                pattern="[0-9]*"
+                pattern="[0-9, ]*"
                 value={certDrafts[o.id] ?? ''}
                 onChange={(e) =>
                   setCertDrafts((prev) => ({
                     ...prev,
-                    [o.id]: e.target.value.replace(/\D/g, ''),
+                    [o.id]: e.target.value.replace(/[^\d,\s]/g, ''),
                   }))
                 }
-                placeholder="Введите номер"
-                className="h-9 w-40 rounded-full"
+                placeholder="Например: 123456, 789012"
+                className="h-9 w-56 rounded-full"
               />
               <Button
                 size="sm"

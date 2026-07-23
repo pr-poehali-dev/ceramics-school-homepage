@@ -174,7 +174,11 @@ def handler(event: dict, context) -> dict:
                 }
 
             order_id = body.get('order_id')
-            certificate_number = (body.get('certificate_number') or '').strip()
+            raw_certificate_number = (body.get('certificate_number') or '').strip()
+            # Несколько номеров сертификатов вводятся через запятую — нормализуем пробелы
+            certificate_number = ', '.join(
+                part.strip() for part in raw_certificate_number.split(',') if part.strip()
+            )
 
             if not order_id:
                 return {
