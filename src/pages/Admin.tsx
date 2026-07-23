@@ -1,100 +1,17 @@
 import { useEffect, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import PageContentEditor from '@/components/admin/PageContentEditor';
+import AdminLogin from '@/components/admin/AdminLogin';
+import AdminBanner from '@/components/admin/AdminBanner';
+import AdminOrders from '@/components/admin/AdminOrders';
+import AdminLeads from '@/components/admin/AdminLeads';
+import { Order, Lead } from '@/components/admin/adminHelpers';
 import func2url from '../../backend/func2url.json';
 
 const SESSION_KEY = 'manager-session-token';
-
-interface OrderItem {
-  id?: string;
-  title: string;
-  details?: string;
-  qty: number;
-  price: number;
-}
-
-interface Order {
-  id: number;
-  number: string;
-  name: string;
-  email: string;
-  phone: string;
-  comment?: string;
-  payment: string;
-  total: number;
-  items: OrderItem[];
-  created_at: string;
-  status: string;
-  city: string;
-  certificate_number: string | null;
-}
-
-interface Lead {
-  id: number;
-  service?: string;
-  people?: number;
-  email?: string;
-  phone?: string;
-  created_at: string;
-}
-
-const fmtDate = (s: string) => {
-  try {
-    return new Date(s).toLocaleString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return s;
-  }
-};
-
-const paymentLabel = (p: string) =>
-  p === 'online' ? 'Онлайн (ЮKassa)' : 'Наличными на кассе';
-
-const cityLabel = (c: string) => (c === 'suzdal' ? 'Суздаль' : 'Москва');
-
-const cityBadge = (c: string) => {
-  const isSuzdal = c === 'suzdal';
-  return (
-    <span
-      className={`flex items-center gap-1 rounded-full px-3 py-0.5 text-xs font-medium ${
-        isSuzdal ? 'bg-violet-100 text-violet-700' : 'bg-sky-100 text-sky-700'
-      }`}
-    >
-      <Icon name="MapPin" size={12} />
-      {cityLabel(c)}
-    </span>
-  );
-};
-
-const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  new: { label: 'Новый', className: 'bg-primary/10 text-primary' },
-  pending: { label: 'Ожидает оплаты', className: 'bg-amber-100 text-amber-700' },
-  paid: { label: 'Оплачен', className: 'bg-emerald-100 text-emerald-700' },
-  completed: { label: 'Выполнен', className: 'bg-emerald-100 text-emerald-700' },
-  canceled: { label: 'Отменён', className: 'bg-red-100 text-red-700' },
-  booked: { label: 'Записан на МК', className: 'bg-blue-100 text-blue-700' },
-  pickup: { label: 'Самовывоз', className: 'bg-secondary text-muted-foreground' },
-};
-
-const statusBadge = (status: string) => {
-  const s = STATUS_LABELS[status] || { label: status, className: 'bg-secondary text-muted-foreground' };
-  return (
-    <span className={`rounded-full px-3 py-0.5 text-xs font-medium ${s.className}`}>
-      {s.label}
-    </span>
-  );
-};
 
 const Admin = () => {
   usePageMeta({
@@ -277,49 +194,14 @@ const Admin = () => {
 
   if (!authed || !token) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8">
-          <div className="text-center">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Icon name="Lock" size={26} />
-            </span>
-            <h1 className="mt-5 font-display text-2xl font-semibold">Панель управления</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Войдите, чтобы увидеть заказы и заявки
-            </p>
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              login();
-            }}
-            className="mt-6 space-y-3"
-          >
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              autoFocus
-              autoComplete="username"
-            />
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Пароль"
-              autoComplete="current-password"
-            />
-            <Button
-              type="submit"
-              className="w-full rounded-full"
-              disabled={loginLoading || !email || !password}
-            >
-              {loginLoading ? 'Проверяем…' : 'Войти'}
-            </Button>
-          </form>
-        </div>
-      </div>
+      <AdminLogin
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        loginLoading={loginLoading}
+        onSubmit={login}
+      />
     );
   }
 
@@ -350,40 +232,14 @@ const Admin = () => {
         </div>
 
         {/* УПРАВЛЕНИЕ ПЛАШКОЙ */}
-        <div className="mt-6 rounded-2xl border border-border bg-card p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Icon name="Megaphone" size={18} className="text-primary" />
-              <h2 className="font-display text-lg font-semibold">Информационная плашка</h2>
-            </div>
-            <label className="flex cursor-pointer items-center gap-2 text-sm">
-              <Switch checked={bannerEnabled} onCheckedChange={setBannerEnabled} />
-              <span className={bannerEnabled ? 'font-medium text-primary' : 'text-muted-foreground'}>
-                {bannerEnabled ? 'Показывается на сайте' : 'Скрыта'}
-              </span>
-            </label>
-          </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Текст выводится узкой полосой над шапкой на всех страницах сайта.
-          </p>
-          <Textarea
-            value={bannerText}
-            onChange={(e) => setBannerText(e.target.value)}
-            placeholder="Например: Уважаемые покупатели! В период с 8.01 по 10.01 школа работает только на приём заказов через корзину…"
-            rows={3}
-            className="mt-3 resize-y"
-          />
-          <div className="mt-3 flex justify-end">
-            <Button
-              size="sm"
-              className="rounded-full"
-              onClick={saveBanner}
-              disabled={savingBanner}
-            >
-              {savingBanner ? 'Сохраняем…' : 'Сохранить плашку'}
-            </Button>
-          </div>
-        </div>
+        <AdminBanner
+          bannerEnabled={bannerEnabled}
+          setBannerEnabled={setBannerEnabled}
+          bannerText={bannerText}
+          setBannerText={setBannerText}
+          savingBanner={savingBanner}
+          onSave={saveBanner}
+        />
 
         <div className="mt-6 flex gap-2">
           <button
@@ -415,150 +271,23 @@ const Admin = () => {
         {tab === 'content' && token && <PageContentEditor token={token} />}
 
         {tab === 'orders' && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {(['moscow', 'suzdal', 'all'] as const).map((c) => (
-              <button
-                key={c}
-                onClick={() => {
-                  setCityFilter(c);
-                  setOrdersPage(1);
-                }}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                  cityFilter === c
-                    ? 'bg-foreground text-background'
-                    : 'bg-secondary text-muted-foreground'
-                }`}
-              >
-                {c === 'moscow' ? 'Москва' : c === 'suzdal' ? 'Суздаль' : 'Все города'}
-                {' '}({(c === 'all' ? orders : orders.filter((o) => o.city === c)).length})
-              </button>
-            ))}
-          </div>
+          <AdminOrders
+            orders={orders}
+            filteredOrders={filteredOrders}
+            paginatedOrders={paginatedOrders}
+            cityFilter={cityFilter}
+            setCityFilter={setCityFilter}
+            ordersPage={ordersPage}
+            setOrdersPage={setOrdersPage}
+            totalOrdersPages={totalOrdersPages}
+            certDrafts={certDrafts}
+            setCertDrafts={setCertDrafts}
+            savingCertId={savingCertId}
+            onSaveCertificateNumber={saveCertificateNumber}
+          />
         )}
 
-        {tab === 'orders' && (
-          <div className="mt-6 space-y-4">
-            {filteredOrders.length === 0 && (
-              <p className="text-sm text-muted-foreground">Заказов пока нет.</p>
-            )}
-            {paginatedOrders.map((o) => (
-              <div key={o.id} className="rounded-2xl border border-border bg-card p-5">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display text-lg font-semibold">Заказ № {o.number}</span>
-                    {statusBadge(o.status)}
-                    {cityBadge(o.city)}
-                  </div>
-                  <span className="text-sm text-muted-foreground">{fmtDate(o.created_at)}</span>
-                </div>
-                <div className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
-                  <p><span className="text-muted-foreground">Клиент:</span> {o.name}</p>
-                  <p><span className="text-muted-foreground">Телефон:</span> {o.phone}</p>
-                  {o.email && <p><span className="text-muted-foreground">Email:</span> {o.email}</p>}
-                  <p><span className="text-muted-foreground">Оплата:</span> {paymentLabel(o.payment)}</p>
-                </div>
-                {o.comment && (
-                  <p className="mt-2 text-sm">
-                    <span className="text-muted-foreground">Комментарий:</span> {o.comment}
-                  </p>
-                )}
-                <div className="mt-3 divide-y divide-border rounded-xl border border-border">
-                  {(o.items || []).map((it, i) => (
-                    <div key={i} className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
-                      <span>
-                        {it.title}
-                        {it.details ? ` · ${it.details}` : ''} × {it.qty}
-                      </span>
-                      <span className="shrink-0 font-medium">
-                        {(it.price * it.qty).toLocaleString('ru-RU')} ₽
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-3 text-right font-semibold text-primary">
-                  Итого: {o.total.toLocaleString('ru-RU')} ₽
-                </p>
-
-                <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
-                  <label className="text-sm text-muted-foreground shrink-0">
-                    Номер сертификата:
-                  </label>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={certDrafts[o.id] ?? ''}
-                    onChange={(e) =>
-                      setCertDrafts((prev) => ({
-                        ...prev,
-                        [o.id]: e.target.value.replace(/\D/g, ''),
-                      }))
-                    }
-                    placeholder="Введите номер"
-                    className="h-9 w-40 rounded-full"
-                  />
-                  <Button
-                    size="sm"
-                    className="rounded-full"
-                    onClick={() => saveCertificateNumber(o.id)}
-                    disabled={savingCertId === o.id}
-                  >
-                    {savingCertId === o.id ? 'Сохраняем…' : 'Сохранить'}
-                  </Button>
-                </div>
-              </div>
-            ))}
-
-            {filteredOrders.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setOrdersPage((p) => Math.max(1, p - 1))}
-                  disabled={ordersPage <= 1}
-                >
-                  <Icon name="ChevronLeft" size={15} />
-                </Button>
-                <span className="px-3 text-sm text-muted-foreground">
-                  Страница {ordersPage} из {totalOrdersPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setOrdersPage((p) => Math.min(totalOrdersPages, p + 1))}
-                  disabled={ordersPage >= totalOrdersPages}
-                >
-                  <Icon name="ChevronRight" size={15} />
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {tab === 'leads' && (
-          <div className="mt-6 space-y-3">
-            {leads.length === 0 && (
-              <p className="text-sm text-muted-foreground">Заявок пока нет.</p>
-            )}
-            {leads.map((l) => (
-              <div key={l.id} className="rounded-2xl border border-border bg-card p-5">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-medium">{l.service || 'Заявка'}</span>
-                  <span className="text-sm text-muted-foreground">{fmtDate(l.created_at)}</span>
-                </div>
-                <div className="mt-2 grid gap-1 text-sm sm:grid-cols-3">
-                  {l.people != null && (
-                    <p><span className="text-muted-foreground">Участников:</span> {l.people}</p>
-                  )}
-                  <p><span className="text-muted-foreground">Телефон:</span> {l.phone}</p>
-                  <p><span className="text-muted-foreground">Email:</span> {l.email}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {tab === 'leads' && <AdminLeads leads={leads} />}
       </div>
     </div>
   );
