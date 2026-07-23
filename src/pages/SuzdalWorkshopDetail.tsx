@@ -271,6 +271,12 @@ const SuzdalWorkshopDetail = () => {
   const displaySubtitle = c.subtitle || data.subtitle;
   const displayImg = c.img || data.img;
   const displayPrice = c.price ? Number(c.price) || data.price : data.price;
+  const displayAge = c.age || data.age;
+  const displayDuration = c.duration || data.duration;
+  const displayParagraphs = (c.description || data.paragraphs.join('\n')).split('\n').filter(Boolean);
+  const displayExtraServicePrice = c.extraServicePrice || data.extraServices[0]?.price;
+  const displayBookingPhone = c.bookingPhone || '+7 (915) 157-64-85';
+  const displayAgeNoteText = c.ageNoteText || `Рассчитан для ${data.age.toLowerCase()}. Продолжительность занятия — ${data.duration}.`;
 
   const handleAddToCart = () => {
     addItem({
@@ -323,10 +329,10 @@ const SuzdalWorkshopDetail = () => {
                 <Icon name="Tag" size={16} /> {displayPrice.toLocaleString('ru-RU')} руб.
               </span>
               <span className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-                <Icon name="Clock" size={16} /> {data.duration}
+                <Icon name="Clock" size={16} /> {displayDuration}
               </span>
               <span className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-                <Icon name="Star" size={16} /> {data.age}
+                <Icon name="Star" size={16} /> {displayAge}
               </span>
             </div>
 
@@ -352,7 +358,7 @@ const SuzdalWorkshopDetail = () => {
             </h2>
 
             <div className="mt-6 space-y-4">
-              {data.paragraphs.map((p, i) => (
+              {displayParagraphs.map((p, i) => (
                 <p key={i} className="leading-relaxed text-muted-foreground">
                   {p}
                 </p>
@@ -365,12 +371,10 @@ const SuzdalWorkshopDetail = () => {
                 <Icon name="Wrench" size={18} className="text-primary" /> Дополнительные услуги
               </h3>
               <ul className="mt-3 space-y-1.5">
-                {data.extraServices.map((s) => (
-                  <li key={s.title} className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{s.title}</span>
-                    <span className="font-semibold text-foreground">{s.price}</span>
-                  </li>
-                ))}
+                <li className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Обжиг</span>
+                  <span className="font-semibold text-foreground">{displayExtraServicePrice}</span>
+                </li>
               </ul>
               <p className="mt-3 text-sm text-muted-foreground">
                 Выполнение дополнительных услуг занимает (в зависимости от вида и размера изделия)
@@ -464,8 +468,8 @@ const SuzdalWorkshopDetail = () => {
                 <p className="text-sm font-semibold text-foreground">Запись по телефону</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Запись на мастер-классы только по телефону{' '}
-                  <a href="tel:+79151576485" className="font-medium text-foreground hover:text-primary">
-                    8-915-157-64-85
+                  <a href={`tel:${displayBookingPhone.replace(/[^\d+]/g, '')}`} className="font-medium text-foreground hover:text-primary">
+                    {displayBookingPhone}
                   </a>
                   . Оплата на месте картой или наличными.
                 </p>
@@ -479,7 +483,7 @@ const SuzdalWorkshopDetail = () => {
               <div>
                 <p className="text-sm font-semibold text-foreground">Возраст участников</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Рассчитан для детей с 7 лет и взрослых. Продолжительность занятия — 1 час.
+                  {displayAgeNoteText}
                 </p>
               </div>
             </div>
