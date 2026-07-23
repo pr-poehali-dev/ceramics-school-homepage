@@ -24,6 +24,7 @@ export interface PageSchema {
   title: string;
   city: 'common' | 'moscow' | 'suzdal';
   status: 'ready' | 'soon';
+  path: string;
   fields: ContentFieldSchema[];
   defaults: Record<string, string>;
 }
@@ -34,6 +35,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Главная — выбор города',
     city: 'common',
     status: 'ready',
+    path: '/',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -69,6 +71,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — главная',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -128,6 +131,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — главная',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -153,6 +157,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — мастер-классы (список)',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/workshops',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -172,6 +177,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — МК «Лепка»',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/workshops/lepka',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -190,6 +196,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — МК «Гончарный круг»',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/workshops/krug',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -208,6 +215,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — МК «Ангобы»',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/workshops/angoby',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -226,6 +234,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — МК «Акрил»',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/workshops/akril',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -244,6 +253,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — форматы',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/formats',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -263,6 +273,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — сертификаты',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/certificates',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -286,6 +297,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — контакты',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/contacts',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -313,6 +325,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — отзывы',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/reviews',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -332,6 +345,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Москва — доставка/выдача',
     city: 'moscow',
     status: 'ready',
+    path: '/moscow/info',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -357,6 +371,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — мастер-классы (список)',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -376,6 +391,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Гончарное ремесло»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/goncharnoe-remeslo',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -395,6 +411,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Гончарное ремесло + роспись»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/goncharnoe-remeslo-rospis-angobami',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -414,6 +431,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Роспись тарелок»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/rospis-keramicheskix-tarelok',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -433,6 +451,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Изготовление изразцов»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/izgotovlenie-izrazcov',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -452,6 +471,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Изразцы + роспись»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/izgotovlenie-izrazczov-rospis-angobami',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -471,6 +491,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Кружевная керамика»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/kruzhevnaya-keramika',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -489,6 +510,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Кружевная керамика с росписью»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/kruzhevnaya-keramika-s-rospisyu',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -507,6 +529,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Лепка керамики»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/lepka-keramicheskih',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -525,6 +548,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — МК «Лепка керамики с росписью»',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/workshops/lepka-keramicheskih-s-rospisyu',
     fields: [
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
@@ -543,6 +567,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — сертификаты',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/certificates',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -564,6 +589,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — экскурсии',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/excursions',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -591,6 +617,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — контакты',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/contacts',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -618,6 +645,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — о нас',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/about',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
@@ -635,6 +663,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     title: 'Суздаль — отзывы',
     city: 'suzdal',
     status: 'ready',
+    path: '/suzdal/reviews',
     fields: [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },

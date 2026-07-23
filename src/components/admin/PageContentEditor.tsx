@@ -94,25 +94,48 @@ const PageContentEditor = ({ token }: Props) => {
               <h3 className="mb-3 text-sm font-medium text-muted-foreground">{cityLabel(city)}</h3>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {pages.map((p) => (
-                  <button
+                  <div
                     key={p.key}
-                    onClick={() => p.status === 'ready' && setSelectedKey(p.key)}
-                    disabled={p.status !== 'ready'}
                     className={`flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 text-left transition-all ${
                       p.status === 'ready'
-                        ? 'hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md cursor-pointer'
-                        : 'opacity-50 cursor-not-allowed'
+                        ? 'hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md'
+                        : 'opacity-50'
                     }`}
                   >
-                    <span className="font-medium">{p.title}</span>
+                    <button
+                      type="button"
+                      onClick={() => p.status === 'ready' && setSelectedKey(p.key)}
+                      disabled={p.status !== 'ready'}
+                      className={`min-w-0 flex-1 text-left ${
+                        p.status === 'ready' ? 'cursor-pointer' : 'cursor-not-allowed'
+                      }`}
+                    >
+                      <span className="block font-medium">{p.title}</span>
+                      <a
+                        href={p.path}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="mt-0.5 block truncate text-xs text-muted-foreground hover:text-primary hover:underline"
+                      >
+                        {p.path}
+                      </a>
+                    </button>
                     {p.status === 'ready' ? (
-                      <Icon name="ChevronRight" size={18} className="shrink-0 text-primary" />
+                      <button
+                        type="button"
+                        onClick={() => setSelectedKey(p.key)}
+                        className="shrink-0"
+                        aria-label="Редактировать страницу"
+                      >
+                        <Icon name="ChevronRight" size={18} className="text-primary" />
+                      </button>
                     ) : (
                       <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
                         скоро
                       </span>
                     )}
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -132,7 +155,19 @@ const PageContentEditor = ({ token }: Props) => {
       </button>
 
       <div className="flex items-center justify-between gap-3">
-        <h2 className="font-display text-xl font-semibold">{schema?.title}</h2>
+        <div>
+          <h2 className="font-display text-xl font-semibold">{schema?.title}</h2>
+          {schema?.path && (
+            <a
+              href={schema.path}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-0.5 inline-block text-xs text-muted-foreground hover:text-primary hover:underline"
+            >
+              {schema.path}
+            </a>
+          )}
+        </div>
         <Button size="sm" className="rounded-full" onClick={save} disabled={saving || loading}>
           {saving ? 'Сохраняем…' : 'Сохранить'}
         </Button>
