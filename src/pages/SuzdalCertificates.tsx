@@ -103,7 +103,7 @@ const SuzdalCertificates = () => {
                   Дымов Керамика
                 </p>
                 <p className="mt-1 text-sm text-primary-foreground/70">
-                  Фабрика и школа · Суздаль
+                  {c.previewLocation}
                 </p>
               </div>
               <div className="mt-6 md:mt-0 md:text-right">
@@ -119,7 +119,7 @@ const SuzdalCertificates = () => {
             <div className="relative mt-8 border-t border-white/20 pt-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
-                  <Icon name="Clock" size={15} /> Срок действия: 6 месяцев
+                  <Icon name="Clock" size={15} /> {c.validityText}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
                   <Icon name="Sparkles" size={15} /> Мастер-классы школы
@@ -159,8 +159,8 @@ const SuzdalCertificates = () => {
               <p className="text-sm font-semibold text-foreground">Запись по телефону</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 Запись на мастер-классы только по телефону{' '}
-                <a href="tel:+79151576485" className="font-medium text-foreground hover:text-primary">
-                  8-915-157-64-85
+                <a href={`tel:${(c.phone || '').replace(/[^\d+]/g, '')}`} className="font-medium text-foreground hover:text-primary">
+                  {c.phone}
                 </a>
                 . Оплата на месте картой или наличными.
               </p>
@@ -170,9 +170,9 @@ const SuzdalCertificates = () => {
           {/* PERKS */}
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {[
-              { icon: 'Users', text: 'Для участников любого возраста (кроме сертификата для детской группы)' },
-              { icon: 'Clock', text: 'Продолжительность занятия — от 1 часа' },
-              { icon: 'CalendarDays', text: 'Сертификат действителен в течение 6 месяцев' },
+              { icon: 'Users', text: c.perk1Text },
+              { icon: 'Clock', text: c.perk2Text },
+              { icon: 'CalendarDays', text: c.perk3Text },
             ].map((p) => (
               <div key={p.text} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -199,30 +199,26 @@ const SuzdalCertificates = () => {
           {/* ABOUT */}
           <div className="mt-10 rounded-2xl border border-border bg-card p-7 md:p-8">
             <div className="space-y-4 leading-relaxed text-muted-foreground">
-              <p>
-                Подарки могут быть разными. Особенно хороши подарки, сделанные с душой. Мы в школе
-                «Дымов Керамика» вкладываем душу в каждого ученика.
-              </p>
-              <p className="font-medium text-foreground">
-                Преподнесите в подарок занятие в школе «Дымов Керамика»!
-              </p>
-              <p>
-                Дарите приятные эмоции близким и друзьям! Ждём вас в нашей школе гончарного
-                искусства «Дымов Керамика» в Суздале.
-              </p>
-              <p>
-                Также подарочные сертификаты можно приобрести в магазине «Дымов Керамика»
-                (Суздаль, Транспортная улица, 9).
-              </p>
+              {(() => {
+                const paragraphs = (c.aboutText || '').split('\n').filter(Boolean);
+                return (
+                  <>
+                    {paragraphs[0] && <p>{paragraphs[0]}</p>}
+                    {c.aboutHighlight && (
+                      <p className="font-medium text-foreground">{c.aboutHighlight}</p>
+                    )}
+                    {paragraphs.slice(1).map((p) => (
+                      <p key={p}>{p}</p>
+                    ))}
+                  </>
+                );
+              })()}
             </div>
 
             <div className="mt-6 space-y-2 border-t border-border pt-5 text-xs text-muted-foreground">
-              <p>*Абонемент действителен 3 месяца с момента приобретения.</p>
-              <p>*Подарочный сертификат действителен в течение 6 месяцев.</p>
-              <p>
-                *Вы всегда можете заказать бумажную версию сертификата. Курьерская доставка
-                оплачивается дополнительно.
-              </p>
+              {(c.footnotes || '').split('\n').filter(Boolean).map((f) => (
+                <p key={f}>{f}</p>
+              ))}
             </div>
           </div>
         </div>

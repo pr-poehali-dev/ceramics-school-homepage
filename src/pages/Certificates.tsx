@@ -110,7 +110,7 @@ const Certificates = () => {
                   Дымов Керамика
                 </p>
                 <p className="mt-1 text-sm text-primary-foreground/70">
-                  Студия керамики · ВДНХ, Москва
+                  {c.previewLocation}
                 </p>
               </div>
               <div className="mt-6 md:mt-0 md:text-right">
@@ -126,7 +126,7 @@ const Certificates = () => {
             <div className="relative mt-8 border-t border-white/20 pt-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
-                  <Icon name="Clock" size={15} /> Срок действия: 6 месяцев
+                  <Icon name="Clock" size={15} /> {c.validityText}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
                   <Icon name="Sparkles" size={15} /> Все мастер-классы студии
@@ -172,8 +172,8 @@ const Certificates = () => {
           {/* PERKS */}
           <div className="mt-10 grid gap-3 sm:grid-cols-2">
             {[
-              { icon: 'Download', text: 'Отправим на e-mail сразу после оплаты' },
-              { icon: 'CalendarDays', text: 'Действует 6 месяцев с момента покупки' },
+              { icon: 'Download', text: c.perk1Text },
+              { icon: 'CalendarDays', text: c.perk2Text },
             ].map((p) => (
               <div key={p.text} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -213,117 +213,60 @@ const Certificates = () => {
             <div className="h-px flex-1 bg-border" />
           </div>
           <div className="mt-8 space-y-4">
-            {[
-              {
-                q: 'Как получить сертификат?',
-                a: 'После оформления и оплаты сертификат придёт на вашу электронную почту в течение нескольких минут.',
-              },
-              {
-                q: 'Можно ли использовать сертификат частями?',
-                a: 'Да, сертификат можно использовать на несколько посещений, пока не закончится сумма. Срок действия при этом не продлевается.',
-              },
-              {
-                q: 'Что если занятие стоит больше номинала?',
-                a: 'Разницу можно доплатить на месте. Мы примем наличные или карту.',
-              },
-              {
-                q: 'Можно ли вернуть сертификат?',
-                a: 'Да, неиспользованный сертификат можно вернуть в течение 14 дней с момента покупки.',
-              },
-            ].map((item) => (
-              <details key={item.q} className="group rounded-xl border border-border bg-card">
-                <summary className="flex cursor-pointer list-none items-center justify-between p-5 font-medium">
-                  {item.q}
-                  <Icon
-                    name="ChevronDown"
-                    size={18}
-                    className="shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
-                  />
-                </summary>
-                <p className="border-t border-border px-5 pb-5 pt-4 text-sm leading-relaxed text-muted-foreground">
-                  {item.a}
-                </p>
-              </details>
-            ))}
+            {(c.faqItems || '').split('\n').filter(Boolean).map((line) => {
+              const [q, a] = line.split('|');
+              return (
+                <details key={q} className="group rounded-xl border border-border bg-card">
+                  <summary className="flex cursor-pointer list-none items-center justify-between p-5 font-medium">
+                    {q}
+                    <Icon
+                      name="ChevronDown"
+                      size={18}
+                      className="shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                    />
+                  </summary>
+                  <p className="border-t border-border px-5 pb-5 pt-4 text-sm leading-relaxed text-muted-foreground">
+                    {a}
+                  </p>
+                </details>
+              );
+            })}
           </div>
         </div>
 
         {/* SEO TEXT */}
         <section className="mx-auto mt-20 max-w-3xl">
           <h2 className="font-display text-3xl font-semibold md:text-4xl">
-            Подарочные сертификаты «Дымов Керамика»
+            {c.seoTitle}
           </h2>
           <div className="mt-6 space-y-4 leading-relaxed text-muted-foreground">
-            <p>
-              Школа гончарного мастерства «Дымов Керамика» предлагает вам порадовать своих близких
-              оригинальным и запоминающимся подарком. Подарочный сертификат на уроки гончарного
-              мастерства станет приятным сюрпризом даже для тех людей, которых, казалось бы, нечем
-              удивить. Незабываемые часы, проведённые в гончарной мастерской, позволят зажечь огонь
-              в глазах именинника, пробудить в нём интерес и творческий потенциал, здоровый азарт и
-              детский восторг.
-            </p>
-            <p>
-              Кроме того, сертификат «Дымов Керамика» даёт возможность не только интересно, но и
-              полезно провести время. Работа с глиной — это, в первую очередь, отличный релакс,
-              позволяющий отвлечься от будничных забот и проблем, успокоить нервную систему и
-              развить творческие способности. К тому же, лепка и работа с гончарным кругом тренирует
-              мелкую моторику рук, координацию движений и способность концентрировать своё внимание
-              (что полезно и детям, и взрослым).
-            </p>
+            <p>{c.seoParagraph1}</p>
+            <p>{c.seoParagraph2}</p>
 
             <h3 className="pt-4 font-display text-2xl font-semibold text-foreground">
-              Что представляет собой подарочный сертификат по гончарному делу?
+              {c.seoWhatTitle}
             </h3>
-            <p>
-              Подарочный сертификат «Дымов Керамика» — это интересный и необычный подарок на все
-              случаи жизни. Такой презент приятно удивит именинника своей оригинальностью и не
-              банальностью, а также подчеркнёт хороший вкус дарителя. Немаловажно и то, что подарку
-              будут рады как взрослые, так и дети (у нас есть программы и для малышей от 4 лет, и для
-              школьников младших, средних или старших классов).
-            </p>
-            <p>
-              Сертификат представляет собой своеобразный пропуск в мир гончарного искусства.
-            </p>
-            <p>В соответствии с выбранным направлением, можно будет:</p>
+            {(c.seoWhatText || '').split('\n').filter(Boolean).map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+            <p>{c.seoDirectionsIntro}</p>
             <ul className="space-y-2">
-              {[
-                'лепить из глины причудливые изделия (фигурки, украшения, элементы декора и т. д.);',
-                'создавать на гончарном круге уникальную посуду или авторские вазы;',
-                'штамповать необыкновенные изразцы;',
-                'украшать свои творения волшебной росписью.',
-              ].map((li) => (
+              {(c.seoDirectionsList || '').split('\n').filter(Boolean).map((li) => (
                 <li key={li} className="flex gap-2">
                   <Icon name="Check" size={18} className="mt-0.5 shrink-0 text-primary" />
                   <span>{li}</span>
                 </li>
               ))}
             </ul>
-            <p>
-              Сертификат может быть использован как для занятий в группе, так и для закрытых,
-              индивидуальных мероприятий. К примеру, сертификат может стать прекрасным подарком для
-              влюблённых, которые проведут в нашей мастерской незабываемое свидание в атмосфере
-              творчества, романтики и уединения.
-            </p>
+            <p>{c.seoClosing}</p>
 
             <h3 className="pt-4 font-display text-2xl font-semibold text-foreground">
-              Какими бывают подарочные сертификаты «Дымов Керамика»?
+              {c.seoTypesTitle}
             </h3>
-            <p>
-              Подарочные сертификаты «Дымов Керамика» действительны в течение года с момента продажи
-              и открывают для своего владельца удивительные возможности. Вы можете порадовать
-              именинника сертификатом на участие в определённом мастер-классе (на ваш выбор) или
-              предоставить дорогому вам человеку право самому выбрать направление для творчества.
-              Сертификаты с открытой суммой позволяют своему счастливому обладателю участвовать в
-              нескольких мастер-классах или посещать те занятия, которые ему наиболее интересны.
-            </p>
-            <p>Так, к примеру, вы сможете приобрести следующие сертификаты «Дымов Керамика»:</p>
+            <p>{c.seoTypesText}</p>
+            <p>{c.seoExamplesIntro}</p>
             <ul className="space-y-2">
-              {[
-                'сертификаты на обучение в гончарной мастерской (гончарные курсы для детей и взрослых);',
-                'сертификаты на прохождение выбранных мастер-классов (таких, как «Гончарный круг», «Лепка», «Роспись» и многих других);',
-                'сертификаты на индивидуальные занятия в гончарной мастерской (в том числе романтические свидания);',
-                'сертификаты на проведение праздников и закрытых мероприятий (взрослых или детских дней рождения, корпоративов, девичников, занятий для группы детского сада или школьного класса и т. д.).',
-              ].map((li) => (
+              {(c.seoExamplesList || '').split('\n').filter(Boolean).map((li) => (
                 <li key={li} className="flex gap-2">
                   <Icon name="Check" size={18} className="mt-0.5 shrink-0 text-primary" />
                   <span>{li}</span>
@@ -334,10 +277,10 @@ const Certificates = () => {
               Уточнить стоимость интересующего вас мастер-класса или задать другие вопросы,
               касающиеся сертификатов, вы можете по телефону{' '}
               <a
-                href="tel:+79854198903"
+                href={`tel:${(c.phone || '').replace(/[^\d+]/g, '')}`}
                 className="font-semibold text-primary transition-colors hover:underline"
               >
-                +7 (985) 419-89-03
+                {c.phone}
               </a>
               .
             </p>
