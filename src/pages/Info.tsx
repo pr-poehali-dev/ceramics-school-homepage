@@ -32,7 +32,7 @@ const Info = () => {
               {c.h1}
             </h1>
             <p className="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
-              Доставка готовых изделий и условия их выдачи после мастер-класса.
+              {c.subtitle}
             </p>
           </div>
 
@@ -59,15 +59,14 @@ const Info = () => {
             </div>
             <div className="mt-5 space-y-3 text-sm leading-relaxed text-muted-foreground">
               <p>
-                В нашей школе есть услуга курьерской доставки готовых изделий по Москве. Услуга
-                платная.
+                {c.deliveryText1}
               </p>
               <p>
-                Стоимость доставки уточняется у администратора по номеру{' '}
+                {c.deliveryText2}{' '}
                 <a href={phoneHref} className="font-semibold text-primary hover:underline">
                   {c.phone}
                 </a>{' '}
-                и зависит от адреса, по которому будет доставлена ваша посылка.
+                {c.deliveryText2After}
               </p>
             </div>
           </section>
@@ -82,15 +81,10 @@ const Info = () => {
             </div>
 
             <div className="mt-5 space-y-4 text-sm leading-relaxed text-muted-foreground">
-              <p>Вы прошли мастер-класс в Школе керамики на ВДНХ. Для уточнения статуса готовности изделия вам нужно:</p>
+              <p>{c.pickupIntro}</p>
 
               <ol className="space-y-3">
-                {[
-                  'Подписать изделие либо поставить дату проведения мастер-класса.',
-                  'Сделать фото своей работы.',
-                  'Через 15 дней прислать фото на WhatsApp на номер 8 (985) 419-89-03.',
-                  'Подписаться на нашу страницу в Instagram @dymovceramicschool — в актуальных историях можно посмотреть изделия после глазурного обжига.',
-                ].map((step, i) => (
+                {(c.pickupSteps || '').split('\n').filter(Boolean).map((step, i) => (
                   <li key={i} className="flex gap-3">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                       {i + 1}
@@ -104,7 +98,7 @@ const Info = () => {
                 <p className="flex gap-2">
                   <Icon name="MapPin" size={16} className="mt-0.5 shrink-0 text-primary" />
                   <span>
-                    Готовое изделие можно забрать через 15 дней по адресу:{' '}
+                    {c.pickupNoteAfterPhone}{' '}
                     <span className="font-medium text-foreground">
                       {c.address}
                     </span>
@@ -119,24 +113,22 @@ const Info = () => {
 
               <p className="flex gap-2">
                 <Icon name="Camera" size={16} className="mt-0.5 shrink-0 text-primary" />
-                Изделие выдаётся по фотографии.
+                {c.pickupPhotoNote}
               </p>
               <p className="flex gap-2">
                 <Icon name="Clock" size={16} className="mt-0.5 shrink-0 text-primary" />
-                Мы бережно храним ваши изделия в течение 2 месяцев с даты проведения мастер-класса.
+                {c.pickupStorageNote}
               </p>
 
               <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
                 <p className="flex gap-2 font-medium text-foreground">
                   <Icon name="TriangleAlert" size={16} className="mt-0.5 shrink-0 text-primary" />
-                  Обращаем ваше внимание! Въезд на территорию ВДНХ платный. С условиями въезда и
-                  парковки можно ознакомиться на сайте ВДНХ.
+                  {c.pickupWarning}
                 </p>
               </div>
 
               <p className="text-xs">
-                По истечении срока хранения мы оставляем за собой право утилизировать изделия либо
-                передать их на благотворительную ярмарку.
+                {c.pickupFootnote}
               </p>
             </div>
           </section>

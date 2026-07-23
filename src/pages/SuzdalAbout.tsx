@@ -6,9 +6,6 @@ import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
 
-const FACTORY_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/149adc21-4153-494c-a82b-0489b3754fe0.jpg';
-
 const SuzdalAbout = () => {
   const c = usePageContent('suzdal-about');
   usePageMeta({
@@ -23,7 +20,7 @@ const SuzdalAbout = () => {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <img
-          src={FACTORY_IMG}
+          src={c.heroImg}
           alt="Фабрика «Дымов Керамика» в Суздале"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -31,7 +28,7 @@ const SuzdalAbout = () => {
 
         <div className="container relative flex min-h-[45vh] flex-col justify-end py-14 text-white md:min-h-[55vh]">
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium backdrop-blur">
-            <Icon name="Factory" size={16} /> С 2003 года в Суздале
+            <Icon name="Factory" size={16} /> {c.badge}
           </span>
           <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
             {c.h1}
@@ -47,23 +44,12 @@ const SuzdalAbout = () => {
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Icon name="Factory" size={24} />
               </span>
-              <h2 className="font-display text-2xl font-semibold md:text-3xl">Фабрика</h2>
+              <h2 className="font-display text-2xl font-semibold md:text-3xl">{c.factoryTitle}</h2>
             </div>
             <div className="mt-5 space-y-4 leading-relaxed text-muted-foreground">
-              <p>
-                Компания «Дымов Керамика» берёт своё начало в 2003 году в Суздале, где семья
-                Дымовых основала фабрику по производству керамических изделий ручной работы.
-              </p>
-              <p>
-                Наше производство — это сочетание традиционных методов ручной работы с
-                материалами, современные технологии и авторское видение будущего русской керамики.
-              </p>
-              <p>
-                С момента своего основания фабрика стремительно развивается, воплощая на практике
-                новые творческие концепции. На сегодняшний день сформировалось целое культурное
-                пространство, логическим продолжением которого стало основание школы керамики в
-                Москве.
-              </p>
+              {(c.factoryText || '').split('\n').filter(Boolean).map((p) => (
+                <p key={p}>{p}</p>
+              ))}
             </div>
           </section>
 
@@ -73,23 +59,18 @@ const SuzdalAbout = () => {
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Icon name="GraduationCap" size={24} />
               </span>
-              <h2 className="font-display text-2xl font-semibold md:text-3xl">Школа</h2>
+              <h2 className="font-display text-2xl font-semibold md:text-3xl">{c.schoolTitle}</h2>
             </div>
             <div className="mt-5 space-y-4 leading-relaxed text-muted-foreground">
-              <p>
-                Сегодня керамику ручной работы можно не только приобрести, но и научиться делать
-                её самому — для этого достаточно записаться на мастер-класс.
-              </p>
-              <p>
-                Уютная мастерская, оборудованная всем необходимым инвентарём, готова принять в
-                своих стенах всех интересующихся гончарным производством.
-              </p>
+              {(c.schoolText || '').split('\n').filter(Boolean).map((p) => (
+                <p key={p}>{p}</p>
+              ))}
             </div>
 
             <div className="mt-7 flex flex-wrap gap-4">
               <Link to="/suzdal/workshops">
                 <Button size="lg" className="rounded-full px-8 text-base">
-                  <Icon name="Hammer" size={18} className="mr-2" /> Перейти к мастер-классам
+                  <Icon name="Hammer" size={18} className="mr-2" /> {c.schoolButtonText}
                 </Button>
               </Link>
             </div>

@@ -60,14 +60,14 @@ const SuzdalReviews = () => {
             </div>
             <div className="h-10 w-px bg-border" />
             <div className="text-left">
-              <p className="font-display text-2xl font-semibold">500+</p>
+              <p className="font-display text-2xl font-semibold">{c.statPositiveCount}</p>
               <p className="text-xs text-muted-foreground">положительных оценок</p>
             </div>
           </div>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a
-              href="https://yandex.ru/maps/org/dymov_keramika/"
+              href={c.yandexReviewUrl}
               target="_blank"
               rel="noreferrer"
             >
@@ -118,15 +118,14 @@ const SuzdalReviews = () => {
         {/* CTA */}
         <div className="mx-auto mt-16 max-w-4xl overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">
           <h3 className="font-display text-3xl font-semibold md:text-4xl">
-            Хотите так же?
+            {c.ctaTitle}
           </h3>
           <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
-            Выберите мастер-класс и создайте своё изделие из глины — впечатления останутся
-            надолго.
+            {c.ctaText}
           </p>
           <Link to="/suzdal/workshops">
             <Button size="lg" variant="secondary" className="mt-7 rounded-full px-8">
-              <Icon name="LayoutGrid" size={18} className="mr-2" /> Выбрать мастер-класс
+              <Icon name="LayoutGrid" size={18} className="mr-2" /> {c.ctaButtonText}
             </Button>
           </Link>
         </div>

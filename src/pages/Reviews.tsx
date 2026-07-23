@@ -60,14 +60,14 @@ const Reviews = () => {
             </div>
             <div className="h-10 w-px bg-border" />
             <div className="text-left">
-              <p className="font-display text-2xl font-semibold">+700</p>
+              <p className="font-display text-2xl font-semibold">{c.statPositiveCount}</p>
               <p className="text-xs text-muted-foreground">положительных оценок</p>
             </div>
           </div>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a
-              href="https://yandex.ru/profile/8182762882?lang=ru&utm_source=copy_link&utm_medium=social&utm_campaign=share"
+              href={c.yandexReviewUrl}
               target="_blank"
               rel="noreferrer"
             >
@@ -76,7 +76,7 @@ const Reviews = () => {
               </Button>
             </a>
             <a
-              href="https://2gis.ru/moscow/firm/4504128908512077"
+              href={c.twoGisReviewUrl}
               target="_blank"
               rel="noreferrer"
             >
@@ -127,15 +127,14 @@ const Reviews = () => {
         {/* CTA */}
         <div className="mx-auto mt-16 max-w-4xl overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">
           <h3 className="font-display text-3xl font-semibold md:text-4xl">
-            Хотите так же?
+            {c.ctaTitle}
           </h3>
           <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
-            Выберите формат мастер-класса и создайте своё изделие из глины — впечатления
-            останутся надолго.
+            {c.ctaText}
           </p>
           <Link to="/moscow/formats">
             <Button size="lg" variant="secondary" className="mt-7 rounded-full px-8">
-              <Icon name="LayoutGrid" size={18} className="mr-2" /> Выбрать формат
+              <Icon name="LayoutGrid" size={18} className="mr-2" /> {c.ctaButtonText}
             </Button>
           </Link>
         </div>

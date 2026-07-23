@@ -5,9 +5,6 @@ import ReviewsGallery from '@/pages/reviews/ReviewsGallery';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
 
-const BANNER_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c567306-9774-4e90-ae66-a78ec8eb5977.png';
-
 const EXCURSION_VIDEO = '/video/suzdal-excursion.mp4';
 const EXCURSION_VIDEO_POSTER = '/video/suzdal-excursion-poster.jpg';
 
@@ -34,7 +31,7 @@ const SuzdalExcursions = () => {
       <section className="container py-8 md:py-12">
         <div className="animate-fade-in overflow-hidden rounded-[2rem] border border-border">
           <img
-            src={BANNER_IMG}
+            src={c.bannerImg}
             alt="Экскурсия на завод керамики «Дымов Керамика»"
             className="w-full object-cover"
           />
@@ -56,24 +53,12 @@ const SuzdalExcursions = () => {
           {/* DESCRIPTION */}
           <div className="mt-10 rounded-2xl border border-border bg-card p-7 md:p-10">
             <div className="space-y-4 leading-relaxed text-muted-foreground">
-              <p>
-                Мы приглашаем индивидуальные и организованные группы на экскурсию по фабрике
-                «Дымов Керамика» в Суздале.
-              </p>
-              <p>
-                Особый интерес у посетителей вызывает непосредственно процесс изготовления
-                керамических изделий, который они могут наблюдать в цехах и познакомиться с
-                основными этапами производства.
-              </p>
-              <p>
-                Экскурсионная программа включает в себя посещение основных объектов предприятия,
-                просмотр полного цикла процесса изготовления от участка массозаготовки до участка
-                сортировки и упаковки, знакомство с особенностями производства и секретами
-                технологии обработки глины, обжига, росписи и декорирования.
-              </p>
+              {(c.description || '').split('\n').filter(Boolean).map((p) => (
+                <p key={p}>{p}</p>
+              ))}
               <p className="flex items-center gap-2 font-medium text-foreground">
                 <Icon name="Clock" size={18} className="shrink-0 text-primary" />
-                По времени программа занимает от 30 до 45 минут.
+                {c.durationNote}
               </p>
             </div>
           </div>
@@ -138,8 +123,8 @@ const SuzdalExcursions = () => {
               <p className="text-sm font-semibold text-foreground">Запись на экскурсию</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 Запись и вся информация по телефону{' '}
-                <a href="tel:+79151576485" className="font-medium text-foreground hover:text-primary">
-                  +7 (915) 157-64-85
+                <a href={`tel:${(c.phone || '').replace(/[^\d+]/g, '')}`} className="font-medium text-foreground hover:text-primary">
+                  {c.phone}
                 </a>
                 .
               </p>
@@ -150,8 +135,7 @@ const SuzdalExcursions = () => {
           <div className="mt-4 rounded-2xl border border-primary/30 bg-primary/5 p-5">
             <p className="flex gap-2 text-sm font-medium text-foreground">
               <Icon name="TriangleAlert" size={16} className="mt-0.5 shrink-0 text-primary" />
-              Обращаем ваше внимание на то, что при опоздании или отказе менее чем за 24 часа
-              стоимость посещения не возвращается.
+              {c.cancelWarning}
             </p>
           </div>
 
@@ -163,7 +147,7 @@ const SuzdalExcursions = () => {
             <div>
               <p className="text-sm font-semibold text-foreground">Адрес проведения экскурсий</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Владимирская область, г. Суздаль, ул. Васильевская, 41а.
+                {c.address}
               </p>
             </div>
           </div>
