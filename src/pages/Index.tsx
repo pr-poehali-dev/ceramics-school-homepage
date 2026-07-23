@@ -12,9 +12,6 @@ import { REVIEWS, GALLERY } from './reviews/reviewsData';
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
 
-const SHOP_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/15712126-3d2f-4720-9917-7fe580f849d4.jpg';
-
 const REVIEW_AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
 const HOME_REVIEWS = REVIEWS.slice(0, 3);
 const HOME_GALLERY = GALLERY.slice(0, 6);
@@ -115,10 +112,9 @@ const Index = () => {
       {/* FORMATS */}
       <section id="formats" className="bg-secondary/50 py-16 md:py-24">
         <div className="container">
-          <SectionTitle eyebrow="Форматы" title="Выберите свой формат" />
+          <SectionTitle eyebrow="Форматы" title={c.formatsTitle} />
           <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">
-            От разовых занятий до праздников и выездных мастер-классов — подберите
-            подходящий вариант для себя, ребёнка или компании.
+            {c.formatsSubtitle}
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {ALL_FORMATS.map((f) => {
@@ -269,11 +265,10 @@ const Index = () => {
                 Подарочные сертификаты
               </span>
               <h2 className="mt-4 font-display text-4xl font-semibold md:text-5xl">
-                Подарите творчество на любую сумму
+                {c.certificatesTitle}
               </h2>
               <p className="mt-4 text-primary-foreground/80">
-                Отличный подарок близким — незабываемый вечер в мастерской и
-                изделие, созданное своими руками.
+                {c.certificatesText}
               </p>
               <Link to="/moscow/certificates">
                 <Button
@@ -281,7 +276,7 @@ const Index = () => {
                   variant="secondary"
                   className="mt-8 rounded-full px-8 text-base"
                 >
-                  Оформить сертификат
+                  {c.certificatesButtonText}
                   <Icon name="ArrowRight" size={18} className="ml-2" />
                 </Button>
               </Link>
@@ -308,11 +303,10 @@ const Index = () => {
                 <Icon name="ShoppingBag" size={16} /> Интернет-магазин
               </span>
               <h2 className="mt-5 font-display text-3xl font-semibold md:text-4xl">
-                Керамика ручной работы с доставкой
+                {c.shopTitle}
               </h2>
               <p className="mt-4 max-w-md text-muted-foreground">
-                Не только мастер-классы — в нашем магазине «Дымов Керамика» вы найдёте авторскую
-                посуду, декор и подарки, созданные вручную.
+                {c.shopText}
               </p>
               <a
                 href="https://dymovceramic.ru/"
@@ -320,13 +314,13 @@ const Index = () => {
                 rel="noreferrer"
                 className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
               >
-                Перейти в магазин
+                {c.shopButtonText}
                 <Icon name="ArrowRight" size={18} />
               </a>
             </div>
             <div className="relative hidden h-full min-h-[18rem] md:block">
               <img
-                src={SHOP_IMG}
+                src={c.shopImg}
                 alt="Керамика ручной работы"
                 className="absolute inset-0 h-full w-full object-cover"
               />
@@ -339,60 +333,26 @@ const Index = () => {
       <section className="container pb-16 md:pb-20">
         <div className="mx-auto max-w-3xl">
           <h2 className="font-display text-3xl font-semibold md:text-4xl">
-            О школе «Дымов Керамика»
+            {c.seoTitle}
           </h2>
           <div className="mt-6 space-y-4 leading-relaxed text-muted-foreground">
-            <p>
-              Компания «Дымов Керамика» берёт своё начало в 2003 году в городе Суздаль, где супруги
-              Вадим Дымов и Евгения Зеленская основали собственную фабрику по производству
-              керамических изделий ручной работы.
-            </p>
-            <p>
-              Наше производство — это сочетание традиционных методов ручной работы с материалами,
-              современные технологии и авторское видение будущего русской керамики.
-            </p>
-            <p>
-              С момента своего основания мануфактура «Дымов Керамика» стремительно развивалась,
-              воплощая на практике новые творческие концепции. На сегодняшний день на базе фабрики
-              сформировалось целое культурное пространство, логическим продолжением которого стало
-              основание школы керамики в Москве.
-            </p>
-            <p>
-              Сегодня керамику ручной работы можно не только приобрести, но и научиться делать её
-              самому — для этого достаточно записаться на мастер-класс. Уютная мастерская,
-              оборудованная всем необходимым инвентарём, расположена на ВДНХ и готова принять в своих
-              стенах всех интересующихся гончарным производством.
-            </p>
+            <p>{c.seoParagraph1}</p>
+            <p>{c.seoParagraph2}</p>
+            <p>{c.seoParagraph3}</p>
+            <p>{c.seoParagraph4}</p>
 
             <h3 className="pt-4 font-display text-2xl font-semibold text-foreground">
-              Творчество, доступное для детей и взрослых
+              {c.seoSubtitle1}
             </h3>
-            <p>
-              Создание керамических изделий — это удивительный творческий процесс, который не знает
-              возрастных ограничений. Гончарное дело способно увлечь и детей, и взрослых. Каждый
-              сделает для себя множество интересных открытий и раскроет творческий потенциал.
-            </p>
-            <p>
-              Развивающие занятия для детей возрастом от 3 лет по ручной лепке способствуют развитию
-              мелкой моторики, координации движений, абстрактного мышления и фантазии.
-            </p>
-            <p>
-              Арт-терапия. Занятия с глиной успокаивают нервную систему, дают позитивный настрой,
-              наполняют жизнь яркими красками и дарят положительные эмоции.
-            </p>
+            <p>{c.seoParagraph5}</p>
+            <p>{c.seoParagraph6}</p>
+            <p>{c.seoParagraph7}</p>
 
             <h3 className="pt-4 font-display text-2xl font-semibold text-foreground">
-              Преимущества школы «Дымов Керамика»
+              {c.seoSubtitle2}
             </h3>
             <ul className="space-y-2">
-              {[
-                'Занятия интересны детям и взрослым. Посетить мастер-класс с семьёй в нашей школе — отличная альтернатива совместного досуга.',
-                'Наши преподаватели — опытные мастера, много лет проработавшие на гончарном производстве, готовые поделиться бесценными навыками со своими учениками.',
-                'Мы формируем небольшие группы по пять-шесть человек, благодаря чему каждому ученику уделяется достаточно внимания.',
-                'На занятиях вы научитесь не только создавать изделия с нуля, но и приобретёте навыки ручной росписи.',
-                'Мы работаем ежедневно. Вы всегда можете подобрать удобное время.',
-                'Мы предлагаем программы различной направленности, возможность индивидуального обучения, а также гибкую ценовую политику, акции и программы лояльности (скидки пенсионерам, студентам и т. д.).',
-              ].map((li) => (
+              {(c.seoAdvantagesList || '').split('\n').filter(Boolean).map((li) => (
                 <li key={li} className="flex gap-2">
                   <Icon name="Check" size={18} className="mt-0.5 shrink-0 text-primary" />
                   <span>{li}</span>
@@ -403,10 +363,10 @@ const Index = () => {
               Уточнить подробности и задать интересующие Вас вопросы можете, связавшись с нами по
               телефону{' '}
               <a
-                href="tel:+79854198903"
+                href={`tel:${(c.seoPhone || '').replace(/[^\d+]/g, '')}`}
                 className="font-semibold text-primary transition-colors hover:underline"
               >
-                +7 (985) 419-89-03
+                {c.seoPhone}
               </a>
               .
             </p>
