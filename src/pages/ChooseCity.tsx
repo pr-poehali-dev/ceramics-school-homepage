@@ -33,7 +33,7 @@ const ChooseCity = () => {
       {/* LOGO */}
       <div className="flex flex-col items-center pt-12 pb-8 md:pt-16">
         <Logo className="h-14 origin-center md:h-16" />
-        <h1 className="mt-5 text-center font-display text-2xl font-semibold md:text-3xl">Выберите город: гончарные мастер-классы «Дымов Керамика» в Москве или Суздале</h1>
+        <h1 className="mt-5 text-center font-display text-2xl font-semibold md:text-3xl">Гончарные мастер-классы в Москве или Суздале — выберите город</h1>
       </div>
 
       {/* CHOICE BLOCKS */}
