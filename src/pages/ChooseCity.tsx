@@ -5,10 +5,6 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
 import { REVIEWS as MOSCOW_REVIEWS } from './reviews/reviewsData';
 import { REVIEWS as SUZDAL_REVIEWS } from './suzdal-reviews/reviewsData';
-import SUZDAL_IMG from '@/assets/suzdal/school-facade.jpg';
-
-const MOSCOW_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/260e7e60-766b-4577-b0ce-5dd058cede6b.jpg';
 
 const TOTAL_REVIEWS = MOSCOW_REVIEWS.length + SUZDAL_REVIEWS.length;
 const ALL_RATINGS = [...MOSCOW_REVIEWS, ...SUZDAL_REVIEWS];
@@ -47,20 +43,20 @@ const ChooseCity = () => {
           >
             <div className="relative h-64 overflow-hidden md:h-80">
               <img
-                src={MOSCOW_IMG}
+                src={c.moscowImg}
                 alt="Школа Дымов Керамика на ВДНХ в Москве"
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
-                <Icon name="MapPin" size={13} className="text-primary" /> Москва · ВДНХ
+                <Icon name="MapPin" size={13} className="text-primary" /> {c.moscowBadge}
               </span>
             </div>
             <div className="p-7 md:p-8">
               <h2 className="font-display text-2xl font-semibold leading-tight md:text-3xl">
-                Школа керамики «Дымов Керамика» на ВДНХ
+                {c.moscowTitle}
               </h2>
               <span className="mt-5 inline-flex items-center gap-2 text-base font-medium text-primary transition-all group-hover:gap-3">
-                Перейти на страницу школы
+                {c.moscowLinkText}
                 <Icon name="ArrowRight" size={20} />
               </span>
             </div>
@@ -73,20 +69,20 @@ const ChooseCity = () => {
           >
             <div className="relative h-64 overflow-hidden md:h-80">
               <img
-                src={SUZDAL_IMG}
+                src={c.suzdalImg}
                 alt="Фабрика и школа Дымов Керамика в Суздале"
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
-                <Icon name="MapPin" size={13} className="text-primary" /> Суздаль
+                <Icon name="MapPin" size={13} className="text-primary" /> {c.suzdalBadge}
               </span>
             </div>
             <div className="p-7 md:p-8">
               <h2 className="font-display text-2xl font-semibold leading-tight md:text-3xl">
-                Фабрика и Школа «Дымов Керамика» в Суздале
+                {c.suzdalTitle}
               </h2>
               <span className="mt-5 inline-flex items-center gap-2 text-base font-medium text-primary transition-all group-hover:gap-3">
-                Перейти на страницу фабрики
+                {c.suzdalLinkText}
                 <Icon name="ArrowRight" size={20} />
               </span>
             </div>

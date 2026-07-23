@@ -38,12 +38,30 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
       { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
       { key: 'h1', label: 'Заголовок H1', type: 'text' },
+      { key: 'moscowImg', label: 'Москва — картинка карточки', type: 'image' },
+      { key: 'moscowBadge', label: 'Москва — метка на картинке', type: 'text' },
+      { key: 'moscowTitle', label: 'Москва — заголовок под картинкой', type: 'text' },
+      { key: 'moscowLinkText', label: 'Москва — текст ссылки', type: 'text' },
+      { key: 'suzdalImg', label: 'Суздаль — картинка карточки', type: 'image' },
+      { key: 'suzdalBadge', label: 'Суздаль — метка на картинке', type: 'text' },
+      { key: 'suzdalTitle', label: 'Суздаль — заголовок под картинкой', type: 'text' },
+      { key: 'suzdalLinkText', label: 'Суздаль — текст ссылки', type: 'text' },
     ],
     defaults: {
       metaTitle: 'Гончарные мастер-классы в Москве и Суздале | Дымов Керамика',
       metaDescription:
         'Мастерская «Дымов Керамика»: мастер-классы по лепке, работа на гончарном круге, роспись акрилом. Уроки для детей и взрослых в Москве и Суздале. Скидки, абонементы, сертификаты!',
       h1: 'Гончарные мастер-классы в Москве или Суздале — выберите город',
+      moscowImg:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/260e7e60-766b-4577-b0ce-5dd058cede6b.jpg',
+      moscowBadge: 'Москва · ВДНХ',
+      moscowTitle: 'Школа керамики «Дымов Керамика» на ВДНХ',
+      moscowLinkText: 'Перейти на страницу школы',
+      suzdalImg:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/page-content/2f30440a43a8e3afc84cf515.jpg',
+      suzdalBadge: 'Суздаль',
+      suzdalTitle: 'Фабрика и Школа «Дымов Керамика» в Суздале',
+      suzdalLinkText: 'Перейти на страницу фабрики',
     },
   },
   {
