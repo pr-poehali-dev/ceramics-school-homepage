@@ -1,10 +1,19 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
+import SocialLinks from '@/components/SocialLinks';
+import CityDetailsSection from './choose-city/CityDetailsSection';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
 import { REVIEWS as MOSCOW_REVIEWS } from './reviews/reviewsData';
 import { REVIEWS as SUZDAL_REVIEWS } from './suzdal-reviews/reviewsData';
+
+const MOSCOW_REVIEWS_AVG = (
+  MOSCOW_REVIEWS.reduce((s, r) => s + r.rating, 0) / MOSCOW_REVIEWS.length
+).toFixed(1);
+const SUZDAL_REVIEWS_AVG = (
+  SUZDAL_REVIEWS.reduce((s, r) => s + r.rating, 0) / SUZDAL_REVIEWS.length
+).toFixed(1);
 
 const TOTAL_REVIEWS = MOSCOW_REVIEWS.length + SUZDAL_REVIEWS.length;
 const ALL_RATINGS = [...MOSCOW_REVIEWS, ...SUZDAL_REVIEWS];
@@ -21,6 +30,8 @@ const STATS = [
 
 const ChooseCity = () => {
   const c = usePageContent('home');
+  const moscowContacts = usePageContent('moscow-contacts');
+  const suzdalContacts = usePageContent('suzdal-contacts');
   usePageMeta({
     title: c.metaTitle,
     description: c.metaDescription,
@@ -124,9 +135,53 @@ const ChooseCity = () => {
         </div>
       </section>
 
+      {/* DETAILS ABOUT EACH SCHOOL */}
+      <section className="py-14 md:py-16">
+        <div className="container">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+              <Icon name="Building2" size={16} /> Наши школы
+            </span>
+            <h2 className="mt-5 font-display text-3xl font-semibold md:text-4xl">
+              {c.detailsTitle}
+            </h2>
+            <p className="mt-4 leading-relaxed text-muted-foreground">{c.detailsSubtitle}</p>
+          </div>
+
+          <div className="mx-auto mt-10 max-w-5xl space-y-8">
+            <CityDetailsSection
+              city="moscow"
+              badge={c.moscowDetailsBadge}
+              title={c.moscowDetailsTitle}
+              text={c.moscowDetailsText}
+              img={c.moscowDetailsImg}
+              reviewsCount={MOSCOW_REVIEWS.length}
+              reviewsAvg={MOSCOW_REVIEWS_AVG}
+              workshopsCount={4}
+              address={moscowContacts.address}
+              workHours={moscowContacts.workHours}
+            />
+            <CityDetailsSection
+              city="suzdal"
+              badge={c.suzdalDetailsBadge}
+              title={c.suzdalDetailsTitle}
+              text={c.suzdalDetailsText}
+              img={c.suzdalDetailsImg}
+              reviewsCount={SUZDAL_REVIEWS.length}
+              reviewsAvg={SUZDAL_REVIEWS_AVG}
+              workshopsCount={9}
+              address={suzdalContacts.address}
+              workHours={suzdalContacts.workHours}
+              reversed
+            />
+          </div>
+        </div>
+      </section>
+
       {/* FOOTER */}
       <footer className="border-t border-border bg-secondary/40">
-        <div className="container flex flex-col items-center justify-center gap-1 py-6 text-sm text-muted-foreground">
+        <div className="container flex flex-col items-center justify-center gap-4 py-8 text-sm text-muted-foreground">
+          <SocialLinks size={18} variant="solid" />
           <span>© 2003–2026 «Дымов Керамика». Все права защищены.</span>
         </div>
       </footer>

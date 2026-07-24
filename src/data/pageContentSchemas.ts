@@ -48,6 +48,16 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'suzdalBadge', label: 'Суздаль — метка на картинке', type: 'text' },
       { key: 'suzdalTitle', label: 'Суздаль — заголовок под картинкой', type: 'text' },
       { key: 'suzdalLinkText', label: 'Суздаль — текст ссылки', type: 'text' },
+      { key: 'detailsTitle', label: 'Блок «Подробнее о школах» — заголовок', type: 'text' },
+      { key: 'detailsSubtitle', label: 'Блок «Подробнее о школах» — подзаголовок', type: 'textarea' },
+      { key: 'moscowDetailsImg', label: 'Москва подробно — картинка', type: 'image' },
+      { key: 'moscowDetailsBadge', label: 'Москва подробно — метка', type: 'text' },
+      { key: 'moscowDetailsTitle', label: 'Москва подробно — заголовок', type: 'text' },
+      { key: 'moscowDetailsText', label: 'Москва подробно — текст', type: 'textarea' },
+      { key: 'suzdalDetailsImg', label: 'Суздаль подробно — картинка', type: 'image' },
+      { key: 'suzdalDetailsBadge', label: 'Суздаль подробно — метка', type: 'text' },
+      { key: 'suzdalDetailsTitle', label: 'Суздаль подробно — заголовок', type: 'text' },
+      { key: 'suzdalDetailsText', label: 'Суздаль подробно — текст', type: 'textarea' },
     ],
     defaults: {
       metaTitle: 'Гончарные мастер-классы в Москве и Суздале | Дымов Керамика',
@@ -64,6 +74,21 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       suzdalBadge: 'Суздаль',
       suzdalTitle: 'Фабрика и Школа «Дымов Керамика» в Суздале',
       suzdalLinkText: 'Перейти на страницу фабрики',
+      detailsTitle: 'Две школы — один дух творчества',
+      detailsSubtitle:
+        'Выберите город и узнайте больше о мастер-классах, ценах и контактах каждой площадки.',
+      moscowDetailsImg:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/15712126-3d2f-4720-9917-7fe580f849d4.jpg',
+      moscowDetailsBadge: 'Москва · ВДНХ',
+      moscowDetailsTitle: 'Школа керамики на ВДНХ',
+      moscowDetailsText:
+        'Уютная студия в самом центре ВДНХ. Лепка, гончарный круг, роспись ангобами и акрилом — форматы для детей и взрослых, разовые занятия и праздники.',
+      suzdalDetailsImg:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/c6f10822-9087-43b5-af4a-0d27b8ec6a9b.jpg',
+      suzdalDetailsBadge: 'Суздаль',
+      suzdalDetailsTitle: 'Фабрика и школа в Суздале',
+      suzdalDetailsText:
+        'Настоящее гончарное производство с 2003 года. Девять разных мастер-классов, экскурсии по фабрике и авторская керамика ручной работы.',
     },
   },
   {
