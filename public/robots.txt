@@ -1,5 +1,7 @@
 User-agent: *
 Disallow: /admin
+Disallow: /moscow/order-status
+Disallow: /suzdal/order-status
 Allow: /
 
 Sitemap: https://dymovceramicschool.ru/sitemap.xml
