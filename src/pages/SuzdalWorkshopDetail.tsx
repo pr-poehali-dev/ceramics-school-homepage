@@ -8,7 +8,7 @@ import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
-import WorkshopMediaBlock from '@/pages/workshop-detail/WorkshopMediaBlock';
+import WorkshopHero from '@/pages/workshop-detail/WorkshopHero';
 
 interface SuzdalWorkshopData {
   slug: string;
@@ -322,52 +322,31 @@ const SuzdalWorkshopDetail = () => {
           <Icon name="ArrowLeft" size={16} /> Назад к мастер-классам
         </Link>
 
-        {/* HERO */}
-        <div className="relative mt-8 animate-scale-in overflow-hidden rounded-[2rem] shadow-xl">
-          <img
-            src={displayImg}
-            alt={displayTitle}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/25" />
-
-          <div className="relative flex min-h-[26rem] flex-col justify-end p-7 text-white md:min-h-[32rem] md:p-12">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur">
-              <Icon name={data.badgeIcon} size={16} /> Мастер-класс
-            </span>
-            <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
-              {displayTitle}
-            </h1>
-            <p className="mt-4 max-w-xl text-lg text-white/85 md:text-xl">{displaySubtitle}</p>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <span className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-                <Icon name="Tag" size={16} /> {displayPrice.toLocaleString('ru-RU')} руб.
-              </span>
-              <span className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-                <Icon name="Clock" size={16} /> {displayDuration}
-              </span>
-              <span className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-                <Icon name="Star" size={16} /> {displayAge}
-              </span>
-            </div>
-
-            <Button
-              onClick={handleAddToCart}
-              size="lg"
-              className="mt-7 w-fit rounded-full px-8 text-base"
-            >
-              <Icon name="ShoppingCart" size={18} className="mr-2" /> Добавить в корзину
-            </Button>
-          </div>
-        </div>
-
-        {/* ФОТО И ВИДЕО */}
-        <WorkshopMediaBlock
-          enabled={c.mediaEnabled}
-          video={c.mediaVideo}
-          gallery={c.mediaGallery}
-        />
+        {/* HERO + SLIDER + VIDEO */}
+        <WorkshopHero
+          images={
+            c.mediaEnabled !== 'false' && c.mediaGallery
+              ? [displayImg, ...c.mediaGallery.split('\n').filter(Boolean)]
+              : [displayImg]
+          }
+          badgeIcon={data.badgeIcon}
+          title={displayTitle}
+          subtitle={displaySubtitle}
+          video={c.mediaEnabled !== 'false' ? c.mediaVideo : undefined}
+          stats={[
+            { icon: 'Tag', text: `${displayPrice.toLocaleString('ru-RU')} руб.` },
+            { icon: 'Clock', text: displayDuration },
+            { icon: 'Star', text: displayAge },
+          ]}
+        >
+          <Button
+            onClick={handleAddToCart}
+            size="lg"
+            className="w-fit rounded-full px-8 text-base"
+          >
+            <Icon name="ShoppingCart" size={18} className="mr-2" /> Добавить в корзину
+          </Button>
+        </WorkshopHero>
 
         {/* DESCRIPTION + ORDER */}
         <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
