@@ -87,7 +87,7 @@ const Contacts = () => {
         <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl border border-border">
           {/* Yandex map embed */}
           <iframe
-            src="https://yandex.ru/map-widget/v1/?mode=search&text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%2C%20%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82%20%D0%9C%D0%B8%D1%80%D0%B0%2C%20119%D1%81186&z=17"
+            src={content.mapEmbedUrl}
             width="100%"
             height="380"
             frameBorder="0"
@@ -109,12 +109,12 @@ const Contacts = () => {
             </div>
             <div className="mt-5 space-y-4 text-sm text-muted-foreground leading-relaxed">
               <div>
-                <p className="font-semibold text-foreground mb-1">Въезд Лихоборский</p>
-                <p>Со стороны Сельскохозяйственной улицы, после 21 дома. Далее через въезд, по прямой до перекрёстка с кольцевой дорогой — налево, строение 186.</p>
+                <p className="font-semibold text-foreground mb-1">{content.carEntranceTitle}</p>
+                <p>{content.carEntranceText}</p>
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">Выезд Совхозный</p>
-                <p>Со стороны Сельскохозяйственной улицы, после 19 дома. Далее через выезд, по прямой до перекрёстка с кольцевой дорогой — направо, строение 186.</p>
+                <p className="font-semibold text-foreground mb-1">{content.carExitTitle}</p>
+                <p>{content.carExitText}</p>
               </div>
             </div>
           </div>
@@ -128,22 +128,20 @@ const Contacts = () => {
               <h2 className="font-display text-2xl font-semibold">На транспорте</h2>
             </div>
             <div className="mt-5 space-y-4 text-sm text-muted-foreground leading-relaxed">
-              <p>
-                <span className="font-semibold text-foreground">Автобус №533</span> — «Метро ВДНХ» → «Метро Ботанический сад» по территории ВДНХ.
-              </p>
+              <p>{content.busRouteText}</p>
               <div className="space-y-2">
-                <p><span className="font-semibold text-foreground">→ к «Ботанический сад»:</span> остановка «Павильон № 57 — Исторический парк Россия — Моя история».</p>
-                <p><span className="font-semibold text-foreground">→ к «ВДНХ»:</span> остановка «Городская ферма» или «Дворец бракосочетания».</p>
+                <p>{content.busToOneText}</p>
+                <p>{content.busToTwoText}</p>
               </div>
               <div className="flex gap-4 rounded-xl bg-muted/50 px-4 py-3">
                 <div>
                   <p className="text-xs text-muted-foreground">Первый автобус</p>
-                  <p className="font-semibold text-foreground">07:00 от ВДНХ</p>
+                  <p className="font-semibold text-foreground">{content.busFirstTime}</p>
                 </div>
                 <div className="w-px bg-border" />
                 <div>
                   <p className="text-xs text-muted-foreground">Последний автобус</p>
-                  <p className="font-semibold text-foreground">23:20 от Ботанического сада</p>
+                  <p className="font-semibold text-foreground">{content.busLastTime}</p>
                 </div>
               </div>
             </div>
@@ -153,7 +151,7 @@ const Contacts = () => {
         {/* SOCIALS */}
         <div className="mx-auto mt-8 max-w-4xl flex flex-wrap gap-4">
           <a
-            href="https://vk.com/dymovceramicschool"
+            href={content.vkUrl}
             target="_blank"
             rel="noreferrer"
             className="flex flex-1 items-center justify-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 font-medium transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5"
@@ -162,7 +160,7 @@ const Contacts = () => {
             ВКонтакте
           </a>
           <a
-            href="https://t.me/dymovceramicschool"
+            href={content.telegramUrl}
             target="_blank"
             rel="noreferrer"
             className="flex flex-1 items-center justify-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 font-medium transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5"
