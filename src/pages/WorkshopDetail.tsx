@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import UtilBlock from '@/pages/workshop-detail/UtilBlock';
-import WorkshopHero from '@/pages/workshop-detail/WorkshopHero';
+import WorkshopMediaBlock from '@/pages/workshop-detail/WorkshopMediaBlock';
 import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -161,35 +161,59 @@ const WorkshopDetail = () => {
           <Icon name="ArrowLeft" size={16} /> Назад к услугам
         </Link>
 
-        {/* HERO + SLIDER + VIDEO */}
-        <WorkshopHero
-          images={
-            c.mediaEnabled !== 'false' && c.mediaGallery
-              ? [c.img || data.img, ...c.mediaGallery.split('\n').filter(Boolean)]
-              : [c.img || data.img]
-          }
-          badgeIcon={data.badgeIcon}
-          title={c.title || data.title}
-          subtitle={c.subtitle || data.subtitle}
-          video={c.mediaEnabled !== 'false' ? c.mediaVideo : undefined}
-          stats={data.stats.map((s, i) => ({
-            icon: s.icon,
-            text: i === 0 && c.price ? c.price : s.text,
-          }))}
-        >
-          <Button size="lg" onClick={openBooking} className="w-fit rounded-full px-10 text-base">
-            <Icon name="CalendarCheck" size={18} className="mr-2" /> {c.bookButtonText}
-          </Button>
-          <Link to="/moscow/certificates">
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-fit rounded-full border-white/40 bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white hover:text-foreground"
-            >
-              <Icon name="Gift" size={18} className="mr-2" /> {c.certificateButtonText}
-            </Button>
-          </Link>
-        </WorkshopHero>
+        {/* HERO */}
+        <div className="relative mt-8 animate-scale-in overflow-hidden rounded-[2rem] shadow-xl">
+          <img
+            src={c.img || data.img}
+            alt={c.title || data.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/25" />
+
+          <div className="relative flex min-h-[26rem] flex-col justify-end p-7 text-white md:min-h-[32rem] md:p-12">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur">
+              <Icon name={data.badgeIcon} size={16} /> Мастер-класс
+            </span>
+            <h1 className="mt-5 font-display text-5xl font-semibold leading-tight md:text-6xl">
+              {c.title || data.title}
+            </h1>
+            <p className="mt-4 max-w-xl text-lg text-white/85 md:text-xl">{c.subtitle || data.subtitle}</p>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              {data.stats.map((s, i) => (
+                <span
+                  key={s.text}
+                  className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur"
+                >
+                  <Icon name={s.icon} size={16} className="text-white" />
+                  {i === 0 && c.price ? c.price : s.text}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button size="lg" onClick={openBooking} className="w-fit rounded-full px-10 text-base">
+                <Icon name="CalendarCheck" size={18} className="mr-2" /> {c.bookButtonText}
+              </Button>
+              <Link to="/moscow/certificates">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-fit rounded-full border-white/40 bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white hover:text-foreground"
+                >
+                  <Icon name="Gift" size={18} className="mr-2" /> {c.certificateButtonText}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ФОТО И ВИДЕО */}
+        <WorkshopMediaBlock
+          enabled={c.mediaEnabled}
+          video={c.mediaVideo}
+          gallery={c.mediaGallery}
+        />
 
         {/* DESCRIPTION + NOTES */}
         <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
