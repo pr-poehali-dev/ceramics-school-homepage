@@ -136,8 +136,9 @@ const WorkshopDetail = () => {
   const c = usePageContent(`moscow-workshops-${slug || 'lepka'}`);
 
   usePageMeta({
-    title: meta?.title || 'Мастер-классы «Дымов Керамика» в Москве',
+    title: c.metaTitle || meta?.title || 'Мастер-классы «Дымов Керамика» в Москве',
     description:
+      c.metaDescription ||
       meta?.description ||
       'Мастер-классы по керамике и гончарному делу для детей и взрослых в школе «Дымов Керамика» на ВДНХ.',
   });

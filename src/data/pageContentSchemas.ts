@@ -294,6 +294,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     status: 'ready',
     path: '/moscow/workshops/lepka',
     fields: [
+      { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
+      { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
       { key: 'price', label: 'Цена', type: 'price' },
@@ -313,6 +315,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
     ],
     defaults: {
+      metaTitle: 'Мастер-класс "Лепка" в гончарной школе «Дымов Керамика» в Москве',
+      metaDescription:
+        'Мастер-класс по лепке из глины для детей и взрослых на ВДНХ. Школа лепки из глины в Москве. Действуют скидки для пенсионеров и многодетных семей.',
       title: 'Лепка из глины',
       subtitle: 'Освойте разные техники ручной лепки и создайте изделие своими руками за 1 час.',
       price: '2 900 ₽',
@@ -342,6 +347,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     status: 'ready',
     path: '/moscow/workshops/krug',
     fields: [
+      { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
+      { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
       { key: 'price', label: 'Цена', type: 'price' },
@@ -361,6 +368,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
     ],
     defaults: {
+      metaTitle: 'Мастер-класс на гончарном круге в «Дымов Керамика», Москва',
+      metaDescription:
+        'Мастер-класс лепки на гончарном круге для детей и взрослых на ВДНХ в Москве. Действуют скидки для пенсионеров и многодетных семей. Запишитесь онлайн!',
       title: 'Гончарный круг',
       subtitle: 'Освойте азы гончарного ремесла и создайте изделие своими руками за 1 час.',
       price: '2 900 ₽',
@@ -390,6 +400,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     status: 'ready',
     path: '/moscow/workshops/angoby',
     fields: [
+      { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
+      { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
       { key: 'price', label: 'Цена', type: 'price' },
@@ -409,6 +421,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
     ],
     defaults: {
+      metaTitle: 'Мастер-класс «Роспись ангобами» в «Дымов Керамика», Москва',
+      metaDescription:
+        'Ручная роспись керамических тарелок и изделий из глины для детей и взрослых на ВДНХ. Действуют скидки для пенсионеров и многодетных семей.',
       title: 'Роспись ангобами',
       subtitle: 'Красочно и сочно распишите керамику экологичной подглазурной краской.',
       price: '2 100 ₽',
@@ -438,6 +453,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
     status: 'ready',
     path: '/moscow/workshops/akril',
     fields: [
+      { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
+      { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
       { key: 'title', label: 'Название', type: 'text' },
       { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
       { key: 'price', label: 'Цена', type: 'price' },
@@ -457,6 +474,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
     ],
     defaults: {
+      metaTitle: 'Мастер-класс «Роспись акрилом» в «Дымов Керамика», Москва',
+      metaDescription:
+        'Роспись акрилом керамических тарелок и изделий из глины для детей и взрослых на ВДНХ. Скидки для пенсионеров и многодетных семей. Запись онлайн!',
       title: 'Роспись акрилом',
       subtitle: 'Попробуйте себя в роли художника — забирайте готовое изделие с собой сразу.',
       price: '1 500 ₽',
