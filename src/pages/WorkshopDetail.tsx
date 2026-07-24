@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import UtilBlock from '@/pages/workshop-detail/UtilBlock';
+import WorkshopMediaBlock from '@/pages/workshop-detail/WorkshopMediaBlock';
 import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -282,6 +283,13 @@ const WorkshopDetail = () => {
 
         {/* УТИЛЬ ДЛЯ РОСПИСИ */}
         {slug === 'angoby' && <UtilBlock />}
+
+        {/* ФОТО И ВИДЕО */}
+        <WorkshopMediaBlock
+          enabled={c.mediaEnabled}
+          video={c.mediaVideo}
+          gallery={c.mediaGallery}
+        />
 
         {/* CTA BANNER */}
         <div className="relative mt-14 overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">

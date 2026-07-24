@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import func2url from '../../../backend/func2url.json';
 import { PAGE_SCHEMAS, getPageSchema } from '@/data/pageContentSchemas';
@@ -58,8 +59,11 @@ const PageContentEditor = ({ token }: Props) => {
     }
   };
 
-  const uploadImage = async (fieldKey: string, file: File) => {
-    setUploadingKey(fieldKey);
+  const uploadFile = async (
+    file: File,
+    onSuccess: (url: string) => void,
+    kind: 'картинку' | 'видео' = 'картинку',
+  ) => {
     try {
       const base64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -74,13 +78,47 @@ const PageContentEditor = ({ token }: Props) => {
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || 'fail');
-      setFields((prev) => ({ ...prev, [fieldKey]: data.url }));
-      toast({ title: 'Картинка загружена' });
+      onSuccess(data.url);
+      toast({ title: `Файл загружен` });
     } catch {
-      toast({ title: 'Не удалось загрузить картинку', description: 'Попробуйте другой файл.' });
-    } finally {
-      setUploadingKey(null);
+      toast({ title: `Не удалось загрузить ${kind}`, description: 'Попробуйте другой файл.' });
     }
+  };
+
+  const uploadImage = async (fieldKey: string, file: File) => {
+    setUploadingKey(fieldKey);
+    await uploadFile(file, (url) => setFields((prev) => ({ ...prev, [fieldKey]: url })));
+    setUploadingKey(null);
+  };
+
+  const uploadVideo = async (fieldKey: string, file: File) => {
+    setUploadingKey(fieldKey);
+    await uploadFile(
+      file,
+      (url) => setFields((prev) => ({ ...prev, [fieldKey]: url })),
+      'видео',
+    );
+    setUploadingKey(null);
+  };
+
+  const uploadGalleryImage = async (fieldKey: string, file: File) => {
+    setUploadingKey(fieldKey);
+    await uploadFile(file, (url) => {
+      setFields((prev) => {
+        const list = (prev[fieldKey] || '').split('\n').filter(Boolean);
+        list.push(url);
+        return { ...prev, [fieldKey]: list.join('\n') };
+      });
+    });
+    setUploadingKey(null);
+  };
+
+  const removeGalleryImage = (fieldKey: string, index: number) => {
+    setFields((prev) => {
+      const list = (prev[fieldKey] || '').split('\n').filter(Boolean);
+      list.splice(index, 1);
+      return { ...prev, [fieldKey]: list.join('\n') };
+    });
   };
 
   if (!selectedKey) {
@@ -181,9 +219,21 @@ const PageContentEditor = ({ token }: Props) => {
         <div className="mt-6 space-y-5">
           {schema?.fields.map((f) => (
             <div key={f.key}>
-              <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
-                {f.label}
-              </label>
+              {f.type === 'boolean' ? (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-secondary/30 p-3">
+                  <span className="text-sm font-medium text-foreground">{f.label}</span>
+                  <Switch
+                    checked={fields[f.key] !== 'false'}
+                    onCheckedChange={(checked) =>
+                      setFields((prev) => ({ ...prev, [f.key]: checked ? 'true' : 'false' }))
+                    }
+                  />
+                </div>
+              ) : (
+                <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
+                  {f.label}
+                </label>
+              )}
               {f.type === 'textarea' && (
                 <Textarea
                   value={fields[f.key] || ''}
@@ -229,6 +279,76 @@ const PageContentEditor = ({ token }: Props) => {
                       />
                     </label>
                   </div>
+                </div>
+              )}
+              {f.type === 'video' && (
+                <div className="flex items-center gap-3">
+                  {fields[f.key] && (
+                    <video src={fields[f.key]} className="h-16 w-24 shrink-0 rounded-lg border border-border object-cover" muted />
+                  )}
+                  <div className="flex-1">
+                    <Input
+                      value={fields[f.key] || ''}
+                      onChange={(e) => setFields((prev) => ({ ...prev, [f.key]: e.target.value }))}
+                      placeholder="Ссылка на видео"
+                    />
+                    <label className="mt-2 inline-flex cursor-pointer items-center gap-1.5 text-xs text-primary hover:underline">
+                      <Icon name="Upload" size={13} />
+                      {uploadingKey === f.key ? 'Загружаем…' : 'Загрузить своё видео'}
+                      <input
+                        type="file"
+                        accept="video/mp4,video/webm"
+                        className="hidden"
+                        disabled={uploadingKey === f.key}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadVideo(f.key, file);
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              )}
+              {f.type === 'gallery' && (
+                <div>
+                  <div className="flex flex-wrap gap-2">
+                    {(fields[f.key] || '')
+                      .split('\n')
+                      .filter(Boolean)
+                      .map((src, i) => (
+                        <div key={src} className="group relative h-16 w-16 shrink-0">
+                          <img
+                            src={src}
+                            alt=""
+                            className="h-16 w-16 rounded-lg border border-border object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryImage(f.key, i)}
+                            className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 shadow transition-opacity group-hover:opacity-100"
+                            aria-label="Удалить фото"
+                          >
+                            <Icon name="X" size={12} />
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                  <label className="mt-2 inline-flex cursor-pointer items-center gap-1.5 text-xs text-primary hover:underline">
+                    <Icon name="Upload" size={13} />
+                    {uploadingKey === f.key ? 'Загружаем…' : 'Добавить фото'}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      className="hidden"
+                      disabled={uploadingKey === f.key}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) uploadGalleryImage(f.key, file);
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
                 </div>
               )}
             </div>

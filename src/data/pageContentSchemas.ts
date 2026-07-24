@@ -11,7 +11,7 @@
  * первого открытия страницы в админке (чтобы редактор не показывал пустые поля).
  */
 
-export type ContentFieldType = 'text' | 'textarea' | 'price' | 'image';
+export type ContentFieldType = 'text' | 'textarea' | 'price' | 'image' | 'boolean' | 'gallery' | 'video';
 
 export interface ContentFieldSchema {
   key: string;
@@ -308,6 +308,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'ctaTitle', label: 'Нижний блок — заголовок «Остались вопросы?»', type: 'text' },
       { key: 'ctaText', label: 'Нижний блок — текст', type: 'textarea' },
       { key: 'ctaPhone', label: 'Нижний блок — телефон', type: 'text' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
     ],
     defaults: {
       title: 'Лепка из глины',
@@ -326,6 +329,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       ctaTitle: 'Остались вопросы?',
       ctaText: 'Поможем выбрать удобное время, уточним расписание и ответим на любые вопросы.',
       ctaPhone: '+7 (985) 419-89-03',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
     },
   },
   {
@@ -349,6 +356,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'ctaTitle', label: 'Нижний блок — заголовок «Остались вопросы?»', type: 'text' },
       { key: 'ctaText', label: 'Нижний блок — текст', type: 'textarea' },
       { key: 'ctaPhone', label: 'Нижний блок — телефон', type: 'text' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
     ],
     defaults: {
       title: 'Гончарный круг',
@@ -367,6 +377,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       ctaTitle: 'Остались вопросы?',
       ctaText: 'Поможем выбрать удобное время, уточним расписание и ответим на любые вопросы.',
       ctaPhone: '+7 (985) 419-89-03',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
     },
   },
   {
@@ -390,6 +404,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'ctaTitle', label: 'Нижний блок — заголовок «Остались вопросы?»', type: 'text' },
       { key: 'ctaText', label: 'Нижний блок — текст', type: 'textarea' },
       { key: 'ctaPhone', label: 'Нижний блок — телефон', type: 'text' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
     ],
     defaults: {
       title: 'Роспись ангобами',
@@ -408,6 +425,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       ctaTitle: 'Остались вопросы?',
       ctaText: 'Поможем выбрать удобное время, уточним расписание и ответим на любые вопросы.',
       ctaPhone: '+7 (985) 419-89-03',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
     },
   },
   {
@@ -431,6 +452,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'ctaTitle', label: 'Нижний блок — заголовок «Остались вопросы?»', type: 'text' },
       { key: 'ctaText', label: 'Нижний блок — текст', type: 'textarea' },
       { key: 'ctaPhone', label: 'Нижний блок — телефон', type: 'text' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
     ],
     defaults: {
       title: 'Роспись акрилом',
@@ -449,6 +473,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       ctaTitle: 'Остались вопросы?',
       ctaText: 'Поможем выбрать удобное время, уточним расписание и ответим на любые вопросы.',
       ctaPhone: '+7 (985) 419-89-03',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
     },
   },
   {
@@ -886,6 +914,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -910,6 +941,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 7 лет и взрослых. Продолжительность занятия — 1 час.',
     },
@@ -936,6 +971,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -960,6 +998,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 7 лет и взрослых. Продолжительность занятия — 1,5 часа.',
     },
@@ -986,6 +1028,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -1010,6 +1055,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 3 лет и взрослых. Продолжительность занятия — 1 час.',
     },
@@ -1036,6 +1085,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -1060,6 +1112,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 7 лет и взрослых. Продолжительность занятия — 1 час.',
     },
@@ -1086,6 +1142,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -1110,6 +1169,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 7 лет и взрослых. Продолжительность занятия — 1,5 часа.',
     },
@@ -1136,6 +1199,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -1159,6 +1225,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 7 лет и взрослых. Продолжительность занятия — 1 час.',
     },
@@ -1185,6 +1255,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -1208,6 +1281,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 7 лет и взрослых. Продолжительность занятия — 1 час 30 мин.',
     },
@@ -1234,6 +1311,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -1257,6 +1337,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 3 лет и взрослых. Продолжительность занятия — 1 час.',
     },
@@ -1283,6 +1367,9 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка транспортной компанией', type: 'textarea' },
       { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
       { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+      { key: 'mediaEnabled', label: 'Показывать блок «Фото и видео»', type: 'boolean' },
+      { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+      { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
       { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
       { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
     ],
@@ -1306,6 +1393,10 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
       pickupStorageText:
         'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+      mediaEnabled: 'true',
+      mediaVideo: '/video/suzdal-excursion.mp4',
+      mediaGallery:
+        'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6981a41f-a208-4c29-8da8-961e77b2310c.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/8effc812-f55a-48f8-8151-45e875ced003.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/6c076295-b32d-4fa5-a46b-5b81cabe22fe.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/37096009-0ead-45e9-9d42-c1a1f8f395bf.jpeg\nhttps://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/d774bbae-e455-4dee-a6e0-2c45e16cdd0d.jpeg',
       bookingPhone: '+7 (915) 157-64-85',
       ageNoteText: 'Рассчитан для детей с 3 лет и взрослых. Продолжительность занятия — 1 час 30 мин.',
     },

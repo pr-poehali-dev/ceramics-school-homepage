@@ -8,6 +8,7 @@ import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import WorkshopMediaBlock from '@/pages/workshop-detail/WorkshopMediaBlock';
 
 interface SuzdalWorkshopData {
   slug: string;
@@ -419,6 +420,13 @@ const SuzdalWorkshopDetail = () => {
                 {displayPickupStorageText}
               </p>
             </div>
+
+            {/* ФОТО И ВИДЕО */}
+            <WorkshopMediaBlock
+              enabled={c.mediaEnabled}
+              video={c.mediaVideo}
+              gallery={c.mediaGallery}
+            />
           </div>
 
           {/* ORDER CARD */}

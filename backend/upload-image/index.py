@@ -22,7 +22,15 @@ ALLOWED_TYPES = {
     'image/jpg': 'jpg',
     'image/webp': 'webp',
     'image/svg+xml': 'svg',
+    'video/mp4': 'mp4',
+    'video/webm': 'webm',
 }
+
+MAX_SIZE_BY_TYPE = {
+    'video/mp4': 40 * 1024 * 1024,
+    'video/webm': 40 * 1024 * 1024,
+}
+DEFAULT_MAX_SIZE = 8 * 1024 * 1024
 
 
 def handler(event: dict, context) -> dict:
@@ -76,8 +84,9 @@ def handler(event: dict, context) -> dict:
     except Exception:
         return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Некорректные данные файла'})}
 
-    if len(raw) > 8 * 1024 * 1024:
-        return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Файл больше 8МБ'})}
+    max_size = MAX_SIZE_BY_TYPE.get(content_type, DEFAULT_MAX_SIZE)
+    if len(raw) > max_size:
+        return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': f'Файл больше {max_size // (1024 * 1024)}МБ'})}
 
     ext = ALLOWED_TYPES[content_type]
     key = f'page-content/{secrets.token_hex(12)}.{ext}'
