@@ -122,14 +122,14 @@ const SuzdalWorkshops = () => {
 
         <div className="mx-auto mt-14 max-w-4xl overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">
           <h3 className="font-display text-3xl font-semibold md:text-4xl">
-            Не знаете, что выбрать?
+            {c.askBannerTitle}
           </h3>
           <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
-            Напишите нам — подскажем формат под ваш возраст, компанию и повод.
+            {c.askBannerText}
           </p>
           <AskQuestionDialog>
             <Button size="lg" variant="secondary" className="mt-7 rounded-full px-8 text-base">
-              <Icon name="MessageCircle" size={18} className="mr-2" /> Задать вопрос
+              <Icon name="MessageCircle" size={18} className="mr-2" /> {c.askBannerButtonText}
             </Button>
           </AskQuestionDialog>
         </div>
@@ -139,32 +139,18 @@ const SuzdalWorkshops = () => {
       <section className="container pb-4">
         <div className="mx-auto max-w-3xl">
           <h2 className="font-display text-3xl font-semibold md:text-4xl">
-            Мастер-классы по гончарному искусству в Суздале
+            {c.seoTitle}
           </h2>
           <div className="mt-6 space-y-4 leading-relaxed text-muted-foreground">
-            <p>
-              Каждый день на фабрике и в школе «Дымов Керамика» в Суздале гости познают гончарное
-              ремесло, осуществляют свои творческие идеи и создают авторские изделия из глины.
-            </p>
-            <p>
-              В уютной мастерской каждый найдёт себе занятие по душе. Нашими участниками становятся
-              малыши, школьники и взрослые любого возраста.
-            </p>
-            <p>
-              Опытные мастера научат всех желающих гончарному ремеслу, ручной лепке, техникам
-              росписи керамических изделий и изготовлению изразцов. Помогут каждому раскрыться в
-              творчестве и создать собственное неповторимое изделие.
-            </p>
+            {(c.seoParagraphs || '').split('\n').filter(Boolean).map((p) => (
+              <p key={p}>{p}</p>
+            ))}
 
             <h3 className="pt-4 font-display text-2xl font-semibold text-foreground">
-              Что вас ждёт на мастер-классах в школе «Дымов Керамика»:
+              {c.seoListTitle}
             </h3>
             <ul className="space-y-2">
-              {[
-                'Просторная мастерская и творческая атмосфера, оснащённая всем необходимым для работы с глиной.',
-                'Запись на мастер-классы по телефону — подберём удобное время для творчества.',
-                'Обучать азам гончарного дела вас будут опытные преподаватели, которые поделятся своими знаниями, откроют вам волшебные свойства глины и расскажут о некоторых секретах мастерства.',
-              ].map((li) => (
+              {(c.seoListItems || '').split('\n').filter(Boolean).map((li) => (
                 <li key={li} className="flex gap-2">
                   <Icon name="Check" size={18} className="mt-0.5 shrink-0 text-primary" />
                   <span>{li}</span>
@@ -172,25 +158,16 @@ const SuzdalWorkshops = () => {
               ))}
             </ul>
 
-            <p className="pt-2">Занятия состоят из нескольких этапов:</p>
+            <p className="pt-2">{c.seoStagesIntro}</p>
             <ul className="space-y-2">
-              {[
-                'Подготовка глины к работе',
-                'Формовка или отминка изделия',
-                'Создание декоративных элементов',
-                'Роспись ангобами (если выбран соответствующий формат)',
-              ].map((li) => (
+              {(c.seoStagesList || '').split('\n').filter(Boolean).map((li) => (
                 <li key={li} className="flex gap-2">
                   <Icon name="ChevronRight" size={18} className="mt-0.5 shrink-0 text-primary" />
                   <span>{li}</span>
                 </li>
               ))}
             </ul>
-            <p>
-              После окончания занятия созданное вами изделие ждёт просушка и обжиг. Готовое изделие
-              можно забрать в мастерской в Суздале или на ВДНХ в Москве — как только его доставят
-              (в течение 60 дней), вы будете оповещены по телефону.
-            </p>
+            <p>{c.seoClosing}</p>
           </div>
         </div>
       </section>
