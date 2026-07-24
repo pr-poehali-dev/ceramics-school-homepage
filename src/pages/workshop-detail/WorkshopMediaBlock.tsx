@@ -36,37 +36,30 @@ const WorkshopMediaBlock = ({ enabled, video, gallery }: Props) => {
   return (
     <div
       className={`mt-8 grid gap-6 ${
-        hasImages && hasVideo ? 'lg:grid-cols-[1fr_320px]' : ''
+        hasImages && hasVideo ? 'lg:grid-cols-2' : ''
       }`}
     >
       {hasImages && (
-        <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-7 md:p-10">
-          <h2 className="flex items-center gap-3 font-display text-2xl font-semibold">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Icon name="Images" size={20} />
-            </span>
-            Фото с занятий
-          </h2>
-
-          <div className="mt-6 flex flex-1 items-center">
-            <Carousel opts={{ align: 'start', loop: true }} className="w-full">
-              <CarouselContent>
-                {images.map((src, i) => (
-                  <CarouselItem key={src} className="basis-1/2 sm:basis-1/3 md:basis-1/4">
-                    <div className="overflow-hidden rounded-xl border border-border">
-                      <img
-                        src={src}
-                        alt={`Фото ${i + 1}`}
-                        className="aspect-square w-full object-cover"
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-1 md:-left-4" />
-              <CarouselNext className="right-1 md:-right-4" />
-            </Carousel>
-          </div>
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm lg:aspect-auto lg:h-full lg:min-h-[280px]">
+          <Carousel opts={{ loop: images.length > 1 }} className="h-full w-full">
+            <CarouselContent className="ml-0 h-full">
+              {images.map((src, i) => (
+                <CarouselItem key={src} className="h-full pl-0">
+                  <img
+                    src={src}
+                    alt={`Фото ${i + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {images.length > 1 && (
+              <>
+                <CarouselPrevious className="left-3 h-10 w-10 border-none bg-white/90 text-primary shadow-lg hover:bg-white" />
+                <CarouselNext className="right-3 h-10 w-10 border-none bg-white/90 text-primary shadow-lg hover:bg-white" />
+              </>
+            )}
+          </Carousel>
         </div>
       )}
 
