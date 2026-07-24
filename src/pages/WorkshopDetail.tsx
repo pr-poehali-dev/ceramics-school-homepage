@@ -207,6 +207,13 @@ const WorkshopDetail = () => {
           </div>
         </div>
 
+        {/* ФОТО И ВИДЕО */}
+        <WorkshopMediaBlock
+          enabled={c.mediaEnabled}
+          video={c.mediaVideo}
+          gallery={c.mediaGallery}
+        />
+
         {/* DESCRIPTION + NOTES */}
         <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
           {/* DESCRIPTION */}
@@ -283,13 +290,6 @@ const WorkshopDetail = () => {
 
         {/* УТИЛЬ ДЛЯ РОСПИСИ */}
         {slug === 'angoby' && <UtilBlock />}
-
-        {/* ФОТО И ВИДЕО */}
-        <WorkshopMediaBlock
-          enabled={c.mediaEnabled}
-          video={c.mediaVideo}
-          gallery={c.mediaGallery}
-        />
 
         {/* CTA BANNER */}
         <div className="relative mt-14 overflow-hidden rounded-[2rem] bg-primary px-8 py-12 text-center text-primary-foreground md:px-16">

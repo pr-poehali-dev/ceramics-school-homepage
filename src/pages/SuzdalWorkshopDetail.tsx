@@ -362,6 +362,13 @@ const SuzdalWorkshopDetail = () => {
           </div>
         </div>
 
+        {/* ФОТО И ВИДЕО */}
+        <WorkshopMediaBlock
+          enabled={c.mediaEnabled}
+          video={c.mediaVideo}
+          gallery={c.mediaGallery}
+        />
+
         {/* DESCRIPTION + ORDER */}
         <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
           {/* DESCRIPTION */}
@@ -420,13 +427,6 @@ const SuzdalWorkshopDetail = () => {
                 {displayPickupStorageText}
               </p>
             </div>
-
-            {/* ФОТО И ВИДЕО */}
-            <WorkshopMediaBlock
-              enabled={c.mediaEnabled}
-              video={c.mediaVideo}
-              gallery={c.mediaGallery}
-            />
           </div>
 
           {/* ORDER CARD */}
