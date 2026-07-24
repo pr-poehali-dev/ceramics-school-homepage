@@ -4,14 +4,13 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
-import { REVIEWS, GALLERY } from './suzdal-reviews/reviewsData';
+import { REVIEWS, GALLERY, type Review } from './suzdal-reviews/reviewsData';
 import ReviewCard from './reviews/ReviewCard';
 import ReviewsGallery from './reviews/ReviewsGallery';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
 
 const STEP = 24;
-const AVG = '4.9';
 
 const SuzdalReviews = () => {
   const [visible, setVisible] = useState(STEP);
@@ -21,6 +20,18 @@ const SuzdalReviews = () => {
     title: c.metaTitle,
     description: c.metaDescription,
   });
+
+  const reviews: Review[] = (() => {
+    if (!c.reviewsData) return REVIEWS;
+    try {
+      const parsed = JSON.parse(c.reviewsData);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : REVIEWS;
+    } catch {
+      return REVIEWS;
+    }
+  })();
+  const gallery = (c.reviewsGallery || '').split('\n').filter(Boolean);
+  const AVG = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1);
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
@@ -55,7 +66,7 @@ const SuzdalReviews = () => {
             </div>
             <div className="h-10 w-px bg-border" />
             <div className="text-left">
-              <p className="font-display text-2xl font-semibold">{REVIEWS.length}+</p>
+              <p className="font-display text-2xl font-semibold">{reviews.length}+</p>
               <p className="text-xs text-muted-foreground">отзывов о фабрике</p>
             </div>
             <div className="h-10 w-px bg-border" />
@@ -84,7 +95,7 @@ const SuzdalReviews = () => {
             <Icon name="Images" size={22} className="text-primary" />
             <h2 className="font-display text-2xl font-semibold">Работы участников</h2>
           </div>
-          <ReviewsGallery images={GALLERY} />
+          <ReviewsGallery images={gallery.length > 0 ? gallery : GALLERY} />
         </section>
 
         {/* REVIEWS LIST */}
@@ -95,12 +106,12 @@ const SuzdalReviews = () => {
           </div>
 
           <div className="columns-1 gap-5 sm:columns-2 lg:columns-3">
-            {REVIEWS.slice(0, visible).map((r, i) => (
+            {reviews.slice(0, visible).map((r, i) => (
               <ReviewCard key={`${r.name}-${i}`} review={r} index={i} />
             ))}
           </div>
 
-          {visible < REVIEWS.length && (
+          {visible < reviews.length && (
             <div className="mt-8 text-center">
               <Button
                 variant="outline"

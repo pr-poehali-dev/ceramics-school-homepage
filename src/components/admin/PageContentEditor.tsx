@@ -121,6 +121,34 @@ const PageContentEditor = ({ token }: Props) => {
     });
   };
 
+  const uploadReviewsExcel = async (fieldKey: string, file: File) => {
+    setUploadingKey(fieldKey);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const resp = await fetch(func2url['parse-reviews'], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ fileData: base64 }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'fail');
+      setFields((prev) => ({ ...prev, [fieldKey]: JSON.stringify(data.reviews) }));
+      toast({ title: `Загружено отзывов: ${data.count}` });
+    } catch (e) {
+      toast({
+        title: 'Не удалось загрузить отзывы',
+        description: e instanceof Error ? e.message : 'Проверьте формат файла.',
+      });
+    } finally {
+      setUploadingKey(null);
+    }
+  };
+
   if (!selectedKey) {
     return (
       <div className="mt-6 space-y-6">
@@ -349,6 +377,55 @@ const PageContentEditor = ({ token }: Props) => {
                       }}
                     />
                   </label>
+                </div>
+              )}
+              {f.type === 'reviews' && (
+                <div>
+                  {(() => {
+                    let count = 0;
+                    try {
+                      const parsed = JSON.parse(fields[f.key] || '[]');
+                      if (Array.isArray(parsed)) count = parsed.length;
+                    } catch {
+                      count = 0;
+                    }
+                    return (
+                      <p className="rounded-xl border border-border bg-secondary/30 px-3 py-2 text-sm text-muted-foreground">
+                        {count > 0
+                          ? `Загружено отзывов: ${count}. Загрузите новый файл, чтобы полностью заменить список.`
+                          : 'Отзывы ещё не загружены — на сайте показываются стандартные.'}
+                      </p>
+                    );
+                  })()}
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
+                    <label className="inline-flex cursor-pointer items-center gap-1.5 text-xs text-primary hover:underline">
+                      <Icon name="Upload" size={13} />
+                      {uploadingKey === f.key ? 'Загружаем…' : 'Загрузить Excel (.xlsx)'}
+                      <input
+                        type="file"
+                        accept=".xlsx"
+                        className="hidden"
+                        disabled={uploadingKey === f.key}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadReviewsExcel(f.key, file);
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                    {fields[f.key] && (
+                      <button
+                        type="button"
+                        onClick={() => setFields((prev) => ({ ...prev, [f.key]: '' }))}
+                        className="inline-flex items-center gap-1.5 text-xs text-destructive hover:underline"
+                      >
+                        <Icon name="X" size={13} /> Сбросить к стандартным
+                      </button>
+                    )}
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Колонки в файле: Имя, Метка (необязательно), Дата, Оценка, Текст.
+                  </p>
                 </div>
               )}
             </div>

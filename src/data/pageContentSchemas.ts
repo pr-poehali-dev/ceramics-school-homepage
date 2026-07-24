@@ -11,7 +11,7 @@
  * первого открытия страницы в админке (чтобы редактор не показывал пустые поля).
  */
 
-export type ContentFieldType = 'text' | 'textarea' | 'price' | 'image' | 'boolean' | 'gallery' | 'video';
+export type ContentFieldType = 'text' | 'textarea' | 'price' | 'image' | 'boolean' | 'gallery' | 'video' | 'reviews';
 
 export interface ContentFieldSchema {
   key: string;
@@ -686,6 +686,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'ctaTitle', label: 'Блок CTA — заголовок', type: 'text' },
       { key: 'ctaText', label: 'Блок CTA — текст', type: 'textarea' },
       { key: 'ctaButtonText', label: 'Блок CTA — текст кнопки', type: 'text' },
+      { key: 'reviewsGallery', label: 'Фото работ участников', type: 'gallery' },
+      { key: 'reviewsData', label: 'Отзывы гостей (загрузка из Excel)', type: 'reviews' },
     ],
     defaults: {
       metaTitle: 'Отзывы о студии керамики Дымов Керамика | ВДНХ, Москва',
@@ -699,6 +701,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       ctaTitle: 'Хотите так же?',
       ctaText: 'Выберите формат мастер-класса и создайте своё изделие из глины — впечатления останутся надолго.',
       ctaButtonText: 'Выбрать формат',
+      reviewsGallery: '',
+      reviewsData: '',
     },
   },
   {
@@ -1682,6 +1686,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'ctaTitle', label: 'Блок CTA — заголовок', type: 'text' },
       { key: 'ctaText', label: 'Блок CTA — текст', type: 'textarea' },
       { key: 'ctaButtonText', label: 'Блок CTA — текст кнопки', type: 'text' },
+      { key: 'reviewsGallery', label: 'Фото работ участников', type: 'gallery' },
+      { key: 'reviewsData', label: 'Отзывы гостей (загрузка из Excel)', type: 'reviews' },
     ],
     defaults: {
       metaTitle: 'Отзывы о фабрике и школе керамики «Дымов Керамика» в Суздале',
@@ -1694,6 +1700,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       ctaTitle: 'Хотите так же?',
       ctaText: 'Выберите мастер-класс и создайте своё изделие из глины — впечатления останутся надолго.',
       ctaButtonText: 'Выбрать мастер-класс',
+      reviewsGallery: '',
+      reviewsData: '',
     },
   },
   {
