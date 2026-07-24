@@ -156,13 +156,13 @@ const SuzdalCertificates = () => {
               <Icon name="Phone" size={18} />
             </span>
             <div>
-              <p className="text-sm font-semibold text-foreground">Запись по телефону</p>
+              <p className="text-sm font-semibold text-foreground">{c.bookingTitle}</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Запись на мастер-классы только по телефону{' '}
+                {c.bookingTextBefore}{' '}
                 <a href={`tel:${(c.phone || '').replace(/[^\d+]/g, '')}`} className="font-medium text-foreground hover:text-primary">
                   {c.phone}
                 </a>
-                . Оплата на месте картой или наличными.
+                . {c.bookingTextAfter}
               </p>
             </div>
           </div>
