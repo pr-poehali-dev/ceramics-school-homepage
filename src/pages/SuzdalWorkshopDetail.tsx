@@ -265,7 +265,7 @@ const SuzdalWorkshopDetail = () => {
   });
 
   if (!data) {
-    return <Navigate to="/suzdal/master-klassy" replace />;
+    return <Navigate to="/suzdal/workshops" replace />;
   }
 
   const displayTitle = c.title || data.title;
@@ -311,12 +311,12 @@ const SuzdalWorkshopDetail = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
-      <SiteHeader active="/suzdal/master-klassy" />
+      <SiteHeader active="/suzdal/workshops" />
 
       <div className="container py-10 md:py-14">
         {/* BACK */}
         <Link
-          to="/suzdal/master-klassy"
+          to="/suzdal/workshops"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
         >
           <Icon name="ArrowLeft" size={16} /> Назад к мастер-классам
