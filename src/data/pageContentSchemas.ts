@@ -1602,6 +1602,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'email', label: 'E-mail', type: 'text' },
       { key: 'address', label: 'Адрес', type: 'textarea' },
       { key: 'workHours', label: 'График работы', type: 'text' },
+      { key: 'mapEmbedUrl', label: 'Ссылка на карту (iframe)', type: 'text' },
       { key: 'excursionsTitle', label: 'Блок «Экскурсии» — заголовок', type: 'text' },
       { key: 'excursionsWarning', label: 'Блок «Экскурсии» — предупреждение об адресе', type: 'textarea' },
       { key: 'excursionsPhoneText', label: 'Блок «Экскурсии» — текст перед телефоном', type: 'text' },
@@ -1619,6 +1620,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       email: 'mk@dymovceramicschool.ru',
       address: 'Владимирская область, г. Суздаль, ул. Васильевская, 41а',
       workHours: 'Понедельник – Воскресенье, 9:00 – 18:00',
+      mapEmbedUrl:
+        'https://yandex.ru/map-widget/v1/?mode=search&text=%D0%A1%D1%83%D0%B7%D0%B4%D0%B0%D0%BB%D1%8C%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%92%D0%B0%D1%81%D0%B8%D0%BB%D1%8C%D0%B5%D0%B2%D1%81%D0%BA%D0%B0%D1%8F%2C%2041%D0%B0&z=16',
       excursionsTitle: 'Экскурсии',
       excursionsWarning:
         'Внимание! Экскурсии проводятся по адресу: Владимирская область, г. Суздаль, ул. Васильевская, 41а.',
