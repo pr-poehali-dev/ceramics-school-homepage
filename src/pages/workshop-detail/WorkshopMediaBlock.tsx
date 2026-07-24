@@ -36,11 +36,11 @@ const WorkshopMediaBlock = ({ enabled, video, gallery }: Props) => {
   return (
     <div
       className={`mt-8 grid gap-6 ${
-        hasImages && hasVideo ? 'lg:grid-cols-2' : ''
+        hasImages && hasVideo ? 'lg:grid-cols-[1fr_320px] lg:items-stretch' : ''
       }`}
     >
       {hasImages && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm lg:aspect-auto lg:h-full lg:min-h-[280px]">
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm lg:aspect-auto lg:h-[340px]">
           <Carousel opts={{ loop: images.length > 1 }} className="h-full w-full">
             <CarouselContent className="ml-0 h-full">
               {images.map((src, i) => (
@@ -64,7 +64,7 @@ const WorkshopMediaBlock = ({ enabled, video, gallery }: Props) => {
       )}
 
       {hasVideo && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm lg:aspect-auto lg:h-full lg:min-h-[280px]">
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm lg:aspect-auto lg:h-[340px]">
           <video
             ref={videoRef}
             controls
