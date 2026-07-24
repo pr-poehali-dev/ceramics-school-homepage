@@ -71,37 +71,29 @@ const WorkshopMediaBlock = ({ enabled, video, gallery }: Props) => {
       )}
 
       {hasVideo && (
-        <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-          <div className="flex items-center gap-2 border-b border-border/60 px-5 py-4">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Icon name="Video" size={16} />
-            </span>
-            <p className="font-display text-base font-semibold">Видео с занятия</p>
-          </div>
-          <div className="relative flex-1 bg-black">
-            <video
-              ref={videoRef}
-              controls
-              preload="metadata"
-              className="absolute inset-0 h-full w-full object-cover"
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm lg:aspect-auto lg:h-full lg:min-h-[280px]">
+          <video
+            ref={videoRef}
+            controls
+            preload="metadata"
+            className="absolute inset-0 h-full w-full object-cover"
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          >
+            <source src={`${video}#t=0.1`} type="video/mp4" />
+          </video>
+          {!isPlaying && (
+            <button
+              type="button"
+              onClick={togglePlay}
+              aria-label="Воспроизвести видео"
+              className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors hover:bg-black/20"
             >
-              <source src={`${video}#t=0.1`} type="video/mp4" />
-            </video>
-            {!isPlaying && (
-              <button
-                type="button"
-                onClick={togglePlay}
-                aria-label="Воспроизвести видео"
-                className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors hover:bg-black/20"
-              >
-                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-transform hover:scale-105">
-                  <Icon name="Play" size={28} className="ml-1" />
-                </span>
-              </button>
-            )}
-          </div>
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-transform hover:scale-105">
+                <Icon name="Play" size={28} className="ml-1" />
+              </span>
+            </button>
+          )}
         </div>
       )}
     </div>
