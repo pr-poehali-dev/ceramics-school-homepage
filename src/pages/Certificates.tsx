@@ -45,7 +45,7 @@ const Certificates = () => {
 
   const activeAmount = thematicWorkshop ? thematicWorkshop.price : selected ?? 0;
   const activeHint = thematicWorkshop
-    ? `Тематический мастер-класс «${thematicWorkshop.title}»`
+    ? `Тематический мастер-класс: ${thematicWorkshop.title}`
     : PRESETS.find((p) => p.value === activeAmount)?.hint;
 
   const minThematicPrice = Math.min(...THEMATIC_WORKSHOPS.map((w) => w.price));
@@ -205,7 +205,9 @@ const Certificates = () => {
                     thematicWorkshop ? 'text-primary-foreground/80' : 'text-muted-foreground'
                   }`}
                 >
-                  {thematicWorkshop ? thematicWorkshop.title : 'Тематический мастер-класс — выбрать изделие'}
+                  {thematicWorkshop
+                    ? `Тематический мастер-класс: ${thematicWorkshop.title}`
+                    : 'Тематический мастер-класс — выбрать изделие'}
                 </span>
               </button>
             </div>
