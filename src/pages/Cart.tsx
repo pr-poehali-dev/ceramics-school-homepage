@@ -62,6 +62,11 @@ const Cart = () => {
                         {item.details && (
                           <p className="mt-1 text-sm text-muted-foreground">{item.details}</p>
                         )}
+                        {item.hint && (
+                          <p className="mt-0.5 text-xs italic text-muted-foreground">
+                            Подходит на: {item.hint}
+                          </p>
+                        )}
                         {item.certificate && (
                           <div className="mt-2 rounded-lg bg-accent/15 px-3 py-2 text-xs text-muted-foreground">
                             {item.certificate.message && (

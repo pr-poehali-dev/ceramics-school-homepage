@@ -38,10 +38,12 @@ const Certificates = () => {
   const activeAmount = selected ?? 0;
 
   const handleAddToCart = () => {
+    const preset = PRESETS.find((p) => p.value === activeAmount);
     addItem({
       id: `certificate-${activeAmount}-${Date.now()}`,
       title: 'Подарочный сертификат «Дымов Керамика»',
       details: `Номинал ${formatNum(activeAmount)}`,
+      hint: preset?.hint,
       price: activeAmount,
     });
     reachGoal(GOALS.CERTIFICATE_ADD, 'moscow', { amount: activeAmount });
