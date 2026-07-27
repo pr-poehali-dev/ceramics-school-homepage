@@ -49,6 +49,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
   const messengersContent = usePageContent(`${city}-messengers`);
   const messengerLinks = buildMessengerLinks(messengersContent);
   const preferredLabel = messengersContent.preferredLabel?.trim();
+  const outageNotice = messengersContent.outageNotice?.trim();
   const navLinks = isSuzdal ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
   const contacts = isSuzdal ? SUZDAL_CONTACTS : MOSCOW_CONTACTS;
   const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
@@ -237,8 +238,15 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
             </div>
             {messengerLinks.length > 0 && (
               <div className="mt-3 px-2">
-                {preferredLabel && (
-                  <p className="mb-1.5 text-xs text-muted-foreground">{preferredLabel}: {messengerLinks[0].name}</p>
+                {outageNotice ? (
+                  <p className="mb-2 flex items-start gap-1.5 rounded-lg bg-amber-100 px-2.5 py-2 text-xs font-medium text-amber-800">
+                    <Icon name="AlertTriangle" size={13} className="mt-0.5 shrink-0 text-amber-600" />
+                    {outageNotice}
+                  </p>
+                ) : (
+                  preferredLabel && (
+                    <p className="mb-1.5 text-xs text-muted-foreground">{preferredLabel}: {messengerLinks[0].name}</p>
+                  )
                 )}
                 <div className="flex items-center gap-2">
                   {messengerLinks.map((m) => (
