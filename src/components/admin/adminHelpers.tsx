@@ -4,6 +4,7 @@ export interface OrderItem {
   id?: string;
   title: string;
   details?: string;
+  hint?: string;
   qty: number;
   price: number;
 }

@@ -95,6 +95,7 @@ const Checkout = () => {
         id: i.id,
         title: i.title,
         details: i.details,
+        hint: i.hint,
         qty: i.qty,
         price: i.price,
       }));

@@ -104,8 +104,15 @@ const AdminOrders = ({
               {(o.items || []).map((it, i) => (
                 <div key={i} className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
                   <span>
-                    {it.title}
-                    {it.details ? ` · ${it.details}` : ''} × {it.qty}
+                    <span>
+                      {it.title}
+                      {it.details ? ` · ${it.details}` : ''} × {it.qty}
+                    </span>
+                    {it.hint && (
+                      <span className="block text-xs italic text-muted-foreground">
+                        Подходит на: {it.hint}
+                      </span>
+                    )}
                   </span>
                   <span className="shrink-0 font-medium">
                     {(it.price * it.qty).toLocaleString('ru-RU')} ₽
