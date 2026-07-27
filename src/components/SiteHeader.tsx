@@ -6,8 +6,10 @@ import MobileMenu from '@/components/MobileMenu';
 import CartButton from '@/components/CartButton';
 import CitySwitcher from '@/components/CitySwitcher';
 import AnnouncementBanner from '@/components/AnnouncementBanner';
+import MessengersMenu from '@/components/MessengersMenu';
 import { useNavClick } from '@/hooks/useNavClick';
 import { useCity } from '@/hooks/useCity';
+import { usePageContent } from '@/hooks/usePageContent';
 import { CITIES } from '@/lib/cities';
 import { reachGoal, GOALS } from '@/lib/metrika';
 
@@ -19,6 +21,7 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
   const navClick = useNavClick();
   const city = useCity();
   const cityConfig = CITIES[city];
+  const messengersContent = usePageContent(`${city}-messengers`);
 
   return (
   <>
@@ -32,13 +35,16 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
         <CitySwitcher />
       </div>
       <DesktopNav active={active} />
-      <a
-        href={cityConfig.phoneHref}
-        onClick={() => reachGoal(GOALS.PHONE_CLICK, city)}
-        className="hidden items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary md:flex"
-      >
-        <Icon name="Phone" size={18} className="text-primary" /> {cityConfig.phone}
-      </a>
+      <div className="hidden items-center gap-3 md:flex">
+        <a
+          href={cityConfig.phoneHref}
+          onClick={() => reachGoal(GOALS.PHONE_CLICK, city)}
+          className="flex items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary"
+        >
+          <Icon name="Phone" size={18} className="text-primary" /> {cityConfig.phone}
+        </a>
+        <MessengersMenu fields={messengersContent} />
+      </div>
       <div className="flex items-center gap-3">
         <CartButton />
         <MobileMenu active={active} />

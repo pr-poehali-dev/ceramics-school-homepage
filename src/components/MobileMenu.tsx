@@ -16,10 +16,11 @@ import {
   SUZDAL_NAV_LINKS,
 } from '@/lib/cities';
 import { reachGoal, GOALS } from '@/lib/metrika';
+import { usePageContent } from '@/hooks/usePageContent';
+import { buildMessengerLinks } from '@/lib/messengers';
 
 const MOSCOW_CONTACTS = [
   { icon: 'Phone', label: 'Телефон', value: '+7 (985) 419-89-03', href: 'tel:+79854198903' },
-  { icon: 'MessageCircle', label: 'WhatsApp', value: '+7 (985) 419-89-03', href: 'https://wa.me/79854198903' },
   { icon: 'Mail', label: 'Почта', value: 'hello@dymovceramic.ru', href: 'mailto:hello@dymovceramic.ru' },
   { icon: 'MapPin', label: 'Адрес', value: 'г. Москва, проспект Мира, д. 119, стр. 186', href: null },
   { icon: 'Clock', label: 'График работы', value: 'Пн–Вс, с 11:00 до 20:00', href: null },
@@ -44,8 +45,9 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
     setMounted(true);
   }, []);
   const city = useCity();
-  const cityConfig = CITIES[city];
   const isSuzdal = city === 'suzdal';
+  const messengersContent = usePageContent(`${city}-messengers`);
+  const messengerLinks = buildMessengerLinks(messengersContent);
   const navLinks = isSuzdal ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
   const contacts = isSuzdal ? SUZDAL_CONTACTS : MOSCOW_CONTACTS;
   const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
@@ -213,7 +215,6 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
                 );
                 const handleContactClick = () => {
                   if (c.icon === 'Phone') reachGoal(GOALS.PHONE_CLICK, city);
-                  if (c.icon === 'MessageCircle') reachGoal(GOALS.WHATSAPP_CLICK, city);
                 };
                 return c.href ? (
                   <a
@@ -233,6 +234,24 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
                 );
               })}
             </div>
+            {messengerLinks.length > 0 && (
+              <div className="mt-3 flex items-center gap-2 px-2">
+                {messengerLinks.map((m) => (
+                  <a
+                    key={m.key}
+                    href={m.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={m.name}
+                    title={m.name}
+                    onClick={() => m.key === 'whatsapp' && reachGoal(GOALS.WHATSAPP_CLICK, city)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <Icon name={m.icon} size={18} />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* SOCIALS */}

@@ -1933,6 +1933,40 @@ export const PAGE_SCHEMAS: PageSchema[] = [
         'Телефон: +7 (915) 157-64-85',
     },
   },
+  {
+    key: 'moscow-messengers',
+    title: 'Москва — мессенджеры в шапке',
+    city: 'moscow',
+    status: 'ready',
+    path: '/moscow',
+    fields: [
+      { key: 'whatsappLink', label: 'WhatsApp — ссылка (пусто = скрыть иконку)', type: 'text' },
+      { key: 'telegramLink', label: 'Telegram — ссылка (пусто = скрыть иконку)', type: 'text' },
+      { key: 'maxLink', label: 'MAX — ссылка на профиль (пусто = скрыть иконку)', type: 'text' },
+    ],
+    defaults: {
+      whatsappLink: 'https://wa.me/79854198903',
+      telegramLink: 'https://t.me/+79854198903',
+      maxLink: '',
+    },
+  },
+  {
+    key: 'suzdal-messengers',
+    title: 'Суздаль — мессенджеры в шапке',
+    city: 'suzdal',
+    status: 'ready',
+    path: '/suzdal',
+    fields: [
+      { key: 'whatsappLink', label: 'WhatsApp — ссылка (пусто = скрыть иконку)', type: 'text' },
+      { key: 'telegramLink', label: 'Telegram — ссылка (пусто = скрыть иконку)', type: 'text' },
+      { key: 'maxLink', label: 'MAX — ссылка на профиль (пусто = скрыть иконку)', type: 'text' },
+    ],
+    defaults: {
+      whatsappLink: 'https://wa.me/79854198903',
+      telegramLink: 'https://t.me/+79854198903',
+      maxLink: '',
+    },
+  },
 ];
 
 export const getPageSchema = (key: string) => PAGE_SCHEMAS.find((p) => p.key === key);
