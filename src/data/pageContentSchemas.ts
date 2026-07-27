@@ -1943,11 +1943,13 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'whatsappLink', label: 'WhatsApp — ссылка (пусто = скрыть иконку)', type: 'text' },
       { key: 'telegramLink', label: 'Telegram — ссылка (пусто = скрыть иконку)', type: 'text' },
       { key: 'maxLink', label: 'MAX — ссылка на профиль (пусто = скрыть иконку)', type: 'text' },
+      { key: 'preferredLabel', label: 'Подсказка рядом с иконкой мессенджеров (пусто = не показывать)', type: 'text' },
     ],
     defaults: {
       whatsappLink: 'https://wa.me/79854198903',
       telegramLink: 'https://t.me/+79854198903',
       maxLink: '',
+      preferredLabel: 'Предпочтительнее',
     },
   },
   {
@@ -1960,11 +1962,13 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'whatsappLink', label: 'WhatsApp — ссылка (пусто = скрыть иконку)', type: 'text' },
       { key: 'telegramLink', label: 'Telegram — ссылка (пусто = скрыть иконку)', type: 'text' },
       { key: 'maxLink', label: 'MAX — ссылка на профиль (пусто = скрыть иконку)', type: 'text' },
+      { key: 'preferredLabel', label: 'Подсказка рядом с иконкой мессенджеров (пусто = не показывать)', type: 'text' },
     ],
     defaults: {
       whatsappLink: 'https://wa.me/79854198903',
       telegramLink: 'https://t.me/+79854198903',
       maxLink: '',
+      preferredLabel: 'Предпочтительнее',
     },
   },
 ];

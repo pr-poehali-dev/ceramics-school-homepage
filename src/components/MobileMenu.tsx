@@ -48,6 +48,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
   const isSuzdal = city === 'suzdal';
   const messengersContent = usePageContent(`${city}-messengers`);
   const messengerLinks = buildMessengerLinks(messengersContent);
+  const preferredLabel = messengersContent.preferredLabel?.trim();
   const navLinks = isSuzdal ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
   const contacts = isSuzdal ? SUZDAL_CONTACTS : MOSCOW_CONTACTS;
   const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
@@ -235,21 +236,30 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
               })}
             </div>
             {messengerLinks.length > 0 && (
-              <div className="mt-3 flex items-center gap-2 px-2">
-                {messengerLinks.map((m) => (
-                  <a
-                    key={m.key}
-                    href={m.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={m.name}
-                    title={m.name}
-                    onClick={() => m.key === 'whatsapp' && reachGoal(GOALS.WHATSAPP_CLICK, city)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-                  >
-                    <Icon name={m.icon} size={18} />
-                  </a>
-                ))}
+              <div className="mt-3 px-2">
+                {preferredLabel && (
+                  <p className="mb-1.5 text-xs text-muted-foreground">{preferredLabel}: {messengerLinks[0].name}</p>
+                )}
+                <div className="flex items-center gap-2">
+                  {messengerLinks.map((m) => (
+                    <a
+                      key={m.key}
+                      href={m.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={m.name}
+                      title={m.name}
+                      onClick={() => m.key === 'whatsapp' && reachGoal(GOALS.WHATSAPP_CLICK, city)}
+                      className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-primary hover:text-primary-foreground ${
+                        preferredLabel && m.key === messengerLinks[0].key
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-primary/10 text-primary'
+                      }`}
+                    >
+                      <Icon name={m.icon} size={18} />
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
           </div>
