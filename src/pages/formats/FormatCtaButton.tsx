@@ -24,7 +24,7 @@ const DIALOGS = {
 
 const FormatCtaButton = ({ cta, autoOpen }: { cta: FormatItem['cta']; autoOpen?: boolean }) => {
   const button = (
-    <Button variant={cta.variant} className="mt-5 w-fit shrink-0 rounded-full px-6">
+    <Button variant={cta.variant} className="w-fit shrink-0 rounded-full px-6">
       {cta.label}
       <Icon name={cta.icon} size={15} className="ml-2" />
     </Button>
@@ -35,7 +35,7 @@ const FormatCtaButton = ({ cta, autoOpen }: { cta: FormatItem['cta']; autoOpen?:
 
   if (action === 'link' && to) {
     return (
-      <Button asChild variant={cta.variant} className="mt-5 w-fit shrink-0 rounded-full px-6">
+      <Button asChild variant={cta.variant} className="w-fit shrink-0 rounded-full px-6">
         <Link to={to}>
           {cta.label}
           <Icon name={cta.icon} size={15} className="ml-2" />

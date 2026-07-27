@@ -219,7 +219,7 @@ const WorkshopDetail = () => {
         <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
           {/* DESCRIPTION */}
           <div className="rounded-2xl border border-border bg-card p-7 md:p-10">
-            <h2 className="flex items-center gap-3 font-display text-2xl font-semibold">
+            <h2 className="flex items-center gap-3 font-display text-2xl font-semibold uppercase tracking-wide">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Icon name="Info" size={20} />
               </span>
@@ -252,6 +252,24 @@ const WorkshopDetail = () => {
 
           {/* NOTES — правая колонка */}
           <div className="space-y-4 lg:sticky lg:top-24">
+            <Link
+              to="/moscow/info"
+              className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-5 transition-colors hover:border-primary/50 hover:bg-primary/10"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                <Icon name="Truck" size={18} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Доставка и выдача готовых изделий
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Как забрать изделие после обжига или заказать доставку — читайте на странице «Информация»
+                </p>
+              </div>
+              <Icon name="ChevronRight" size={18} className="ml-auto mt-1 shrink-0 text-primary" />
+            </Link>
+
             {c.benefit && (
               <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/15 p-5">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">

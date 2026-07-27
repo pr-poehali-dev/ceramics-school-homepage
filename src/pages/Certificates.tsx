@@ -17,7 +17,7 @@ const PRESETS = [
   { value: 1900, label: '1 900 ₽', popular: false, hint: 'Детская группа (сб/вс)' },
   { value: 2100, label: '2 100 ₽', popular: false, hint: 'Роспись ангобами' },
   { value: 2900, label: '2 900 ₽', popular: false, hint: 'Лепка / гончарный круг' },
-  { value: 5000, label: '5 000 ₽', popular: true, hint: 'Тематический мастер-класс' },
+  { value: 5000, label: '5 000 ₽', popular: true, hint: 'Гончарный круг с росписью и Лепка из глины с росписью' },
   { value: 7000, label: '7 000 ₽', popular: false, hint: 'Свидание в мастерской' },
   { value: 9000, label: '9 000 ₽', popular: false, hint: 'Тематический мастер-класс' },
   { value: 10000, label: '10 000 ₽', popular: false, hint: 'На несколько занятий' },

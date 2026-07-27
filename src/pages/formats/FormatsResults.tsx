@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import type { FormatItem } from './formatsData';
@@ -79,12 +80,21 @@ const FormatsResults = ({ results, expanded, setExpanded, reset, openAction }: F
                   </>
                 )}
 
-                <FormatCtaButton
-                  cta={f.cta}
-                  autoOpen={
-                    !!openAction && 'action' in f.cta && f.cta.action === openAction
-                  }
-                />
+                <div className="mt-5 flex flex-wrap items-center gap-4">
+                  <FormatCtaButton
+                    cta={f.cta}
+                    autoOpen={
+                      !!openAction && 'action' in f.cta && f.cta.action === openAction
+                    }
+                  />
+                  <Link
+                    to="/moscow/info"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+                  >
+                    <Icon name="Info" size={15} />
+                    Как забрать готовое изделие
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
