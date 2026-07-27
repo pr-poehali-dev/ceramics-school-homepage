@@ -6,6 +6,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from '@/components/ui/carousel';
+import { LightboxModal, useLightbox } from '@/components/ImageLightbox';
 
 const UTIL_IMAGES = [
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/ac7d60a2-e0a5-421d-902d-973ddf73f97a.jpg',
@@ -22,6 +23,8 @@ const UTIL_IMAGES = [
 ];
 
 const UtilBlock = () => {
+  const { current, setCurrent } = useLightbox();
+
   return (
     <div className="mt-8 rounded-2xl border border-border bg-card p-7 md:p-10">
       <h2 className="flex items-center gap-3 font-display text-2xl font-semibold">
@@ -46,13 +49,20 @@ const UtilBlock = () => {
           <CarouselContent>
             {UTIL_IMAGES.map((src, i) => (
               <CarouselItem key={i} className="basis-1/2 sm:basis-1/3 md:basis-1/4">
-                <div className="overflow-hidden rounded-xl border border-border">
+                <button
+                  type="button"
+                  onClick={() => setCurrent(i)}
+                  className="group relative block w-full overflow-hidden rounded-xl border border-border"
+                >
                   <img
                     src={src}
                     alt={`Изделия для росписи — утиль ${i + 1}`}
-                    className="aspect-square w-full object-cover"
+                    className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                </div>
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/30 group-hover:opacity-100">
+                    <Icon name="Expand" size={22} className="text-white" />
+                  </span>
+                </button>
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -60,6 +70,13 @@ const UtilBlock = () => {
           <CarouselNext className="right-1 md:-right-4" />
         </Carousel>
       </div>
+
+      <LightboxModal
+        images={UTIL_IMAGES}
+        current={current}
+        setCurrent={setCurrent}
+        altPrefix="Изделия для росписи — утиль"
+      />
     </div>
   );
 };
