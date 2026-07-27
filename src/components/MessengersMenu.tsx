@@ -13,7 +13,7 @@ interface MessengersMenuProps {
   fields: Record<string, string>;
 }
 
-/** Кнопка «Написать» с выпадающим списком мессенджеров (WhatsApp, Telegram, MAX). */
+/** Иконка-кнопка с выпадающим списком мессенджеров (WhatsApp, Telegram, MAX). */
 const MessengersMenu = ({ fields }: MessengersMenuProps) => {
   const city = useCity();
   const links = buildMessengerLinks(fields);
@@ -25,10 +25,10 @@ const MessengersMenu = ({ fields }: MessengersMenuProps) => {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+          aria-label="Написать в мессенджер"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
         >
-          <Icon name="MessageCircle" size={16} />
-          Написать
+          <Icon name="MessageCircle" size={18} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[160px]">
