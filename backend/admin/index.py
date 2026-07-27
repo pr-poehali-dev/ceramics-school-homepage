@@ -202,7 +202,7 @@ def handler(event: dict, context) -> dict:
         cur.execute(
             "SELECT id, number, customer_name, email, phone, comment, payment, total, items, "
             "created_at, status, city, certificate_number, yookassa_payment_id "
-            "FROM orders ORDER BY created_at DESC LIMIT 500"
+            "FROM orders ORDER BY created_at DESC LIMIT 10000"
         )
         orders = []
         for r in cur.fetchall():
@@ -225,7 +225,7 @@ def handler(event: dict, context) -> dict:
 
         cur.execute(
             "SELECT id, service, people, email, phone, created_at "
-            "FROM leads ORDER BY created_at DESC LIMIT 500"
+            "FROM leads ORDER BY created_at DESC LIMIT 10000"
         )
         leads = []
         for r in cur.fetchall():
