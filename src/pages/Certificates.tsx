@@ -22,13 +22,15 @@ const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
 
 const PRESETS = [
-  { value: 1900, label: '1 900 ₽', popular: false, hint: 'Детская группа (сб/вс)' },
-  { value: 2100, label: '2 100 ₽', popular: false, hint: 'Роспись ангобами' },
-  { value: 2900, label: '2 900 ₽', popular: false, hint: 'Лепка / гончарный круг' },
-  { value: 5000, label: '5 000 ₽', popular: true, hint: 'Гончарный круг с росписью или Лепка из глины с росписью' },
-  { value: 7000, label: '7 000 ₽', popular: false, hint: 'Свидание в мастерской' },
-  { value: 13000, label: '13 000 ₽', popular: false, hint: 'Тариф льготный. 5 занятий на выбор (гончарный круг, лепка)' },
-];
+  { value: 1900, label: '1 900 ₽', badge: null, hint: 'Детская группа (сб/вс)' },
+  { value: 2100, label: '2 100 ₽', badge: null, hint: 'Роспись ангобами' },
+  { value: 2900, label: '2 900 ₽', badge: null, hint: 'Лепка / гончарный круг' },
+  { value: 5000, label: '5 000 ₽', badge: 'popular', hint: 'Гончарный круг с росписью или Лепка из глины с росписью' },
+  { value: 7000, label: '7 000 ₽', badge: null, hint: 'Свидание в мастерской' },
+  { value: 9000, label: '9 000 ₽', badge: 'value', hint: 'Льготный тариф. Детская группа (сб/вс в 11.00)' },
+  { value: 13000, label: '13 000 ₽', badge: 'value', hint: 'Тариф льготный. 5 занятий на выбор (гончарный круг, лепка)' },
+  { value: 20000, label: '20 000 ₽', badge: 'value', hint: 'Тариф льготный. 10 занятий на выбор (гончарный круг, лепка)' },
+].sort((a, b) => a.value - b.value);
 
 
 const Certificates = () => {
@@ -172,9 +174,14 @@ const Certificates = () => {
                       : 'border-border bg-card hover:border-primary/50'
                   }`}
                 >
-                  {p.popular && (
+                  {p.badge === 'popular' && (
                     <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">
                       Популярный
+                    </span>
+                  )}
+                  {p.badge === 'value' && (
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+                      Выгодно
                     </span>
                   )}
                   <span className="text-sm font-semibold">{p.label}</span>
