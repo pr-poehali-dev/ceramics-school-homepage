@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
@@ -9,6 +16,7 @@ import { useCart } from '@/context/CartContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
 import { reachGoal, GOALS } from '@/lib/metrika';
+import { THEMATIC_WORKSHOPS, ThematicWorkshop } from './formats/thematicData';
 
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
@@ -17,11 +25,9 @@ const PRESETS = [
   { value: 1900, label: '1 900 ₽', popular: false, hint: 'Детская группа (сб/вс)' },
   { value: 2100, label: '2 100 ₽', popular: false, hint: 'Роспись ангобами' },
   { value: 2900, label: '2 900 ₽', popular: false, hint: 'Лепка / гончарный круг' },
-  { value: 5000, label: '5 000 ₽', popular: true, hint: 'Гончарный круг с росписью и Лепка из глины с росписью' },
+  { value: 5000, label: '5 000 ₽', popular: true, hint: 'Гончарный круг с росписью или Лепка из глины с росписью' },
   { value: 7000, label: '7 000 ₽', popular: false, hint: 'Свидание в мастерской' },
-  { value: 9000, label: '9 000 ₽', popular: false, hint: 'Тематический мастер-класс' },
-  { value: 10000, label: '10 000 ₽', popular: false, hint: 'На несколько занятий' },
-  { value: 13000, label: '13 000 ₽', popular: false, hint: 'На несколько занятий' },
+  { value: 13000, label: '13 000 ₽', popular: false, hint: 'Тариф льготный. 5 занятий на выбор (гончарный круг, лепка)' },
 ];
 
 
@@ -34,16 +40,22 @@ const Certificates = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [selected, setSelected] = useState<number | null>(null);
+  const [thematicOpen, setThematicOpen] = useState(false);
+  const [thematicWorkshop, setThematicWorkshop] = useState<ThematicWorkshop | null>(null);
 
-  const activeAmount = selected ?? 0;
+  const activeAmount = thematicWorkshop ? thematicWorkshop.price : selected ?? 0;
+  const activeHint = thematicWorkshop
+    ? `Тематический мастер-класс «${thematicWorkshop.title}»`
+    : PRESETS.find((p) => p.value === activeAmount)?.hint;
+
+  const minThematicPrice = Math.min(...THEMATIC_WORKSHOPS.map((w) => w.price));
 
   const handleAddToCart = () => {
-    const preset = PRESETS.find((p) => p.value === activeAmount);
     addItem({
       id: `certificate-${activeAmount}-${Date.now()}`,
       title: 'Подарочный сертификат «Дымов Керамика»',
       details: `Номинал ${formatNum(activeAmount)}`,
-      hint: preset?.hint,
+      hint: activeHint,
       price: activeAmount,
     });
     reachGoal(GOALS.CERTIFICATE_ADD, 'moscow', { amount: activeAmount });
@@ -56,6 +68,13 @@ const Certificates = () => {
 
   const handlePreset = (val: number) => {
     setSelected(val);
+    setThematicWorkshop(null);
+  };
+
+  const handleThematicPick = (w: ThematicWorkshop) => {
+    setThematicWorkshop(w);
+    setSelected(null);
+    setThematicOpen(false);
   };
 
   const formatNum = (n: number) =>
@@ -168,6 +187,27 @@ const Certificates = () => {
                   </span>
                 </button>
               ))}
+
+              {/* ТЕМАТИЧЕСКИЙ МАСТЕР-КЛАСС — цена зависит от выбранного изделия */}
+              <button
+                onClick={() => setThematicOpen(true)}
+                className={`relative flex flex-col items-center gap-1 rounded-xl border px-2 py-4 text-center transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                  thematicWorkshop
+                    ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                    : 'border-border bg-card hover:border-primary/50'
+                }`}
+              >
+                <span className="text-sm font-semibold">
+                  {thematicWorkshop ? formatNum(thematicWorkshop.price) : `от ${formatNum(minThematicPrice)}`}
+                </span>
+                <span
+                  className={`text-xs font-normal leading-tight ${
+                    thematicWorkshop ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                  }`}
+                >
+                  {thematicWorkshop ? thematicWorkshop.title : 'Тематический мастер-класс — выбрать изделие'}
+                </span>
+              </button>
             </div>
           </div>
 
@@ -289,6 +329,46 @@ const Certificates = () => {
           </div>
         </section>
       </div>
+
+      {/* ВЫБОР ТЕМАТИЧЕСКОГО МАСТЕР-КЛАССА */}
+      <Dialog open={thematicOpen} onOpenChange={setThematicOpen}>
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">Тематические мастер-классы</DialogTitle>
+            <DialogDescription>Выберите мастер-класс — создайте конкретное изделие</DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-2 grid gap-4 sm:grid-cols-2">
+            {THEMATIC_WORKSHOPS.map((w) => (
+              <button
+                key={w.id}
+                onClick={() => handleThematicPick(w)}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card text-left transition-all hover:border-primary/60 hover:shadow-lg"
+              >
+                <div className="h-40 w-full overflow-hidden">
+                  <img
+                    src={w.image}
+                    alt={w.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col p-4">
+                  <h3 className="font-display text-lg font-semibold">{w.title}</h3>
+                  <p className="mt-1 flex-1 text-sm text-muted-foreground">{w.tagline}</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="font-semibold text-primary">
+                      {w.price.toLocaleString('ru-RU')} ₽
+                    </span>
+                    <span className="flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                      Выбрать <Icon name="ArrowRight" size={15} />
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* FOOTER */}
       <SiteFooter />
