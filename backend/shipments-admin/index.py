@@ -486,17 +486,19 @@ def handler(event: dict, context) -> dict:
                 conn.commit()
 
                 tracking_number, customer_email = row
+                email_error = None
                 if customer_email:
                     try:
                         address, work_hours = _fetch_pickup_info(cur)
                         _send_ready_email(customer_email, tracking_number, address, work_hours)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        email_error = str(e)
+                        print(f"[ready_for_pickup] email send failed for {customer_email}: {e}")
 
                 return {
                     'statusCode': 200,
                     'headers': cors_headers,
-                    'body': json.dumps({'ok': True}, ensure_ascii=False),
+                    'body': json.dumps({'ok': True, 'emailError': email_error}, ensure_ascii=False),
                 }
 
             if action == 'issue':

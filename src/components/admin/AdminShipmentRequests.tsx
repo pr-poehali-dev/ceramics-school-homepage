@@ -177,10 +177,17 @@ const AdminShipmentRequests = ({ token }: Props) => {
         toast({ title: data.error || 'Не удалось отметить готовность' });
         return;
       }
-      toast({
-        title: 'Изделие готово к выдаче',
-        description: `№ ${readyTarget.trackingNumber} — клиенту отправлено уведомление`,
-      });
+      if (data.emailError) {
+        toast({
+          title: 'Готовность отмечена, но письмо не отправлено',
+          description: `№ ${readyTarget.trackingNumber} — ошибка почты: ${data.emailError}`,
+        });
+      } else {
+        toast({
+          title: 'Изделие готово к выдаче',
+          description: `№ ${readyTarget.trackingNumber} — клиенту отправлено уведомление`,
+        });
+      }
       setConfirmed((prev) =>
         prev.map((r) => (r.id === readyTarget.id ? { ...r, readyAt: new Date().toISOString() } : r)),
       );
