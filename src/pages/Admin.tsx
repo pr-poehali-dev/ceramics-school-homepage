@@ -305,7 +305,7 @@ const Admin = () => {
               tab === 'shipments' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
             }`}
           >
-            Посылки
+            Посылки (Суздаль)
           </button>
           {managerRole === 'vdnh' && (
             <button
@@ -314,7 +314,7 @@ const Admin = () => {
                 tab === 'shipment-requests' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
               }`}
             >
-              Заявки на посылки
+              Изделия (Москва)
             </button>
           )}
 
