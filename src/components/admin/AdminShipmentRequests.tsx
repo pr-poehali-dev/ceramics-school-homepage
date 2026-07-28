@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -375,16 +374,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Подтвердить заявку?</AlertDialogTitle>
           </AlertDialogHeader>
-          <div className="py-2">
-            <Label htmlFor="approve-date">Дата доставки в Москву</Label>
-            <Input
-              id="approve-date"
-              type="date"
-              value={approveDate}
-              onChange={(e) => setApproveDate(e.target.value)}
-              className="mt-1.5"
-            />
-          </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Отмена</AlertDialogCancel>
             <AlertDialogAction onClick={confirmApprove} disabled={approving}>
