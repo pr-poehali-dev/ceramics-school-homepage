@@ -135,7 +135,7 @@ const Tracking = () => {
             >
               <Icon name="Camera" size={14} className="shrink-0 sm:hidden" />
               <Icon name="Camera" size={15} className="hidden shrink-0 sm:block" />
-              Добавить заявку
+              Добавить
             </button>
           </div>
 
