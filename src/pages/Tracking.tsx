@@ -120,8 +120,7 @@ const Tracking = () => {
             <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
               <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-amber-600" />
               <p className="text-sm text-amber-800">
-                Сюда добавляются только изделия, сделанные на мастер-классе в Москве. Изделия,
-                сделанные в Суздале, уже учтены — их не нужно добавлять повторно.
+                Изделия, сделанные в Суздале, уже учтены — их не нужно добавлять повторно.
               </p>
             </div>
           )}
