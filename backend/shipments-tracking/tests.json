@@ -1,0 +1,21 @@
+{
+  "tests": [
+    {
+      "name": "Ошибка без телефона",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 400,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Поиск по несуществующему телефону",
+      "method": "GET",
+      "path": "/?phone=%2B79990000000",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "shipments": []
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
