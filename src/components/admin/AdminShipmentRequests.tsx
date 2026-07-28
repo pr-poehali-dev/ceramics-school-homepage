@@ -23,7 +23,10 @@ interface ShipmentRequest {
   customerPhone: string;
   customerEmail: string;
   photoUrl: string;
-  createdAt: string;
+  createdAt?: string;
+  deliveredAt?: string | null;
+  returnAt?: string | null;
+  status?: string;
 }
 
 interface Props {
@@ -32,7 +35,7 @@ interface Props {
 
 const PER_PAGE = 20;
 
-const fmtDate = (s: string) => {
+const fmtDateTime = (s: string) => {
   try {
     return new Date(s).toLocaleString('ru-RU', {
       day: '2-digit',
@@ -46,10 +49,21 @@ const fmtDate = (s: string) => {
   }
 };
 
+const fmtDate = (s: string | null | undefined) => {
+  if (!s) return '—';
+  try {
+    return new Date(s).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch {
+    return s;
+  }
+};
+
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const AdminShipmentRequests = ({ token }: Props) => {
+  const [view, setView] = useState<'requests' | 'confirmed'>('requests');
   const [requests, setRequests] = useState<ShipmentRequest[]>([]);
+  const [confirmed, setConfirmed] = useState<ShipmentRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
@@ -60,19 +74,21 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const [rejectTarget, setRejectTarget] = useState<ShipmentRequest | null>(null);
   const [rejecting, setRejecting] = useState(false);
 
-  const load = async () => {
+  const load = async (v: 'requests' | 'confirmed') => {
     setLoading(true);
     try {
-      const resp = await fetch(`${func2url['shipments-admin']}?status=requests`, {
+      const resp = await fetch(`${func2url['shipments-admin']}?status=${v}`, {
         headers: { 'X-Session-Token': token },
       });
       const data = await resp.json();
       if (!resp.ok) {
         toast({ title: data.error || 'Не удалось загрузить заявки' });
-        setRequests([]);
+        if (v === 'requests') setRequests([]);
+        else setConfirmed([]);
         return;
       }
-      setRequests(data.requests || []);
+      if (v === 'requests') setRequests(data.requests || []);
+      else setConfirmed(data.requests || []);
       setPage(1);
     } catch {
       toast({ title: 'Ошибка загрузки', description: 'Попробуйте позже.' });
@@ -82,9 +98,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
   };
 
   useEffect(() => {
-    load();
+    load(view);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [view]);
 
   const openApprove = (r: ShipmentRequest) => {
     setApproveTarget(r);
@@ -105,7 +121,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
         toast({ title: data.error || 'Не удалось подтвердить заявку' });
         return;
       }
-      toast({ title: 'Заявка подтверждена', description: `№ ${approveTarget.trackingNumber} теперь в активных посылках` });
+      toast({ title: 'Заявка подтверждена', description: `№ ${approveTarget.trackingNumber} теперь в очереди на обжиг` });
       setRequests((prev) => prev.filter((r) => r.id !== approveTarget.id));
       setApproveTarget(null);
     } catch {
@@ -139,27 +155,53 @@ const AdminShipmentRequests = ({ token }: Props) => {
     }
   };
 
+  const list = view === 'requests' ? requests : confirmed;
+  const totalPages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+  const paginated = list.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Заявки, которые клиенты отправили самостоятельно со страницы отслеживания. Проверьте фото
-          и подтвердите — посылка появится в «Активных» и станет видна клиенту.
-        </p>
-        <Button variant="outline" size="sm" className="shrink-0 rounded-full" onClick={load} disabled={loading}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setView('requests')}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              view === 'requests' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
+            }`}
+          >
+            Требуется подтвердить {requests.length ? `(${requests.length})` : ''}
+          </button>
+          <button
+            onClick={() => setView('confirmed')}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              view === 'confirmed' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
+            }`}
+          >
+            Подтверждённые
+          </button>
+        </div>
+        <Button variant="outline" size="sm" className="shrink-0 rounded-full" onClick={() => load(view)} disabled={loading}>
           <Icon name="RefreshCcw" size={14} className="mr-1.5" /> Обновить
         </Button>
       </div>
+
+      <p className="mt-3 text-sm text-muted-foreground">
+        {view === 'requests'
+          ? 'Заявки, которые клиенты отправили самостоятельно со страницы отслеживания. Проверьте фото и подтвердите — изделие встанет в очередь на обжиг и станет видно клиенту.'
+          : 'Заявки клиентов, которые уже подтверждены и встали в очередь на обжиг.'}
+      </p>
 
       {loading ? (
         <div className="mt-8 flex justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
-      ) : requests.length === 0 ? (
-        <p className="mt-8 text-center text-sm text-muted-foreground">Новых заявок нет.</p>
+      ) : list.length === 0 ? (
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          {view === 'requests' ? 'Новых заявок нет.' : 'Подтверждённых заявок пока нет.'}
+        </p>
       ) : (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {requests.slice((page - 1) * PER_PAGE, page * PER_PAGE).map((r) => (
+          {paginated.map((r) => (
             <div key={r.id} className="overflow-hidden rounded-2xl border border-border bg-card">
               <img src={r.photoUrl} alt="Фото изделия" className="h-48 w-full object-cover" />
               <div className="p-4">
@@ -169,28 +211,40 @@ const AdminShipmentRequests = ({ token }: Props) => {
                   <p className="text-muted-foreground">{r.customerPhone}</p>
                   <p className="text-muted-foreground">{r.customerEmail}</p>
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">Заявка от {fmtDate(r.createdAt)}</p>
 
-                <div className="mt-4 flex gap-2">
-                  <Button size="sm" className="flex-1 rounded-full" onClick={() => openApprove(r)}>
-                    <Icon name="Check" size={14} className="mr-1.5" /> Подтвердить
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="flex-1 rounded-full"
-                    onClick={() => setRejectTarget(r)}
-                  >
-                    <Icon name="X" size={14} className="mr-1.5" /> Отклонить
-                  </Button>
-                </div>
+                {view === 'requests' ? (
+                  <>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Заявка от {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
+                    </p>
+                    <div className="mt-4 flex gap-2">
+                      <Button size="sm" className="flex-1 rounded-full" onClick={() => openApprove(r)}>
+                        <Icon name="Check" size={14} className="mr-1.5" /> Подтвердить
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 rounded-full"
+                        onClick={() => setRejectTarget(r)}
+                      >
+                        <Icon name="X" size={14} className="mr-1.5" /> Отклонить
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                    <p>Доставлено в Москву: {fmtDate(r.deliveredAt)}</p>
+                    <p>Хранение до: {fmtDate(r.returnAt)}</p>
+                    <p>Статус: {r.status === 'issued' ? 'Выдано' : 'В очереди на обжиг'}</p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {requests.length > PER_PAGE && (
+      {list.length > PER_PAGE && (
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button
             variant="outline"
@@ -202,16 +256,14 @@ const AdminShipmentRequests = ({ token }: Props) => {
             <Icon name="ChevronLeft" size={15} />
           </Button>
           <span className="px-3 text-sm text-muted-foreground">
-            Страница {page} из {Math.max(1, Math.ceil(requests.length / PER_PAGE))}
+            Страница {page} из {totalPages}
           </span>
           <Button
             variant="outline"
             size="sm"
             className="rounded-full"
-            onClick={() =>
-              setPage((p) => Math.min(Math.max(1, Math.ceil(requests.length / PER_PAGE)), p + 1))
-            }
-            disabled={page >= Math.ceil(requests.length / PER_PAGE)}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
           >
             <Icon name="ChevronRight" size={15} />
           </Button>

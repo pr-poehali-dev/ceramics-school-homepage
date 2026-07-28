@@ -50,6 +50,20 @@ def _request_dict(r):
     }
 
 
+def _confirmed_dict(r):
+    return {
+        'id': r[0],
+        'trackingNumber': r[1],
+        'customerName': r[2],
+        'customerPhone': r[3],
+        'customerEmail': r[4],
+        'photoUrl': r[5],
+        'deliveredAt': r[6].isoformat() if r[6] else None,
+        'returnAt': r[7].isoformat() if r[7] else None,
+        'status': r[8],
+    }
+
+
 def handler(event: dict, context) -> dict:
     '''
     Управление посылками с готовыми керамическими изделиями для менеджеров Суздаля и ВДНХ.
@@ -57,6 +71,8 @@ def handler(event: dict, context) -> dict:
     GET ?status=active|closed — список посылок (активные или выданные), доступно обеим ролям.
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
+    GET ?status=confirmed — заявки клиентов, подтверждённые администратором и вставшие
+      в очередь на обжиг (статус 'shipped', source='client'), доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
     POST { action: 'create', trackingNumber, customerName, customerPhone, deliveredAt } —
       добавление посылки, доступно только роли 'suzdal'.
@@ -432,6 +448,12 @@ def handler(event: dict, context) -> dict:
                 'headers': cors_headers,
                 'body': json.dumps({'error': 'Заявки клиентов доступны только менеджеру ВДНХ'}, ensure_ascii=False),
             }
+        if status_filter == 'confirmed' and role != 'vdnh':
+            return {
+                'statusCode': 403,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Заявки клиентов доступны только менеджеру ВДНХ'}, ensure_ascii=False),
+            }
         if export and role != 'vdnh':
             return {
                 'statusCode': 403,
@@ -449,6 +471,20 @@ def handler(event: dict, context) -> dict:
                 'statusCode': 200,
                 'headers': cors_headers,
                 'body': json.dumps({'requests': [_request_dict(r) for r in requests_rows], 'role': role}, ensure_ascii=False),
+            }
+
+        if status_filter == 'confirmed':
+            cur.execute(
+                f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
+                f"delivered_at, return_at, status "
+                f"FROM {SCHEMA}.shipments WHERE source = 'client' AND status IN ('shipped', 'issued') "
+                f"ORDER BY delivered_at DESC LIMIT 500",
+            )
+            confirmed_rows = cur.fetchall()
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'requests': [_confirmed_dict(r) for r in confirmed_rows], 'role': role}, ensure_ascii=False),
             }
 
         db_status = 'issued' if status_filter == 'closed' else 'shipped'
