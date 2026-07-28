@@ -77,6 +77,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const [rejecting, setRejecting] = useState(false);
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
 
   const load = async (v: 'requests' | 'confirmed') => {
     setLoading(true);
@@ -159,7 +160,12 @@ const AdminShipmentRequests = ({ token }: Props) => {
     }
   };
 
-  const list = view === 'requests' ? requests : confirmed;
+  const baseList = view === 'requests' ? requests : confirmed;
+  const searchDigits = search.replace(/\D/g, '');
+  const list =
+    view === 'confirmed' && searchDigits
+      ? baseList.filter((r) => r.customerPhone.replace(/\D/g, '').includes(searchDigits))
+      : baseList;
   const totalPages = Math.max(1, Math.ceil(list.length / PER_PAGE));
   const paginated = list.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -194,6 +200,20 @@ const AdminShipmentRequests = ({ token }: Props) => {
           ? 'Заявки, которые клиенты отправили самостоятельно со страницы отслеживания. Проверьте фото и подтвердите — изделие встанет в очередь на обжиг и станет видно клиенту.'
           : 'Заявки клиентов, которые уже подтверждены и встали в очередь на обжиг.'}
       </p>
+
+      {view === 'confirmed' && (
+        <div className="mt-3 max-w-xs">
+          <Input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Поиск по номеру телефона"
+            className="rounded-full"
+          />
+        </div>
+      )}
 
       {loading ? (
         <div className="mt-8 flex justify-center">
