@@ -13,6 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
 import func2url from '../../../backend/func2url.json';
 
@@ -73,6 +75,8 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
   const [rejectTarget, setRejectTarget] = useState<ShipmentRequest | null>(null);
   const [rejecting, setRejecting] = useState(false);
+
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const load = async (v: 'requests' | 'confirmed') => {
     setLoading(true);
@@ -200,47 +204,82 @@ const AdminShipmentRequests = ({ token }: Props) => {
           {view === 'requests' ? 'Новых заявок нет.' : 'Подтверждённых заявок пока нет.'}
         </p>
       ) : (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {paginated.map((r) => (
-            <div key={r.id} className="overflow-hidden rounded-2xl border border-border bg-card">
-              <img src={r.photoUrl} alt="Фото изделия" className="h-48 w-full object-cover" />
-              <div className="p-4">
-                <p className="font-display text-base font-semibold">№ {r.trackingNumber}</p>
-                <div className="mt-2 space-y-1 text-sm">
-                  <p>{r.customerName}</p>
-                  <p className="text-muted-foreground">{r.customerPhone}</p>
-                  <p className="text-muted-foreground">{r.customerEmail}</p>
-                </div>
-
+        <div className="mt-4 overflow-hidden rounded-2xl border border-border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-20">Фото</TableHead>
+                <TableHead>№ заявки</TableHead>
+                <TableHead>Клиент</TableHead>
+                <TableHead>Контакты</TableHead>
                 {view === 'requests' ? (
-                  <>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Заявка от {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
-                    </p>
-                    <div className="mt-4 flex gap-2">
-                      <Button size="sm" className="flex-1 rounded-full" onClick={() => openApprove(r)}>
-                        <Icon name="Check" size={14} className="mr-1.5" /> Подтвердить
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="flex-1 rounded-full"
-                        onClick={() => setRejectTarget(r)}
-                      >
-                        <Icon name="X" size={14} className="mr-1.5" /> Отклонить
-                      </Button>
-                    </div>
-                  </>
+                  <TableHead>Заявка от</TableHead>
                 ) : (
-                  <div className="mt-2 space-y-1 text-xs text-muted-foreground">
-                    <p>Доставлено в Москву: {fmtDate(r.deliveredAt)}</p>
-                    <p>Хранение до: {fmtDate(r.returnAt)}</p>
-                    <p>Статус: {r.status === 'issued' ? 'Выдано' : 'В очереди на обжиг'}</p>
-                  </div>
+                  <>
+                    <TableHead>Доставлено в Москву</TableHead>
+                    <TableHead>Хранение до</TableHead>
+                    <TableHead>Статус</TableHead>
+                  </>
                 )}
-              </div>
-            </div>
-          ))}
+                {view === 'requests' && <TableHead className="text-right">Действия</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginated.map((r) => (
+                <TableRow key={r.id}>
+                  <TableCell>
+                    <button
+                      type="button"
+                      onClick={() => setPhotoPreview(r.photoUrl)}
+                      className="block overflow-hidden rounded-lg border border-border"
+                    >
+                      <img
+                        src={r.photoUrl}
+                        alt="Фото изделия"
+                        className="h-14 w-14 object-cover transition-transform hover:scale-105"
+                      />
+                    </button>
+                  </TableCell>
+                  <TableCell className="font-medium">№ {r.trackingNumber}</TableCell>
+                  <TableCell>{r.customerName}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    <p>{r.customerPhone}</p>
+                    <p>{r.customerEmail}</p>
+                  </TableCell>
+                  {view === 'requests' ? (
+                    <TableCell className="text-sm text-muted-foreground">
+                      {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
+                    </TableCell>
+                  ) : (
+                    <>
+                      <TableCell className="text-sm text-muted-foreground">{fmtDate(r.deliveredAt)}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{fmtDate(r.returnAt)}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {r.status === 'issued' ? 'Выдано' : 'В очереди на обжиг'}
+                      </TableCell>
+                    </>
+                  )}
+                  {view === 'requests' && (
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" className="rounded-full" onClick={() => openApprove(r)}>
+                          <Icon name="Check" size={14} className="mr-1.5" /> Подтвердить
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full"
+                          onClick={() => setRejectTarget(r)}
+                        >
+                          <Icon name="X" size={14} className="mr-1.5" /> Отклонить
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
@@ -313,6 +352,15 @@ const AdminShipmentRequests = ({ token }: Props) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* ПРОСМОТР ФОТО */}
+      <Dialog open={!!photoPreview} onOpenChange={(v) => !v && setPhotoPreview(null)}>
+        <DialogContent className="max-w-2xl">
+          {photoPreview && (
+            <img src={photoPreview} alt="Фото изделия" className="max-h-[80vh] w-full rounded-lg object-contain" />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
