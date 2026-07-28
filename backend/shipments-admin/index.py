@@ -1,9 +1,11 @@
+import base64
 import csv
 import io
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
+import openpyxl
 import psycopg2
 
 SCHEMA = 't_p90609946_ceramics_school_home'
@@ -58,6 +60,9 @@ def handler(event: dict, context) -> dict:
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
     POST { action: 'create', trackingNumber, customerName, customerPhone, deliveredAt } —
       добавление посылки, доступно только роли 'suzdal'.
+    POST { action: 'import_excel', fileData (base64 .xlsx) } — массовая загрузка посылок из
+      Excel-файла с колонками «Номер посылки», «ФИО клиента», «Телефон клиента»,
+      «Дата доставки в Москву», доступно только роли 'suzdal'.
     POST { action: 'issue', id } — пометить посылку выданной, доступно только роли 'vdnh'.
     POST { action: 'approve_request', id, deliveredAt } — подтвердить заявку клиента и
       перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
@@ -159,6 +164,134 @@ def handler(event: dict, context) -> dict:
                     'statusCode': 200,
                     'headers': cors_headers,
                     'body': json.dumps({'ok': True, 'id': new_id}, ensure_ascii=False),
+                }
+
+            if action == 'import_excel':
+                if role != 'suzdal':
+                    return {
+                        'statusCode': 403,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Загружать посылки может только менеджер Суздаля'}, ensure_ascii=False),
+                    }
+
+                file_data = body.get('fileData') or ''
+                if not file_data:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Файл не передан'}, ensure_ascii=False),
+                    }
+                if ',' in file_data:
+                    file_data = file_data.split(',', 1)[1]
+
+                try:
+                    raw = base64.b64decode(file_data)
+                    workbook = openpyxl.load_workbook(io.BytesIO(raw), data_only=True)
+                    sheet = workbook.active
+                except Exception:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не удалось прочитать Excel-файл'}, ensure_ascii=False),
+                    }
+
+                # Ожидаемые колонки (в любом порядке, по заголовку первой строки):
+                # Номер посылки | ФИО клиента | Телефон | Дата доставки в Москву
+                header_map = {
+                    'номер посылки': 'trackingNumber',
+                    'фио клиента': 'customerName',
+                    'телефон': 'customerPhone',
+                    'телефон клиента': 'customerPhone',
+                    'дата доставки в москву': 'deliveredAt',
+                    'дата доставки': 'deliveredAt',
+                }
+
+                rows_iter = sheet.iter_rows(values_only=True)
+                try:
+                    header_row = next(rows_iter)
+                except StopIteration:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Файл пуст'}, ensure_ascii=False),
+                    }
+
+                col_index = {}
+                for idx, cell in enumerate(header_row):
+                    key = str(cell or '').strip().lower()
+                    if key in header_map:
+                        col_index[header_map[key]] = idx
+
+                required_cols = {'trackingNumber', 'customerName', 'customerPhone'}
+                if not required_cols.issubset(col_index.keys()):
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({
+                            'error': 'В файле должны быть колонки: Номер посылки, ФИО клиента, Телефон клиента, Дата доставки в Москву',
+                        }, ensure_ascii=False),
+                    }
+
+                created = 0
+                skipped = []
+                today = datetime.utcnow().date()
+
+                for row in rows_iter:
+                    if row is None or all(c is None or str(c).strip() == '' for c in row):
+                        continue
+
+                    def _get(field):
+                        idx = col_index.get(field)
+                        if idx is None or idx >= len(row):
+                            return None
+                        val = row[idx]
+                        return val
+
+                    tracking_number = str(_get('trackingNumber') or '').strip()
+                    customer_name = str(_get('customerName') or '').strip()
+                    customer_phone = str(_get('customerPhone') or '').strip()
+                    delivered_raw = _get('deliveredAt')
+
+                    if not tracking_number or not customer_name or not customer_phone:
+                        skipped.append(tracking_number or '(без номера)')
+                        continue
+
+                    if isinstance(delivered_raw, datetime):
+                        delivered_date = delivered_raw.date()
+                    elif isinstance(delivered_raw, date):
+                        delivered_date = delivered_raw
+                    elif delivered_raw:
+                        try:
+                            delivered_date = datetime.strptime(str(delivered_raw)[:10], '%Y-%m-%d').date()
+                        except ValueError:
+                            delivered_date = today
+                    else:
+                        delivered_date = today
+
+                    return_date = delivered_date + timedelta(days=30)
+
+                    cur.execute(
+                        f"SELECT id FROM {SCHEMA}.shipments WHERE tracking_number = %s",
+                        (tracking_number,),
+                    )
+                    if cur.fetchone():
+                        skipped.append(tracking_number)
+                        continue
+
+                    cur.execute(
+                        f"INSERT INTO {SCHEMA}.shipments "
+                        f"(tracking_number, customer_name, customer_phone, delivered_at, return_at, status, created_by) "
+                        f"VALUES (%s, %s, %s, %s, %s, 'shipped', %s)",
+                        (tracking_number, customer_name, customer_phone, delivered_date, return_date, manager_id),
+                    )
+                    created += 1
+
+                conn.commit()
+
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'ok': True, 'created': created, 'skipped': skipped}, ensure_ascii=False),
                 }
 
             if action == 'approve_request':

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,6 +46,14 @@ const fmtDate = (s: string | null) => {
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
+const fileToBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
 const AdminShipments = ({ token, role }: Props) => {
   const [view, setView] = useState<'active' | 'closed'>('active');
   const [shipments, setShipments] = useState<Shipment[]>([]);
@@ -62,6 +70,9 @@ const AdminShipments = ({ token, role }: Props) => {
   const [formPhone, setFormPhone] = useState('');
   const [formDate, setFormDate] = useState(todayISO());
   const [saving, setSaving] = useState(false);
+
+  const excelInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
 
   const load = async (status: 'active' | 'closed') => {
     setLoading(true);
@@ -123,6 +134,43 @@ const AdminShipments = ({ token, role }: Props) => {
       toast({ title: 'Ошибка сохранения', description: 'Попробуйте позже.' });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleImportExcel = async (file: File | undefined) => {
+    if (!file) return;
+    const isXlsx =
+      file.name.toLowerCase().endsWith('.xlsx') ||
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    if (!isXlsx) {
+      toast({ title: 'Неверный формат файла', description: 'Загрузите файл .xlsx' });
+      return;
+    }
+    setImporting(true);
+    try {
+      const base64 = await fileToBase64(file);
+      const resp = await fetch(func2url['shipments-admin'], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ action: 'import_excel', fileData: base64 }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        toast({ title: data.error || 'Не удалось загрузить файл' });
+        return;
+      }
+      const skippedCount = (data.skipped || []).length;
+      toast({
+        title: `Добавлено посылок: ${data.created}`,
+        description: skippedCount
+          ? `Пропущено (дубликаты или ошибки): ${skippedCount} — ${(data.skipped as string[]).slice(0, 5).join(', ')}${skippedCount > 5 ? '…' : ''}`
+          : undefined,
+      });
+      if (view === 'active') load('active');
+    } catch {
+      toast({ title: 'Ошибка загрузки файла', description: 'Попробуйте позже.' });
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -248,6 +296,33 @@ const AdminShipments = ({ token, role }: Props) => {
               </Button>
             </div>
           </form>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-5">
+            <input
+              ref={excelInputRef}
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              className="hidden"
+              onChange={(e) => {
+                handleImportExcel(e.target.files?.[0]);
+                e.target.value = '';
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full"
+              onClick={() => excelInputRef.current?.click()}
+              disabled={importing}
+            >
+              <Icon name={importing ? 'Loader2' : 'FileSpreadsheet'} size={16} className={`mr-2 ${importing ? 'animate-spin' : ''}`} />
+              {importing ? 'Загружаем…' : 'Загрузить из Excel'}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Файл .xlsx с колонками: Номер посылки, ФИО клиента, Телефон клиента, Дата доставки в
+              Москву (те же поля, что и в форме выше)
+            </p>
+          </div>
         </div>
       )}
 
