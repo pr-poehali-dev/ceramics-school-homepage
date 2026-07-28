@@ -105,14 +105,14 @@ const Tracking = () => {
             </p>
           </div>
 
-          {mode === 'find' && (
+          {mode === 'find' && content.findNoticeEnabled !== 'false' && (
             <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
               <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-amber-600" />
               <p className="text-sm text-amber-800">{content.findNotice}</p>
             </div>
           )}
 
-          {mode === 'add' && (
+          {mode === 'add' && content.addNoticeEnabled !== 'false' && (
             <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
               <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-amber-600" />
               <p className="text-sm text-amber-800">{content.addNotice}</p>
