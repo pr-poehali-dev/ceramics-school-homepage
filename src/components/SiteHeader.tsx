@@ -40,9 +40,9 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
         <a
           href={cityConfig.phoneHref}
           onClick={() => reachGoal(GOALS.PHONE_CLICK, city)}
-          className="flex items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-primary"
+          className="text-sm font-semibold text-foreground transition-colors hover:text-primary"
         >
-          <Icon name="Phone" size={18} className="text-primary" /> {cityConfig.phone}
+          {cityConfig.phone}
         </a>
         <MessengersMenu fields={messengersContent} />
       </div>
