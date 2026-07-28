@@ -275,7 +275,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
                   <TableHead>Заявка от</TableHead>
                 ) : (
                   <>
-                    <TableHead>Доставлено в Москву</TableHead>
                     <TableHead>Хранение до</TableHead>
                     <TableHead>Статус</TableHead>
                   </>
@@ -311,7 +310,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
                     </TableCell>
                   ) : (
                     <>
-                      <TableCell className="text-sm text-muted-foreground">{fmtDate(r.deliveredAt)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{fmtDate(r.returnAt)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {r.status === 'issued' ? 'Выдано' : r.readyAt ? 'Готово к выдаче' : 'Готовится'}
