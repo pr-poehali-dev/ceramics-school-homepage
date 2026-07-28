@@ -223,11 +223,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Подтвердить заявку?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Посылка № {approveTarget?.trackingNumber} клиента {approveTarget?.customerName} появится
-              в «Активных» посылках и будет видна клиенту в отслеживании. Укажите дату доставки в
-              Москву — от неё считается 30-дневный срок хранения.
-            </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-2">
             <Label htmlFor="approve-date">Дата доставки в Москву</Label>
