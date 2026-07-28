@@ -598,7 +598,7 @@ def handler(event: dict, context) -> dict:
                 f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
                 f"delivered_at, return_at, status, ready_at "
                 f"FROM {SCHEMA}.shipments WHERE source = 'client' AND status IN ('shipped', 'issued') "
-                f"ORDER BY delivered_at DESC LIMIT 500",
+                f"ORDER BY delivered_at DESC, created_at DESC LIMIT 500",
             )
             confirmed_rows = cur.fetchall()
             return {
@@ -608,10 +608,11 @@ def handler(event: dict, context) -> dict:
             }
 
         db_status = 'issued' if status_filter == 'closed' else 'shipped'
+        order_clause = 'issued_at DESC, delivered_at DESC' if status_filter == 'closed' else 'delivered_at DESC, created_at DESC'
 
         cur.execute(
             f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at "
-            f"FROM {SCHEMA}.shipments WHERE status = %s ORDER BY delivered_at DESC LIMIT 2000",
+            f"FROM {SCHEMA}.shipments WHERE status = %s ORDER BY {order_clause} LIMIT 2000",
             (db_status,),
         )
         rows = cur.fetchall()
