@@ -8,6 +8,8 @@ import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { workshopSchema, breadcrumbSchema } from '@/lib/schemaOrg';
 import WorkshopMediaBlock from '@/pages/workshop-detail/WorkshopMediaBlock';
 
 interface SuzdalWorkshopData {
@@ -263,6 +265,27 @@ const SuzdalWorkshopDetail = () => {
     description:
       c.metaDescription || data?.metaDescription || 'Мастер-классы по керамике на фабрике «Дымов Керамика» в Суздале.',
   });
+
+  useJsonLd(
+    data
+      ? [
+          workshopSchema({
+            name: c.title || data.title,
+            description: c.subtitle || data.subtitle,
+            image: c.img || data.img,
+            price: c.price ? Number(c.price) || data.price : data.price,
+            url: `/suzdal/workshops/${data.slug}`,
+            areaServed: 'Суздаль',
+          }),
+          breadcrumbSchema([
+            { name: 'Главная', url: '/suzdal' },
+            { name: 'Мастер-классы', url: '/suzdal/workshops' },
+            { name: c.title || data.title, url: `/suzdal/workshops/${data.slug}` },
+          ]),
+        ]
+      : null,
+    'jsonld-workshop',
+  );
 
   if (!data) {
     return <Navigate to="/suzdal/workshops" replace />;

@@ -9,6 +9,8 @@ import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { workshopSchema, breadcrumbSchema } from '@/lib/schemaOrg';
 
 const WORKSHOP_META: Record<string, { title: string; description: string }> = {
   krug: {
@@ -142,6 +144,27 @@ const WorkshopDetail = () => {
       meta?.description ||
       'Мастер-классы по керамике и гончарному делу для детей и взрослых в школе «Дымов Керамика» на ВДНХ.',
   });
+
+  useJsonLd(
+    data
+      ? [
+          workshopSchema({
+            name: c.title || data.title,
+            description: c.subtitle || data.subtitle,
+            image: c.img || data.img,
+            price: c.price || data.stats[0]?.text || 0,
+            url: `/moscow/workshops/${data.slug}`,
+            areaServed: 'Москва',
+          }),
+          breadcrumbSchema([
+            { name: 'Главная', url: '/moscow' },
+            { name: 'Мастер-классы', url: '/moscow/workshops' },
+            { name: c.title || data.title, url: `/moscow/workshops/${data.slug}` },
+          ]),
+        ]
+      : null,
+    'jsonld-workshop',
+  );
 
   if (!data) {
     return <Navigate to="/moscow/workshops" replace />;

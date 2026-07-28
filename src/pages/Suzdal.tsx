@@ -5,6 +5,8 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { localBusinessSchema } from '@/lib/schemaOrg';
 import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
@@ -39,6 +41,22 @@ const Suzdal = () => {
     title: c.metaTitle,
     description: c.metaDescription,
   });
+
+  useJsonLd(
+    localBusinessSchema({
+      name: 'Дымов Керамика — фабрика и школа в Суздале',
+      description: c.metaDescription,
+      image: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/85c661c4-3d31-4162-87f9-898d5ae1514d.png',
+      url: '/suzdal',
+      telephone: '+7 (915) 157-64-85',
+      streetAddress: 'ул. Васильевская, 41а',
+      addressLocality: 'Суздаль',
+      workHours: 'Пн-Вс 9:00-18:00',
+      ratingValue: REVIEW_AVG,
+      reviewCount: REVIEWS.length,
+    }),
+    'jsonld-localbusiness',
+  );
 
   const handleAddToCart = (e: React.MouseEvent, w: (typeof HOME_WORKSHOPS)[number]) => {
     e.preventDefault();

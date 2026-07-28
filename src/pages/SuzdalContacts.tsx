@@ -3,6 +3,8 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { localBusinessSchema } from '@/lib/schemaOrg';
 
 const SuzdalContacts = () => {
   const content = usePageContent('suzdal-contacts');
@@ -12,6 +14,21 @@ const SuzdalContacts = () => {
   });
   const addressLines = content.address ? content.address.split(',').map((s) => s.trim()) : ['Владимирская область, г. Суздаль,', 'ул. Васильевская, 41а'];
   const workHoursLines = content.workHours ? content.workHours.split(',').map((s) => s.trim()) : ['Понедельник – Воскресенье', '9:00 – 18:00'];
+
+  useJsonLd(
+    localBusinessSchema({
+      name: 'Дымов Керамика — фабрика и школа в Суздале',
+      description: content.metaDescription,
+      image: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/85c661c4-3d31-4162-87f9-898d5ae1514d.png',
+      url: '/suzdal/contacts',
+      telephone: content.phone || '+7 (915) 157-64-85',
+      email: content.email || 'mk@dymovceramicschool.ru',
+      streetAddress: content.address || 'ул. Васильевская, 41а',
+      addressLocality: 'Суздаль',
+      workHours: content.workHours,
+    }),
+    'jsonld-localbusiness',
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">

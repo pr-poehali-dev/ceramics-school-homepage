@@ -6,6 +6,8 @@ import SiteFooter from '@/components/SiteFooter';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { localBusinessSchema } from '@/lib/schemaOrg';
 import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
 
@@ -30,6 +32,22 @@ const Index = () => {
     title: c.metaTitle,
     description: c.metaDescription,
   });
+
+  useJsonLd(
+    localBusinessSchema({
+      name: 'Дымов Керамика — школа керамики на ВДНХ',
+      description: c.metaDescription,
+      image: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/85c661c4-3d31-4162-87f9-898d5ae1514d.png',
+      url: '/moscow',
+      telephone: '+7 (985) 419-89-03',
+      streetAddress: 'проспект Мира, д. 119, стр. 186',
+      addressLocality: 'Москва',
+      workHours: 'Пн-Вс 11:00-20:00',
+      ratingValue: REVIEW_AVG,
+      reviewCount: REVIEWS.length,
+    }),
+    'jsonld-localbusiness',
+  );
 
   const SERVICES = [
     { img: c.service1Img, title: c.service1Title, desc: c.service1Desc, price: c.service1Price, href: '/moscow/workshops/lepka' },

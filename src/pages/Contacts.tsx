@@ -3,6 +3,8 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { localBusinessSchema } from '@/lib/schemaOrg';
 
 const Contacts = () => {
   const content = usePageContent('moscow-contacts');
@@ -12,6 +14,21 @@ const Contacts = () => {
   });
   const addressLines = content.address ? content.address.split(',').map((s) => s.trim()) : ['г. Москва, проспект Мира,', 'д. 119, стр. 186'];
   const workHoursLines = content.workHours ? content.workHours.split(',').map((s) => s.trim()) : ['Пн – Вс', '11:00 – 20:00'];
+
+  useJsonLd(
+    localBusinessSchema({
+      name: 'Дымов Керамика — школа керамики на ВДНХ',
+      description: content.metaDescription,
+      image: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/85c661c4-3d31-4162-87f9-898d5ae1514d.png',
+      url: '/moscow/contacts',
+      telephone: content.phone || '+7 (985) 419-89-03',
+      email: content.email || 'hello@dymovceramic.ru',
+      streetAddress: content.address || 'проспект Мира, д. 119, стр. 186',
+      addressLocality: 'Москва',
+      workHours: content.workHours,
+    }),
+    'jsonld-localbusiness',
+  );
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       <SiteHeader active="/moscow/contacts" />

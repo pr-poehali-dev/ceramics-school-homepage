@@ -9,6 +9,8 @@ import ReviewCard from './reviews/ReviewCard';
 import ReviewsGallery from './reviews/ReviewsGallery';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { reviewsSchema } from '@/lib/schemaOrg';
 
 const STEP = 24;
 
@@ -32,6 +34,16 @@ const SuzdalReviews = () => {
   })();
   const gallery = (c.reviewsGallery || '').split('\n').filter(Boolean);
   const AVG = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1);
+
+  useJsonLd(
+    reviewsSchema({
+      itemName: 'Дымов Керамика — фабрика и школа в Суздале',
+      ratingValue: AVG,
+      reviewCount: reviews.length,
+      reviews,
+    }),
+    'jsonld-reviews',
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
