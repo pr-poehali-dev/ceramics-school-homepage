@@ -148,7 +148,7 @@ const ShipmentRequestForm = () => {
       <div>
         <Label>Фото изделия *</Label>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          Подойдёт фото даже необожжённого полуфабриката — это нормально.
+          Подойдёт фото даже необожжённого полуфабриката, оно поможет нам найти Ваше изделие!
         </p>
         <input
           ref={fileInputRef}
