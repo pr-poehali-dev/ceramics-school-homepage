@@ -17,6 +17,7 @@ import SiteFooter from '@/components/SiteFooter';
 import ShipmentRequestForm from '@/components/ShipmentRequestForm';
 import { useCity } from '@/hooks/useCity';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { usePageContent } from '@/hooks/usePageContent';
 import { formatPhoneInput } from '@/lib/phoneMask';
 import func2url from '../../backend/func2url.json';
 
@@ -44,9 +45,10 @@ const fmtDate = (s: string | null) => {
 
 const Tracking = () => {
   const city = useCity();
+  const content = usePageContent('tracking');
   usePageMeta({
-    title: 'Отследить готовое изделие — «Дымов Керамика»',
-    description: 'Узнайте статус вашего готового керамического изделия по номеру телефона.',
+    title: content.metaTitle,
+    description: content.metaDescription,
   });
 
   const [phone, setPhone] = useState('');
@@ -89,39 +91,31 @@ const Tracking = () => {
         <div className="mx-auto max-w-2xl">
           <div className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-              <Icon name="PackageSearch" size={16} /> Отслеживание готовых работ
+              <Icon name="PackageSearch" size={16} /> {content.badgeText}
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold leading-tight md:text-5xl">
               {mode === 'find' ? (
-                <>Где моё <span className="text-primary italic">изделие?</span></>
+                <>{content.findTitle} <span className="text-primary italic">{content.findTitleHighlight}</span></>
               ) : (
-                <>Добавить <span className="text-primary italic">заявку</span></>
+                <>{content.addTitle} <span className="text-primary italic">{content.addTitleHighlight}</span></>
               )}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              {mode === 'find'
-                ? 'Введите номер телефона — покажем статус изделий из Суздаля и Москвы.'
-                : 'Зарегистрируйте изделие, сделанное на мастер-классе в Москве, чтобы отслеживать его статус.'}
+              {mode === 'find' ? content.findSubtitle : content.addSubtitle}
             </p>
           </div>
 
           {mode === 'find' && (
             <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
               <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-amber-600" />
-              <p className="text-sm text-amber-800">
-                Отследить можно изделия, уже добавленные менеджером Суздаля в систему, и заявки,
-                оформленные в Москве. Если изделие сделано в Суздале, но менеджер ещё не успел
-                его добавить — свяжитесь с нами напрямую.
-              </p>
+              <p className="text-sm text-amber-800">{content.findNotice}</p>
             </div>
           )}
 
           {mode === 'add' && (
             <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
               <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-amber-600" />
-              <p className="text-sm text-amber-800">
-                Изделия, сделанные в Суздале, уже учтены — их не нужно добавлять повторно.
-              </p>
+              <p className="text-sm text-amber-800">{content.addNotice}</p>
             </div>
           )}
 
@@ -182,7 +176,7 @@ const Tracking = () => {
             </div>
           ) : (
             <div className="mt-6 rounded-2xl border border-border bg-card p-6 md:p-8">
-              <ShipmentRequestForm />
+              <ShipmentRequestForm photoHint={content.photoHint} />
             </div>
           )}
 
@@ -199,13 +193,11 @@ const Tracking = () => {
               {!error && shipments.length === 0 && (
                 <div className="rounded-2xl border border-dashed border-border p-10 text-center">
                   <Icon name="PackageX" size={36} className="mx-auto mb-3 text-muted-foreground/50" />
-                  <p className="font-medium">
-                    По вашему номеру ничего не найдено. Проверьте данные или свяжитесь с нами:
-                  </p>
+                  <p className="font-medium">{content.notFoundText}</p>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Суздаль: 8-915-157-64-85
+                    Суздаль: {content.suzdalPhone}
                     <br />
-                    Москва: +7 (985) 419-89-03
+                    Москва: {content.moscowPhone}
                   </p>
                 </div>
               )}

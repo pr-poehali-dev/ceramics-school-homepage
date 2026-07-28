@@ -18,7 +18,11 @@ const fileToBase64 = (file: File) =>
     reader.readAsDataURL(file);
   });
 
-const ShipmentRequestForm = () => {
+interface Props {
+  photoHint?: string;
+}
+
+const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже необожжённого полуфабриката.' }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -147,9 +151,7 @@ const ShipmentRequestForm = () => {
 
       <div>
         <Label>Фото изделия *</Label>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Подойдёт фото даже необожжённого полуфабриката.
-        </p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{photoHint}</p>
         <input
           ref={fileInputRef}
           type="file"
