@@ -8,6 +8,7 @@ import AdminLogin from '@/components/admin/AdminLogin';
 import AdminBanner from '@/components/admin/AdminBanner';
 import AdminOrders from '@/components/admin/AdminOrders';
 import AdminLeads from '@/components/admin/AdminLeads';
+import AdminShipments from '@/components/admin/AdminShipments';
 import { Order, Lead } from '@/components/admin/adminHelpers';
 import func2url from '../../backend/func2url.json';
 
@@ -26,11 +27,12 @@ const Admin = () => {
   const [checkingSession, setCheckingSession] = useState(true);
   const [authed, setAuthed] = useState(false);
   const [managerName, setManagerName] = useState('');
+  const [managerRole, setManagerRole] = useState<'vdnh' | 'suzdal' | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [tab, setTab] = useState<'orders' | 'leads' | 'content'>('orders');
+  const [tab, setTab] = useState<'orders' | 'leads' | 'content' | 'shipments'>('orders');
   const [ordersPage, setOrdersPage] = useState(1);
   const ORDERS_PER_PAGE = 10;
   const [cityFilter, setCityFilter] = useState<'moscow' | 'suzdal' | 'all'>('moscow');
@@ -161,8 +163,14 @@ const Admin = () => {
         });
         if (resp.ok) {
           const data = await resp.json();
+          if (data.role !== 'vdnh') {
+            localStorage.removeItem(SESSION_KEY);
+            setCheckingSession(false);
+            return;
+          }
           setToken(saved);
           setManagerName(data.name || data.email);
+          setManagerRole(data.role);
           await loadData(saved);
         } else {
           localStorage.removeItem(SESSION_KEY);
@@ -182,7 +190,7 @@ const Admin = () => {
       const resp = await fetch(func2url['manager-auth'], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, portal: 'admin' }),
       });
       const data = await resp.json();
       if (!resp.ok) {
@@ -192,6 +200,7 @@ const Admin = () => {
       localStorage.setItem(SESSION_KEY, data.token);
       setToken(data.token);
       setManagerName(data.name || data.email);
+      setManagerRole(data.role);
       await loadData(data.token);
     } catch {
       toast({ title: 'Ошибка входа', description: 'Попробуйте позже.' });
@@ -204,6 +213,7 @@ const Admin = () => {
     localStorage.removeItem(SESSION_KEY);
     setToken(null);
     setAuthed(false);
+    setManagerRole(null);
     setOrders([]);
     setLeads([]);
   };
@@ -298,9 +308,21 @@ const Admin = () => {
           >
             Контент страниц
           </button>
+          <button
+            onClick={() => setTab('shipments')}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+              tab === 'shipments' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+            }`}
+          >
+            Посылки
+          </button>
         </div>
 
         {tab === 'content' && token && <PageContentEditor token={token} />}
+
+        {tab === 'shipments' && token && managerRole && (
+          <AdminShipments token={token} role={managerRole} />
+        )}
 
         {tab === 'orders' && (
           <AdminOrders

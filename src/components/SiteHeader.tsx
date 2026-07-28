@@ -4,6 +4,7 @@ import Logo from '@/components/Logo';
 import DesktopNav from '@/components/DesktopNav';
 import MobileMenu from '@/components/MobileMenu';
 import CartButton from '@/components/CartButton';
+import TrackingButton from '@/components/TrackingButton';
 import CitySwitcher from '@/components/CitySwitcher';
 import AnnouncementBanner from '@/components/AnnouncementBanner';
 import MessengersMenu from '@/components/MessengersMenu';
@@ -46,6 +47,7 @@ const SiteHeader = ({ active }: SiteHeaderProps) => {
         <MessengersMenu fields={messengersContent} />
       </div>
       <div className="flex items-center gap-3">
+        <TrackingButton />
         <CartButton />
         <MobileMenu active={active} />
       </div>

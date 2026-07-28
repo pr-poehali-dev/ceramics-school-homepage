@@ -38,6 +38,9 @@ const SuzdalOffer = lazy(() => import("./pages/SuzdalOffer"));
 const SuzdalPrivacy = lazy(() => import("./pages/SuzdalPrivacy"));
 const SuzdalCookies = lazy(() => import("./pages/SuzdalCookies"));
 const SuzdalReviews = lazy(() => import("./pages/SuzdalReviews"));
+const Tracking = lazy(() => import("./pages/Tracking"));
+const ManagerLogin = lazy(() => import("./pages/ManagerLogin"));
+const ManagerDashboard = lazy(() => import("./pages/ManagerDashboard"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 
 const queryClient = new QueryClient();
@@ -79,6 +82,10 @@ const App = () => (
               <Route path="/moscow/privacy" element={<Privacy />} />
               <Route path="/moscow/cookies" element={<Cookies />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/tracking" element={<Tracking />} />
+              <Route path="/manager" element={<Navigate to="/manager/login" replace />} />
+              <Route path="/manager/login" element={<ManagerLogin />} />
+              <Route path="/manager/dashboard" element={<ManagerDashboard />} />
 
               {/* SUZDAL */}
               <Route path="/suzdal" element={<Suzdal />} />

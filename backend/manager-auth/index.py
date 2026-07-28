@@ -22,12 +22,14 @@ def verify_password(password: str, stored_hash: str) -> bool:
 
 def handler(event: dict, context) -> dict:
     '''
-    Авторизация менеджера по email и паролю для доступа к /admin.
-    POST { email, password } — проверяет учётные данные, создаёт сессию, возвращает token.
-    GET с заголовком X-Session-Token — проверяет валидность текущей сессии.
+    Авторизация менеджера по email и паролю. Используется и панелью /admin (роль 'vdnh'),
+    и панелью /manager (роль 'suzdal') — общая таблица managers, разные фронтенд-роуты.
+    POST { email, password, portal } — проверяет учётные данные и что роль соответствует
+      порталу ('admin' требует role='vdnh', 'manager' требует role='suzdal'), создаёт сессию.
+    GET с заголовком X-Session-Token — проверяет валидность текущей сессии, возвращает role.
     Args: event с httpMethod, headers, body
           context — объект с request_id
-    Returns: HTTP-ответ с token и данными менеджера, либо ошибкой
+    Returns: HTTP-ответ с token, email, name, role менеджера, либо ошибкой
     '''
     method = event.get('httpMethod', 'GET')
 
@@ -49,6 +51,8 @@ def handler(event: dict, context) -> dict:
             body = json.loads(event.get('body') or '{}')
             email = (body.get('email') or '').strip().lower()
             password = body.get('password') or ''
+            # portal: 'admin' (панель ВДНХ) или 'manager' (панель Суздаля) — ограничивает вход по роли
+            portal = body.get('portal') or ''
 
             if not email or not password:
                 return {
@@ -58,7 +62,7 @@ def handler(event: dict, context) -> dict:
                 }
 
             cur.execute(
-                "SELECT id, password_hash, name FROM managers WHERE lower(email) = %s",
+                "SELECT id, password_hash, name, role FROM managers WHERE lower(email) = %s",
                 (email,),
             )
             row = cur.fetchone()
@@ -70,7 +74,21 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'error': 'Неверный email или пароль'}),
                 }
 
-            manager_id, _, name = row
+            manager_id, _, name, role = row
+
+            if portal == 'admin' and role != 'vdnh':
+                return {
+                    'statusCode': 403,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'У вас нет доступа к этой панели'}),
+                }
+            if portal == 'manager' and role != 'suzdal':
+                return {
+                    'statusCode': 403,
+                    'headers': cors_headers,
+                    'body': json.dumps({'error': 'У вас нет доступа к этой панели'}),
+                }
+
             token = secrets.token_hex(32)
             expires_at = datetime.utcnow() + timedelta(days=30)
 
@@ -83,7 +101,7 @@ def handler(event: dict, context) -> dict:
             return {
                 'statusCode': 200,
                 'headers': cors_headers,
-                'body': json.dumps({'token': token, 'email': email, 'name': name}),
+                'body': json.dumps({'token': token, 'email': email, 'name': name, 'role': role}),
             }
 
         if method == 'GET':
@@ -98,7 +116,7 @@ def handler(event: dict, context) -> dict:
                 }
 
             cur.execute(
-                "SELECT m.email, m.name FROM manager_sessions s "
+                "SELECT m.email, m.name, m.role FROM manager_sessions s "
                 "JOIN managers m ON m.id = s.manager_id "
                 "WHERE s.token = %s AND s.expires_at > NOW()",
                 (token,),
@@ -115,7 +133,7 @@ def handler(event: dict, context) -> dict:
             return {
                 'statusCode': 200,
                 'headers': cors_headers,
-                'body': json.dumps({'email': row[0], 'name': row[1]}),
+                'body': json.dumps({'email': row[0], 'name': row[1], 'role': row[2]}),
             }
 
         return {

@@ -183,6 +183,17 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
               </Link>
             ))}
 
+            <Link
+              to="/tracking"
+              onClick={handleLink('/tracking')}
+              className="flex items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              <span className="flex items-center gap-2">
+                <Icon name="PackageSearch" size={18} /> Отследить изделие
+              </span>
+              <Icon name="ChevronRight" size={18} className="text-muted-foreground" />
+            </Link>
+
             <a
               href="https://dymovceramic.ru/"
               target="_blank"
