@@ -88,7 +88,7 @@ const CheckoutItemsForm = ({
               </div>
             </div>
             <div className="text-sm text-muted-foreground sm:text-center">{item.qty} шт.</div>
-            <div className="font-semibold sm:text-right">
+            <div className="whitespace-nowrap font-semibold sm:text-right">
               {(item.price * item.qty).toLocaleString('ru-RU')} руб.
             </div>
             <button

@@ -102,7 +102,7 @@ const Cart = () => {
                         </button>
                       </div>
 
-                      <span className="w-24 text-right font-semibold">
+                      <span className="w-28 shrink-0 whitespace-nowrap text-right font-semibold">
                         {(item.price * item.qty).toLocaleString('ru-RU')} ₽
                       </span>
 
