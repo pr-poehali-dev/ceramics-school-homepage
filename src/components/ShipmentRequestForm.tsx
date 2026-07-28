@@ -96,7 +96,7 @@ const ShipmentRequestForm = () => {
         <h3 className="mt-4 font-display text-xl font-semibold">Заявка отправлена!</h3>
         <p className="mt-2 max-w-sm text-sm text-muted-foreground">
           Ваш временный номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
-          Менеджер проверит фото и подтвердит посылку, после чего вы сможете отслеживать её статус
+          Менеджер проверит фото и подтвердит, после чего вы сможете отслеживать статус заявки
           по номеру телефона.
         </p>
         <Button className="mt-6 rounded-full" onClick={reset}>
