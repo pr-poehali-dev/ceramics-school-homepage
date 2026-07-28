@@ -285,17 +285,6 @@ const AdminShipments = ({ token, role }: Props) => {
               />
             </div>
             <div>
-              <Label htmlFor="ship-email">Email клиента</Label>
-              <Input
-                id="ship-email"
-                type="email"
-                value={formEmail}
-                onChange={(e) => setFormEmail(e.target.value)}
-                placeholder="client@example.com"
-                className="mt-1.5"
-              />
-            </div>
-            <div>
               <Label htmlFor="ship-date">Дата доставки в Москву</Label>
               <Input
                 id="ship-date"
@@ -304,6 +293,17 @@ const AdminShipments = ({ token, role }: Props) => {
                 onChange={(e) => setFormDate(e.target.value)}
                 className="mt-1.5"
                 required
+              />
+            </div>
+            <div>
+              <Label htmlFor="ship-email">Email клиента</Label>
+              <Input
+                id="ship-email"
+                type="email"
+                value={formEmail}
+                onChange={(e) => setFormEmail(e.target.value)}
+                placeholder="client@example.com"
+                className="mt-1.5"
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-4">
@@ -335,8 +335,8 @@ const AdminShipments = ({ token, role }: Props) => {
               {importing ? 'Загружаем…' : 'Загрузить из Excel'}
             </Button>
             <p className="text-xs text-muted-foreground">
-              Файл .xlsx с колонками: Номер посылки, ФИО клиента, Телефон клиента, Email
-              (необязательно), Дата доставки в Москву (те же поля, что и в форме выше)
+              Файл .xlsx с колонками: Номер посылки, ФИО клиента, Телефон клиента, Дата доставки в
+              Москву, Email (необязательно) (те же поля, что и в форме выше)
             </p>
           </div>
         </div>
