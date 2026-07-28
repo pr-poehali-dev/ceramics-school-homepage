@@ -228,7 +228,7 @@ const Tracking = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Позвонить для заказа курьера?</AlertDialogTitle>
             <AlertDialogDescription>
-              Мы соединим вас с номером {COURIER_PHONE}. Курьерская доставка доступна только в пределах МКАД.
+              Мы соединим Вас с администратором школы керамики по номеру {COURIER_PHONE}. Курьерская доставка доступна только в пределах МКАД.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
