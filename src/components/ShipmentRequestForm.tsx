@@ -154,7 +154,6 @@ const ShipmentRequestForm = () => {
           ref={fileInputRef}
           type="file"
           accept="image/png,image/jpeg,image/webp"
-          capture="environment"
           className="hidden"
           onChange={(e) => handlePhotoPick(e.target.files?.[0])}
         />
