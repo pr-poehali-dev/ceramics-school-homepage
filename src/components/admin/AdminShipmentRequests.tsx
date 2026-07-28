@@ -216,7 +216,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
   return (
     <div className="mt-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setView('requests')}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
