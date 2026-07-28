@@ -33,7 +33,7 @@ export function workshopSchema({ name, description, image, price, url, areaServe
     },
     offers: {
       '@type': 'Offer',
-      price: Number.isFinite(numericPrice) ? numericPrice : undefined,
+      price: Number.isFinite(numericPrice) ? String(numericPrice) : undefined,
       priceCurrency: 'RUB',
       availability: 'https://schema.org/InStock',
       url: `${SITE_URL}${url}`,
