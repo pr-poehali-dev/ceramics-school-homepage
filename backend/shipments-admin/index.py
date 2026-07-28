@@ -89,7 +89,7 @@ def _fetch_pickup_info(cur):
     return address, work_hours
 
 
-def _send_ready_email(customer_email: str, tracking_number: str, address: str, work_hours: str) -> None:
+def _send_ready_email(customer_email: str, tracking_number: str, address: str, work_hours: str, storage_until: str) -> None:
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -111,6 +111,10 @@ def _send_ready_email(customer_email: str, tracking_number: str, address: str, w
         f'Номер посылки: {tracking_number}\n'
         f'Адрес: {address}\n'
         f'Время работы: {work_hours}\n\n'
+        f'Срок хранения изделия — 60 календарных дней с даты оформления заявки. '
+        f'Пожалуйста, заберите изделие до {storage_until} включительно. '
+        'По истечении этого срока мы оставляем за собой право утилизировать изделие '
+        'либо передать его на благотворительную ярмарку.\n\n'
         f'Контакты: {SITE_URL}/moscow/contacts'
     )
 
@@ -152,8 +156,9 @@ def handler(event: dict, context) -> dict:
       перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
     POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
     POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client') готовой
-      к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом
-      и часами работы студии, доступно только роли 'vdnh'.
+      к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом,
+      часами работы студии и сроком хранения (60 календарных дней с даты оформления заявки),
+      доступно только роли 'vdnh'.
     Args: event с httpMethod, headers (X-Session-Token), queryStringParameters, body
           context — объект с request_id
     Returns: HTTP-ответ со списком посылок либо результатом операции
@@ -485,7 +490,7 @@ def handler(event: dict, context) -> dict:
                 cur.execute(
                     f"UPDATE {SCHEMA}.shipments SET ready_at = NOW() "
                     f"WHERE id = %s AND source = 'client' AND status = 'shipped' AND ready_at IS NULL "
-                    f"RETURNING tracking_number, customer_email",
+                    f"RETURNING tracking_number, customer_email, created_at",
                     (shipment_id,),
                 )
                 row = cur.fetchone()
@@ -497,14 +502,15 @@ def handler(event: dict, context) -> dict:
                     }
                 conn.commit()
 
-                tracking_number, customer_email = row
+                tracking_number, customer_email, created_at = row
+                storage_until = (created_at.date() + timedelta(days=60)).strftime('%d.%m.%Y')
                 email_error = None
                 if not customer_email:
                     email_error = 'У заявки не указан email клиента'
                 else:
                     try:
                         address, work_hours = _fetch_pickup_info(cur)
-                        _send_ready_email(customer_email, tracking_number, address, work_hours)
+                        _send_ready_email(customer_email, tracking_number, address, work_hours, storage_until)
                         print(f"[ready_for_pickup] email sent to {customer_email} for {tracking_number}")
                     except Exception as e:
                         email_error = str(e)
