@@ -30,6 +30,8 @@ interface Props {
   token: string;
 }
 
+const PER_PAGE = 20;
+
 const fmtDate = (s: string) => {
   try {
     return new Date(s).toLocaleString('ru-RU', {
@@ -49,6 +51,7 @@ const todayISO = () => new Date().toISOString().slice(0, 10);
 const AdminShipmentRequests = ({ token }: Props) => {
   const [requests, setRequests] = useState<ShipmentRequest[]>([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
 
   const [approveTarget, setApproveTarget] = useState<ShipmentRequest | null>(null);
   const [approveDate, setApproveDate] = useState(todayISO());
@@ -70,6 +73,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
         return;
       }
       setRequests(data.requests || []);
+      setPage(1);
     } catch {
       toast({ title: 'Ошибка загрузки', description: 'Попробуйте позже.' });
     } finally {
@@ -155,7 +159,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
         <p className="mt-8 text-center text-sm text-muted-foreground">Новых заявок нет.</p>
       ) : (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {requests.map((r) => (
+          {requests.slice((page - 1) * PER_PAGE, page * PER_PAGE).map((r) => (
             <div key={r.id} className="overflow-hidden rounded-2xl border border-border bg-card">
               <img src={r.photoUrl} alt="Фото изделия" className="h-48 w-full object-cover" />
               <div className="p-4">
@@ -183,6 +187,34 @@ const AdminShipmentRequests = ({ token }: Props) => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {requests.length > PER_PAGE && (
+        <div className="mt-4 flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+          >
+            <Icon name="ChevronLeft" size={15} />
+          </Button>
+          <span className="px-3 text-sm text-muted-foreground">
+            Страница {page} из {Math.max(1, Math.ceil(requests.length / PER_PAGE))}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full"
+            onClick={() =>
+              setPage((p) => Math.min(Math.max(1, Math.ceil(requests.length / PER_PAGE)), p + 1))
+            }
+            disabled={page >= Math.ceil(requests.length / PER_PAGE)}
+          >
+            <Icon name="ChevronRight" size={15} />
+          </Button>
         </div>
       )}
 
