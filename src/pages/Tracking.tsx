@@ -120,20 +120,24 @@ const Tracking = () => {
             <button
               type="button"
               onClick={() => setMode('find')}
-              className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-colors ${
+              className={`flex items-center justify-center gap-1 whitespace-nowrap rounded-full px-2 py-2.5 text-xs font-semibold transition-colors sm:gap-1.5 sm:px-4 sm:text-sm ${
                 mode === 'find' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <Icon name="Search" size={15} /> Найти посылку
+              <Icon name="Search" size={14} className="shrink-0 sm:hidden" />
+              <Icon name="Search" size={15} className="hidden shrink-0 sm:block" />
+              Найти посылку
             </button>
             <button
               type="button"
               onClick={() => setMode('add')}
-              className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-colors ${
+              className={`flex items-center justify-center gap-1 whitespace-nowrap rounded-full px-2 py-2.5 text-xs font-semibold transition-colors sm:gap-1.5 sm:px-4 sm:text-sm ${
                 mode === 'add' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <Icon name="Camera" size={15} /> Добавить посылку
+              <Icon name="Camera" size={14} className="shrink-0 sm:hidden" />
+              <Icon name="Camera" size={15} className="hidden shrink-0 sm:block" />
+              Добавить посылку
             </button>
           </div>
 
