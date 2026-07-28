@@ -183,10 +183,12 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="mt-2 flex h-32 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+            className="mt-2 flex h-32 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border px-3 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
           >
             <Icon name="Camera" size={26} />
-            <span className="text-sm font-medium">Сделать фото или выбрать из галереи</span>
+            <span className="text-center text-sm font-medium leading-snug">
+              Сделать фото или выбрать из галереи
+            </span>
           </button>
         )}
       </div>
