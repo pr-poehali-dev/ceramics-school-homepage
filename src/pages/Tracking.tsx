@@ -95,13 +95,11 @@ const Tracking = () => {
               {mode === 'find' ? (
                 <>Где моё <span className="text-primary italic">изделие?</span></>
               ) : (
-                <>Добавить <span className="text-primary italic">изделие</span></>
+                <>Добавить <span className="text-primary italic">заявку</span></>
               )}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              {mode === 'find'
-                ? 'Введите номер телефона, для уточнения статуса.'
-                : 'Не нашли свою посылку в системе? Оставьте заявку с фото изделия — мы подключим её к отслеживанию.'}
+              {mode === 'find' && 'Введите номер телефона, для уточнения статуса.'}
             </p>
           </div>
 
@@ -137,7 +135,7 @@ const Tracking = () => {
             >
               <Icon name="Camera" size={14} className="shrink-0 sm:hidden" />
               <Icon name="Camera" size={15} className="hidden shrink-0 sm:block" />
-              Добавить изделие
+              Добавить заявку
             </button>
           </div>
 
@@ -200,7 +198,7 @@ const Tracking = () => {
                     className="mt-4 rounded-full"
                     onClick={() => setMode('add')}
                   >
-                    <Icon name="Camera" size={15} className="mr-1.5" /> Добавить изделие
+                    <Icon name="Camera" size={15} className="mr-1.5" /> Добавить заявку
                   </Button>
                 </div>
               )}
