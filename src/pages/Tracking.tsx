@@ -99,9 +99,22 @@ const Tracking = () => {
               )}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              {mode === 'find' && 'Введите номер телефона, для уточнения статуса.'}
+              {mode === 'find'
+                ? 'Введите номер телефона — покажем статус изделий из Суздаля и Москвы.'
+                : 'Зарегистрируйте изделие, сделанное на мастер-классе в Москве, чтобы отслеживать его статус.'}
             </p>
           </div>
+
+          {mode === 'find' && (
+            <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-amber-600" />
+              <p className="text-sm text-amber-800">
+                Отследить можно изделия, уже добавленные менеджером Суздаля в систему, и заявки,
+                оформленные в Москве. Если изделие сделано в Суздале, но менеджер ещё не успел
+                его добавить — свяжитесь с нами напрямую.
+              </p>
+            </div>
+          )}
 
           {mode === 'add' && (
             <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
