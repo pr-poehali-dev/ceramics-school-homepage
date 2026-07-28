@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
-import AddShipmentRequestSheet from '@/components/AddShipmentRequestSheet';
+import ShipmentRequestForm from '@/components/ShipmentRequestForm';
 import { useCity } from '@/hooks/useCity';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { formatPhoneInput } from '@/lib/phoneMask';
@@ -55,7 +55,7 @@ const Tracking = () => {
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [error, setError] = useState('');
   const [courierConfirmOpen, setCourierConfirmOpen] = useState(false);
-  const [addRequestOpen, setAddRequestOpen] = useState(false);
+  const [mode, setMode] = useState<'find' | 'add'>('find');
 
   const isValid = phone.replace(/\D/g, '').length === 11;
 
@@ -92,58 +92,78 @@ const Tracking = () => {
               <Icon name="PackageSearch" size={16} /> Отслеживание посылок
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold leading-tight md:text-5xl">
-              Где моё <span className="text-primary italic">изделие?</span>
+              {mode === 'find' ? (
+                <>Где моё <span className="text-primary italic">изделие?</span></>
+              ) : (
+                <>Добавить <span className="text-primary italic">посылку</span></>
+              )}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Введите номер телефона, указанный при заказе, — покажем статус готового изделия.
+              {mode === 'find'
+                ? 'Введите номер телефона, указанный при заказе, — покажем статус готового изделия.'
+                : 'Не нашли свою посылку в системе? Оставьте заявку с фото изделия — мы подключим её к отслеживанию.'}
             </p>
           </div>
 
-          {/* SEARCH FORM */}
-          <div className="mt-10 rounded-2xl border border-border bg-card p-6 md:p-8">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSearch();
-              }}
-              className="flex flex-col gap-3 sm:flex-row"
+          {/* MODE SWITCH */}
+          <div className="mx-auto mt-8 grid w-full max-w-md grid-cols-2 gap-2 rounded-full border border-border bg-secondary/40 p-1.5">
+            <button
+              type="button"
+              onClick={() => setMode('find')}
+              className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-colors ${
+                mode === 'find' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
-              <Input
-                type="tel"
-                inputMode="tel"
-                value={phone}
-                onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
-                placeholder="Введите номер телефона"
-                className="h-12 flex-1 rounded-xl text-base"
-                required
-              />
-              <Button type="submit" size="lg" className="h-12 rounded-xl px-8" disabled={!isValid || loading}>
-                {loading ? (
-                  <Icon name="Loader2" size={18} className="animate-spin" />
-                ) : (
-                  <>
-                    <Icon name="Search" size={18} className="mr-2" /> Найти
-                  </>
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4">
-              <p className="text-sm text-muted-foreground">Хотите добавить посылку?</p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="rounded-full"
-                onClick={() => setAddRequestOpen(true)}
-              >
-                <Icon name="Plus" size={15} className="mr-1.5" /> Добавить
-              </Button>
-            </div>
+              <Icon name="Search" size={15} /> Найти посылку
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('add')}
+              className={`flex items-center justify-center gap-1.5 rounded-full py-2.5 text-sm font-semibold transition-colors ${
+                mode === 'add' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Icon name="Camera" size={15} /> Добавить посылку
+            </button>
           </div>
 
+          {mode === 'find' ? (
+            <div className="mt-6 rounded-2xl border border-border bg-card p-6 md:p-8">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
+                className="flex flex-col gap-3 sm:flex-row"
+              >
+                <Input
+                  type="tel"
+                  inputMode="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
+                  placeholder="Введите номер телефона"
+                  className="h-12 flex-1 rounded-xl text-base"
+                  required
+                />
+                <Button type="submit" size="lg" className="h-12 rounded-xl px-8" disabled={!isValid || loading}>
+                  {loading ? (
+                    <Icon name="Loader2" size={18} className="animate-spin" />
+                  ) : (
+                    <>
+                      <Icon name="Search" size={18} className="mr-2" /> Найти
+                    </>
+                  )}
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <div className="mt-6 rounded-2xl border border-border bg-card p-6 md:p-8">
+              <ShipmentRequestForm />
+            </div>
+          )}
+
           {/* RESULTS */}
-          {searched && !loading && (
+          {mode === 'find' && searched && !loading && (
             <div className="mt-8">
               {error && (
                 <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-center">
@@ -164,9 +184,9 @@ const Tracking = () => {
                     variant="outline"
                     size="sm"
                     className="mt-4 rounded-full"
-                    onClick={() => setAddRequestOpen(true)}
+                    onClick={() => setMode('add')}
                   >
-                    <Icon name="Plus" size={15} className="mr-1.5" /> Добавить посылку
+                    <Icon name="Camera" size={15} className="mr-1.5" /> Добавить посылку
                   </Button>
                 </div>
               )}
@@ -265,8 +285,6 @@ const Tracking = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <AddShipmentRequestSheet open={addRequestOpen} onOpenChange={setAddRequestOpen} />
 
       <SiteFooter />
     </div>
