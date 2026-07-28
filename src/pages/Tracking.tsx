@@ -191,15 +191,6 @@ const Tracking = () => {
                   <p className="mt-1 text-sm text-muted-foreground">
                     Проверьте правильность номера телефона или свяжитесь с нами.
                   </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="mt-4 rounded-full"
-                    onClick={() => setMode('add')}
-                  >
-                    <Icon name="Camera" size={15} className="mr-1.5" /> Добавить заявку
-                  </Button>
                 </div>
               )}
 
