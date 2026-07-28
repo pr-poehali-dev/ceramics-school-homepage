@@ -74,6 +74,34 @@ def _confirmed_dict(r):
     }
 
 
+def _archived_dict(r):
+    created_at = r[10]
+    return {
+        'id': r[0],
+        'trackingNumber': r[1],
+        'customerName': r[2],
+        'customerPhone': r[3],
+        'customerEmail': r[4],
+        'photoUrl': r[5],
+        'deliveredAt': r[6].isoformat() if r[6] else None,
+        'returnAt': r[7].isoformat() if r[7] else None,
+        'status': r[8],
+        'readyAt': r[9].isoformat() if r[9] else None,
+        'createdAt': created_at.isoformat() if created_at else None,
+        'archivedAt': r[11].isoformat() if r[11] else None,
+    }
+
+
+def _auto_archive(cur):
+    """Переносит в архив подтверждённые заявки клиентов (source='client'), у которых
+    прошло более 3 месяцев с момента отметки «Готово к выдаче» (ready_at)."""
+    cur.execute(
+        f"UPDATE {SCHEMA}.shipments SET archived_at = NOW() "
+        f"WHERE source = 'client' AND archived_at IS NULL "
+        f"AND ready_at IS NOT NULL AND ready_at < NOW() - INTERVAL '3 months'",
+    )
+
+
 def _fetch_pickup_info(cur):
     """Достаёт адрес и часы работы выдачи из CMS-контента страницы moscow-info (с фолбэком)."""
     address = 'ВДНХ, проспект Мира, 119, строение 186'
@@ -146,8 +174,11 @@ def handler(event: dict, context) -> dict:
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
     GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
-      или 'issued', source='client'); ready_at показывает, отмечено ли изделие готовым к выдаче,
-      доступно только роли 'vdnh'.
+      или 'issued', source='client', archived_at IS NULL); ready_at показывает, отмечено ли
+      изделие готовым к выдаче, доступно только роли 'vdnh'. При каждом вызове автоматически
+      архивирует (archived_at=NOW()) заявки, у которых ready_at был более 3 месяцев назад.
+    GET ?status=archived — архив заявок клиентов (source='client', archived_at IS NOT NULL) —
+      заявки, отмеченные готовыми к выдаче более 3 месяцев назад, доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
     POST { action: 'create', trackingNumber, customerName, customerPhone, customerEmail (необязательно),
       deliveredAt } — добавление посылки, доступно только роли 'suzdal'.
@@ -589,6 +620,12 @@ def handler(event: dict, context) -> dict:
                 'headers': cors_headers,
                 'body': json.dumps({'error': 'Заявки клиентов доступны только менеджеру ВДНХ'}, ensure_ascii=False),
             }
+        if status_filter == 'archived' and role != 'vdnh':
+            return {
+                'statusCode': 403,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Архив доступен только менеджеру ВДНХ'}, ensure_ascii=False),
+            }
         if export and role != 'vdnh':
             return {
                 'statusCode': 403,
@@ -609,10 +646,13 @@ def handler(event: dict, context) -> dict:
             }
 
         if status_filter == 'confirmed':
+            _auto_archive(cur)
+            conn.commit()
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
                 f"delivered_at, return_at, status, ready_at, created_at "
                 f"FROM {SCHEMA}.shipments WHERE source = 'client' AND status IN ('shipped', 'issued') "
+                f"AND archived_at IS NULL "
                 f"ORDER BY delivered_at DESC, created_at DESC LIMIT 500",
             )
             confirmed_rows = cur.fetchall()
@@ -620,6 +660,22 @@ def handler(event: dict, context) -> dict:
                 'statusCode': 200,
                 'headers': cors_headers,
                 'body': json.dumps({'requests': [_confirmed_dict(r) for r in confirmed_rows], 'role': role}, ensure_ascii=False),
+            }
+
+        if status_filter == 'archived':
+            _auto_archive(cur)
+            conn.commit()
+            cur.execute(
+                f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
+                f"delivered_at, return_at, status, ready_at, created_at, archived_at "
+                f"FROM {SCHEMA}.shipments WHERE source = 'client' AND archived_at IS NOT NULL "
+                f"ORDER BY archived_at DESC LIMIT 500",
+            )
+            archived_rows = cur.fetchall()
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'requests': [_archived_dict(r) for r in archived_rows], 'role': role}, ensure_ascii=False),
             }
 
         db_status = 'issued' if status_filter == 'closed' else 'shipped'

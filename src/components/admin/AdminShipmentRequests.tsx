@@ -31,6 +31,7 @@ interface ShipmentRequest {
   readyAt?: string | null;
   emailSent?: boolean;
   storageUntil?: string | null;
+  archivedAt?: string | null;
 }
 
 interface Props {
@@ -65,9 +66,10 @@ const fmtDate = (s: string | null | undefined) => {
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const AdminShipmentRequests = ({ token }: Props) => {
-  const [view, setView] = useState<'requests' | 'confirmed'>('requests');
+  const [view, setView] = useState<'requests' | 'confirmed' | 'archived'>('requests');
   const [requests, setRequests] = useState<ShipmentRequest[]>([]);
   const [confirmed, setConfirmed] = useState<ShipmentRequest[]>([]);
+  const [archived, setArchived] = useState<ShipmentRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
@@ -84,7 +86,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  const load = async (v: 'requests' | 'confirmed') => {
+  const load = async (v: 'requests' | 'confirmed' | 'archived') => {
     setLoading(true);
     try {
       const resp = await fetch(`${func2url['shipments-admin']}?status=${v}`, {
@@ -94,11 +96,13 @@ const AdminShipmentRequests = ({ token }: Props) => {
       if (!resp.ok) {
         toast({ title: data.error || 'Не удалось загрузить заявки' });
         if (v === 'requests') setRequests([]);
-        else setConfirmed([]);
+        else if (v === 'confirmed') setConfirmed([]);
+        else setArchived([]);
         return;
       }
       if (v === 'requests') setRequests(data.requests || []);
-      else setConfirmed(data.requests || []);
+      else if (v === 'confirmed') setConfirmed(data.requests || []);
+      else setArchived(data.requests || []);
       setPage(1);
     } catch {
       toast({ title: 'Ошибка загрузки', description: 'Попробуйте позже.' });
@@ -205,10 +209,10 @@ const AdminShipmentRequests = ({ token }: Props) => {
     }
   };
 
-  const baseList = view === 'requests' ? requests : confirmed;
+  const baseList = view === 'requests' ? requests : view === 'confirmed' ? confirmed : archived;
   const searchDigits = search.replace(/\D/g, '');
   const list =
-    view === 'confirmed' && searchDigits
+    view !== 'requests' && searchDigits
       ? baseList.filter((r) => r.customerPhone.replace(/\D/g, '').includes(searchDigits))
       : baseList;
   const totalPages = Math.max(1, Math.ceil(list.length / PER_PAGE));
@@ -234,6 +238,14 @@ const AdminShipmentRequests = ({ token }: Props) => {
           >
             Подтверждённые
           </button>
+          <button
+            onClick={() => setView('archived')}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              view === 'archived' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
+            }`}
+          >
+            Архив
+          </button>
         </div>
         <Button variant="outline" size="sm" className="shrink-0 rounded-full" onClick={() => load(view)} disabled={loading}>
           <Icon name="RefreshCcw" size={14} className="mr-1.5" /> Обновить
@@ -243,10 +255,12 @@ const AdminShipmentRequests = ({ token }: Props) => {
       <p className="mt-3 text-sm text-muted-foreground">
         {view === 'requests'
           ? 'Заявки, которые клиенты отправили самостоятельно со страницы отслеживания. Проверьте фото и подтвердите.'
-          : 'Заявки клиентов, которые уже подтверждены. Когда изделие пройдёт обжиг, нажмите «Готово» — клиенту придёт письмо с адресом и часами работы для получения.'}
+          : view === 'confirmed'
+            ? 'Заявки клиентов, которые уже подтверждены. Когда изделие пройдёт обжиг, нажмите «Готово» — клиенту придёт письмо с адресом и часами работы для получения.'
+            : 'Заявки, отмеченные готовыми к выдаче более 3 месяцев назад, переносятся сюда автоматически.'}
       </p>
 
-      {view === 'confirmed' && (
+      {view !== 'requests' && (
         <div className="mt-3 max-w-xs">
           <Input
             value={search}
@@ -266,7 +280,11 @@ const AdminShipmentRequests = ({ token }: Props) => {
         </div>
       ) : list.length === 0 ? (
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          {view === 'requests' ? 'Новых заявок нет.' : 'Подтверждённых заявок пока нет.'}
+          {view === 'requests'
+            ? 'Новых заявок нет.'
+            : view === 'confirmed'
+              ? 'Подтверждённых заявок пока нет.'
+              : 'Архив пуст.'}
         </p>
       ) : (
         <div className="mt-4 overflow-hidden rounded-2xl border border-border">
@@ -279,11 +297,16 @@ const AdminShipmentRequests = ({ token }: Props) => {
                 <TableHead>Контакты</TableHead>
                 {view === 'requests' ? (
                   <TableHead>Заявка от</TableHead>
-                ) : (
+                ) : view === 'confirmed' ? (
                   <>
                     <TableHead>Заявка создана</TableHead>
                     <TableHead>Хранение до</TableHead>
                     <TableHead>Статус</TableHead>
+                  </>
+                ) : (
+                  <>
+                    <TableHead>Заявка создана</TableHead>
+                    <TableHead>В архиве с</TableHead>
                   </>
                 )}
                 <TableHead className="text-right">Действия</TableHead>
@@ -315,7 +338,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                     <TableCell className="text-sm text-muted-foreground">
                       {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
                     </TableCell>
-                  ) : (
+                  ) : view === 'confirmed' ? (
                     <>
                       <TableCell className="text-sm text-muted-foreground">
                         {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
@@ -326,6 +349,15 @@ const AdminShipmentRequests = ({ token }: Props) => {
                         {r.readyAt && r.status !== 'issued' && r.emailSent && (
                           <p className="mt-0.5 text-xs text-green-600">Письмо отправлено</p>
                         )}
+                      </TableCell>
+                    </>
+                  ) : (
+                    <>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {r.archivedAt ? fmtDateTime(r.archivedAt) : '—'}
                       </TableCell>
                     </>
                   )}
@@ -344,14 +376,14 @@ const AdminShipmentRequests = ({ token }: Props) => {
                           <Icon name="X" size={14} className="mr-1.5" /> Отклонить
                         </Button>
                       </div>
-                    ) : (
+                    ) : view === 'confirmed' ? (
                       !r.readyAt &&
                       r.status !== 'issued' && (
                         <Button size="sm" className="rounded-full" onClick={() => setReadyTarget(r)}>
                           <Icon name="Check" size={14} className="mr-1.5" /> Готово
                         </Button>
                       )
-                    )}
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))}
