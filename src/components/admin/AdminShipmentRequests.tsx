@@ -29,6 +29,7 @@ interface ShipmentRequest {
   returnAt?: string | null;
   status?: string;
   readyAt?: string | null;
+  emailSent?: boolean;
 }
 
 interface Props {
@@ -189,7 +190,11 @@ const AdminShipmentRequests = ({ token }: Props) => {
         });
       }
       setConfirmed((prev) =>
-        prev.map((r) => (r.id === readyTarget.id ? { ...r, readyAt: new Date().toISOString() } : r)),
+        prev.map((r) =>
+          r.id === readyTarget.id
+            ? { ...r, readyAt: new Date().toISOString(), emailSent: !data.emailError }
+            : r,
+        ),
       );
       setReadyTarget(null);
     } catch {
@@ -313,6 +318,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
                       <TableCell className="text-sm text-muted-foreground">{fmtDate(r.returnAt)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {r.status === 'issued' ? 'Выдано' : r.readyAt ? 'Готово к выдаче' : 'Готовится'}
+                        {r.readyAt && r.status !== 'issued' && r.emailSent && (
+                          <p className="mt-0.5 text-xs text-green-600">Письмо отправлено</p>
+                        )}
                       </TableCell>
                     </>
                   )}
