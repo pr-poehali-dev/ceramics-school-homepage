@@ -57,6 +57,7 @@ def _request_dict(r):
 
 
 def _confirmed_dict(r):
+    created_at = r[10]
     return {
         'id': r[0],
         'trackingNumber': r[1],
@@ -68,6 +69,8 @@ def _confirmed_dict(r):
         'returnAt': r[7].isoformat() if r[7] else None,
         'status': r[8],
         'readyAt': r[9].isoformat() if r[9] else None,
+        'createdAt': created_at.isoformat() if created_at else None,
+        'storageUntil': (created_at.date() + timedelta(days=60)).isoformat() if created_at else None,
     }
 
 
@@ -608,7 +611,7 @@ def handler(event: dict, context) -> dict:
         if status_filter == 'confirmed':
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-                f"delivered_at, return_at, status, ready_at "
+                f"delivered_at, return_at, status, ready_at, created_at "
                 f"FROM {SCHEMA}.shipments WHERE source = 'client' AND status IN ('shipped', 'issued') "
                 f"ORDER BY delivered_at DESC, created_at DESC LIMIT 500",
             )

@@ -30,6 +30,7 @@ interface ShipmentRequest {
   status?: string;
   readyAt?: string | null;
   emailSent?: boolean;
+  storageUntil?: string | null;
 }
 
 interface Props {
@@ -280,6 +281,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                   <TableHead>Заявка от</TableHead>
                 ) : (
                   <>
+                    <TableHead>Заявка создана</TableHead>
                     <TableHead>Хранение до</TableHead>
                     <TableHead>Статус</TableHead>
                   </>
@@ -315,7 +317,10 @@ const AdminShipmentRequests = ({ token }: Props) => {
                     </TableCell>
                   ) : (
                     <>
-                      <TableCell className="text-sm text-muted-foreground">{fmtDate(r.returnAt)}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{fmtDate(r.storageUntil)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {r.status === 'issued' ? 'Выдано' : r.readyAt ? 'Готово к выдаче' : 'Готовится'}
                         {r.readyAt && r.status !== 'issued' && r.emailSent && (
