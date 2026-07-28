@@ -19,7 +19,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { formatPhoneInput } from '@/lib/phoneMask';
 import func2url from '../../backend/func2url.json';
 
-const COURIER_PHONE = '+79151576485';
+const COURIER_PHONE = '+79854198903';
 
 interface Shipment {
   trackingNumber: string;
