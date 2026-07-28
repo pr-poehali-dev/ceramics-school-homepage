@@ -94,8 +94,14 @@ def _send_ready_email(customer_email: str, tracking_number: str, address: str, w
     smtp_user = os.environ.get('SMTP_USER')
     smtp_password = os.environ.get('SMTP_PASSWORD')
 
-    if not all([smtp_host, smtp_user, smtp_password, customer_email]):
-        return
+    missing = [
+        name for name, val in [
+            ('SMTP_HOST', smtp_host), ('SMTP_USER', smtp_user),
+            ('SMTP_PASSWORD', smtp_password), ('customerEmail', customer_email),
+        ] if not val
+    ]
+    if missing:
+        raise RuntimeError(f"Не заданы параметры: {', '.join(missing)}")
 
     text = (
         'Уважаемый клиент!\n\n'
@@ -487,13 +493,16 @@ def handler(event: dict, context) -> dict:
 
                 tracking_number, customer_email = row
                 email_error = None
-                if customer_email:
+                if not customer_email:
+                    email_error = 'У заявки не указан email клиента'
+                else:
                     try:
                         address, work_hours = _fetch_pickup_info(cur)
                         _send_ready_email(customer_email, tracking_number, address, work_hours)
+                        print(f"[ready_for_pickup] email sent to {customer_email} for {tracking_number}")
                     except Exception as e:
                         email_error = str(e)
-                        print(f"[ready_for_pickup] email send failed for {customer_email}: {e}")
+                        print(f"[ready_for_pickup] email send failed for {customer_email}: {e!r}")
 
                 return {
                     'statusCode': 200,

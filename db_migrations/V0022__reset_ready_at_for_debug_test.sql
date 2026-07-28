@@ -1,0 +1,1 @@
+UPDATE t_p90609946_ceramics_school_home.shipments SET ready_at = NULL WHERE id = 8;
