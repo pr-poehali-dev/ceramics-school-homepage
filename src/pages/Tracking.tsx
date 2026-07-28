@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,7 +58,8 @@ const Tracking = () => {
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [error, setError] = useState('');
   const [courierConfirmOpen, setCourierConfirmOpen] = useState(false);
-  const [mode, setMode] = useState<'find' | 'add'>('find');
+  const [searchParams] = useSearchParams();
+  const [mode, setMode] = useState<'find' | 'add'>(searchParams.get('mode') === 'add' ? 'add' : 'find');
 
   const isValid = phone.replace(/\D/g, '').length === 11;
 

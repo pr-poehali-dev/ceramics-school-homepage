@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -93,6 +95,21 @@ const Info = () => {
                   </li>
                 ))}
               </ol>
+
+              <div className="flex flex-wrap gap-3">
+                <Link to="/tracking?mode=add">
+                  <Button className="rounded-full">
+                    <Icon name="Camera" size={16} className="mr-2" />
+                    {c.pickupFormButtonText}
+                  </Button>
+                </Link>
+                <Link to="/tracking">
+                  <Button variant="outline" className="rounded-full">
+                    <Icon name="PackageSearch" size={16} className="mr-2" />
+                    {c.pickupTrackButtonText}
+                  </Button>
+                </Link>
+              </div>
 
               <div className="rounded-xl bg-secondary/40 p-4">
                 <p className="flex gap-2">
