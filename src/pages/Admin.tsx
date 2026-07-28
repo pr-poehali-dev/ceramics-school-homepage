@@ -273,10 +273,10 @@ const Admin = () => {
           </div>
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-2">
+        <div className="mt-6 -mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           <button
             onClick={() => setTab('orders')}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
               tab === 'orders' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
             }`}
           >
@@ -284,7 +284,7 @@ const Admin = () => {
           </button>
           <button
             onClick={() => setTab('leads')}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
               tab === 'leads' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
             }`}
           >
@@ -292,7 +292,7 @@ const Admin = () => {
           </button>
           <button
             onClick={() => setTab('content')}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
               tab === 'content' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
             }`}
           >
@@ -300,7 +300,7 @@ const Admin = () => {
           </button>
           <button
             onClick={() => setTab('shipments')}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
               tab === 'shipments' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
             }`}
           >
@@ -309,7 +309,7 @@ const Admin = () => {
           {managerRole === 'vdnh' && (
             <button
               onClick={() => setTab('shipment-requests')}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+              className={`shrink-0 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
                 tab === 'shipment-requests' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
               }`}
             >
