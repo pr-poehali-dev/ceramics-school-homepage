@@ -108,7 +108,7 @@ def _send_ready_email(customer_email: str, tracking_number: str, address: str, w
         'Уважаемый клиент!\n\n'
         'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг '
         'и готово к выдаче.\n\n'
-        f'Номер посылки: {tracking_number}\n'
+        f'Номер заявки: {tracking_number}\n'
         f'Адрес: {address}\n'
         f'Время работы: {work_hours}\n\n'
         f'Срок хранения изделия — 60 календарных дней с даты оформления заявки. '
