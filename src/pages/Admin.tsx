@@ -5,7 +5,6 @@ import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import PageContentEditor from '@/components/admin/PageContentEditor';
 import AdminLogin from '@/components/admin/AdminLogin';
-import AdminBanner from '@/components/admin/AdminBanner';
 import AdminOrders from '@/components/admin/AdminOrders';
 import AdminLeads from '@/components/admin/AdminLeads';
 import AdminShipments from '@/components/admin/AdminShipments';
@@ -317,20 +316,19 @@ const Admin = () => {
               Изделия (Москва)
             </button>
           )}
-
-          <div className="ml-auto">
-            <AdminBanner
-              bannerEnabled={bannerEnabled}
-              setBannerEnabled={setBannerEnabled}
-              bannerText={bannerText}
-              setBannerText={setBannerText}
-              savingBanner={savingBanner}
-              onSave={saveBanner}
-            />
-          </div>
         </div>
 
-        {tab === 'content' && token && <PageContentEditor token={token} />}
+        {tab === 'content' && token && (
+          <PageContentEditor
+            token={token}
+            bannerEnabled={bannerEnabled}
+            setBannerEnabled={setBannerEnabled}
+            bannerText={bannerText}
+            setBannerText={setBannerText}
+            savingBanner={savingBanner}
+            onSaveBanner={saveBanner}
+          />
+        )}
 
         {tab === 'shipments' && token && managerRole && (
           <AdminShipments token={token} role={managerRole} />

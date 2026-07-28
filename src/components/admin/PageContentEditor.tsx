@@ -5,17 +5,32 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
+import AdminBanner from '@/components/admin/AdminBanner';
 import func2url from '../../../backend/func2url.json';
 import { PAGE_SCHEMAS, getPageSchema } from '@/data/pageContentSchemas';
 
 interface Props {
   token: string;
+  bannerEnabled: boolean;
+  setBannerEnabled: (v: boolean) => void;
+  bannerText: string;
+  setBannerText: (v: string) => void;
+  savingBanner: boolean;
+  onSaveBanner: () => void;
 }
 
 const cityLabel = (city: string) =>
   city === 'moscow' ? 'Москва' : city === 'suzdal' ? 'Суздаль' : 'Общее';
 
-const PageContentEditor = ({ token }: Props) => {
+const PageContentEditor = ({
+  token,
+  bannerEnabled,
+  setBannerEnabled,
+  bannerText,
+  setBannerText,
+  savingBanner,
+  onSaveBanner,
+}: Props) => {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -152,6 +167,14 @@ const PageContentEditor = ({ token }: Props) => {
   if (!selectedKey) {
     return (
       <div className="mt-6 space-y-6">
+        <AdminBanner
+          bannerEnabled={bannerEnabled}
+          setBannerEnabled={setBannerEnabled}
+          bannerText={bannerText}
+          setBannerText={setBannerText}
+          savingBanner={savingBanner}
+          onSave={onSaveBanner}
+        />
         {(['common', 'moscow', 'suzdal'] as const).map((city) => {
           const pages = PAGE_SCHEMAS.filter((p) => p.city === city);
           if (pages.length === 0) return null;
