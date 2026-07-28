@@ -187,11 +187,13 @@ const Tracking = () => {
               {!error && shipments.length === 0 && (
                 <div className="rounded-2xl border border-dashed border-border p-10 text-center">
                   <Icon name="PackageX" size={36} className="mx-auto mb-3 text-muted-foreground/50" />
-                  <p className="font-medium">По вашему номеру ничего не найдено</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Проверьте правильность номера телефона или свяжитесь с нами. Если вы делали
-                    изделие в Суздале, то по номеру телефона 8-915-157-64-85. Если вы делали
-                    изделие в Москве, то по номеру +7 (985) 419-89-03.
+                  <p className="font-medium">
+                    По вашему номеру ничего не найдено. Проверьте данные или свяжитесь с нами:
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Суздаль: 8-915-157-64-85
+                    <br />
+                    Москва: +7 (985) 419-89-03
                   </p>
                 </div>
               )}
