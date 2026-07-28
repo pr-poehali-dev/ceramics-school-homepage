@@ -89,18 +89,18 @@ const Tracking = () => {
         <div className="mx-auto max-w-2xl">
           <div className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-              <Icon name="PackageSearch" size={16} /> Отслеживание посылок
+              <Icon name="PackageSearch" size={16} /> Отслеживание готовых работ
             </span>
             <h1 className="mt-5 font-display text-4xl font-semibold leading-tight md:text-5xl">
               {mode === 'find' ? (
                 <>Где моё <span className="text-primary italic">изделие?</span></>
               ) : (
-                <>Добавить <span className="text-primary italic">посылку</span></>
+                <>Добавить <span className="text-primary italic">изделие</span></>
               )}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
               {mode === 'find'
-                ? 'Введите номер телефона, указанный при заказе, — покажем статус готового изделия.'
+                ? 'Введите номер телефона, для уточнения статуса.'
                 : 'Не нашли свою посылку в системе? Оставьте заявку с фото изделия — мы подключим её к отслеживанию.'}
             </p>
           </div>
@@ -126,7 +126,7 @@ const Tracking = () => {
             >
               <Icon name="Search" size={14} className="shrink-0 sm:hidden" />
               <Icon name="Search" size={15} className="hidden shrink-0 sm:block" />
-              Найти посылку
+              Найти
             </button>
             <button
               type="button"
@@ -137,7 +137,7 @@ const Tracking = () => {
             >
               <Icon name="Camera" size={14} className="shrink-0 sm:hidden" />
               <Icon name="Camera" size={15} className="hidden shrink-0 sm:block" />
-              Добавить посылку
+              Добавить изделие
             </button>
           </div>
 
@@ -200,7 +200,7 @@ const Tracking = () => {
                     className="mt-4 rounded-full"
                     onClick={() => setMode('add')}
                   >
-                    <Icon name="Camera" size={15} className="mr-1.5" /> Добавить посылку
+                    <Icon name="Camera" size={15} className="mr-1.5" /> Добавить изделие
                   </Button>
                 </div>
               )}
