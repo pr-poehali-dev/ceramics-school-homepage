@@ -40,6 +40,7 @@ def _shipment_dict(r):
         'returnAt': r[5].isoformat() if r[5] else None,
         'status': r[6],
         'issuedAt': r[7].isoformat() if r[7] else None,
+        'customerEmail': r[8],
     }
 
 
@@ -141,11 +142,11 @@ def handler(event: dict, context) -> dict:
       или 'issued', source='client'); ready_at показывает, отмечено ли изделие готовым к выдаче,
       доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
-    POST { action: 'create', trackingNumber, customerName, customerPhone, deliveredAt } —
-      добавление посылки, доступно только роли 'suzdal'.
+    POST { action: 'create', trackingNumber, customerName, customerPhone, customerEmail (необязательно),
+      deliveredAt } — добавление посылки, доступно только роли 'suzdal'.
     POST { action: 'import_excel', fileData (base64 .xlsx) } — массовая загрузка посылок из
-      Excel-файла с колонками «Номер посылки», «ФИО клиента», «Телефон клиента»,
-      «Дата доставки в Москву», доступно только роли 'suzdal'.
+      Excel-файла с колонками «Номер посылки», «ФИО клиента», «Телефон клиента», «Email»
+      (необязательно), «Дата доставки в Москву», доступно только роли 'suzdal'.
     POST { action: 'issue', id } — пометить посылку выданной, доступно только роли 'vdnh'.
     POST { action: 'approve_request', id, deliveredAt } — подтвердить заявку клиента и
       перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
@@ -207,6 +208,7 @@ def handler(event: dict, context) -> dict:
                 tracking_number = (body.get('trackingNumber') or '').strip()
                 customer_name = (body.get('customerName') or '').strip()
                 customer_phone = (body.get('customerPhone') or '').strip()
+                customer_email = (body.get('customerEmail') or '').strip() or None
                 delivered_at = body.get('deliveredAt') or datetime.utcnow().date().isoformat()
 
                 if not tracking_number or not customer_name or not customer_phone:
@@ -239,9 +241,9 @@ def handler(event: dict, context) -> dict:
 
                 cur.execute(
                     f"INSERT INTO {SCHEMA}.shipments "
-                    f"(tracking_number, customer_name, customer_phone, delivered_at, return_at, status, created_by) "
-                    f"VALUES (%s, %s, %s, %s, %s, 'shipped', %s) RETURNING id",
-                    (tracking_number, customer_name, customer_phone, delivered_date, return_date, manager_id),
+                    f"(tracking_number, customer_name, customer_phone, customer_email, delivered_at, return_at, status, created_by) "
+                    f"VALUES (%s, %s, %s, %s, %s, %s, 'shipped', %s) RETURNING id",
+                    (tracking_number, customer_name, customer_phone, customer_email, delivered_date, return_date, manager_id),
                 )
                 new_id = cur.fetchone()[0]
                 conn.commit()
@@ -282,12 +284,15 @@ def handler(event: dict, context) -> dict:
                     }
 
                 # Ожидаемые колонки (в любом порядке, по заголовку первой строки):
-                # Номер посылки | ФИО клиента | Телефон | Дата доставки в Москву
+                # Номер посылки | ФИО клиента | Телефон | Email | Дата доставки в Москву
                 header_map = {
                     'номер посылки': 'trackingNumber',
                     'фио клиента': 'customerName',
                     'телефон': 'customerPhone',
                     'телефон клиента': 'customerPhone',
+                    'email': 'customerEmail',
+                    'e-mail': 'customerEmail',
+                    'почта': 'customerEmail',
                     'дата доставки в москву': 'deliveredAt',
                     'дата доставки': 'deliveredAt',
                 }
@@ -336,6 +341,7 @@ def handler(event: dict, context) -> dict:
                     tracking_number = str(_get('trackingNumber') or '').strip()
                     customer_name = str(_get('customerName') or '').strip()
                     customer_phone = str(_get('customerPhone') or '').strip()
+                    customer_email = str(_get('customerEmail') or '').strip() or None
                     delivered_raw = _get('deliveredAt')
 
                     if not tracking_number or not customer_name or not customer_phone:
@@ -366,9 +372,9 @@ def handler(event: dict, context) -> dict:
 
                     cur.execute(
                         f"INSERT INTO {SCHEMA}.shipments "
-                        f"(tracking_number, customer_name, customer_phone, delivered_at, return_at, status, created_by) "
-                        f"VALUES (%s, %s, %s, %s, %s, 'shipped', %s)",
-                        (tracking_number, customer_name, customer_phone, delivered_date, return_date, manager_id),
+                        f"(tracking_number, customer_name, customer_phone, customer_email, delivered_at, return_at, status, created_by) "
+                        f"VALUES (%s, %s, %s, %s, %s, %s, 'shipped', %s)",
+                        (tracking_number, customer_name, customer_phone, customer_email, delivered_date, return_date, manager_id),
                     )
                     created += 1
 
@@ -611,7 +617,7 @@ def handler(event: dict, context) -> dict:
         order_clause = 'issued_at DESC, delivered_at DESC' if status_filter == 'closed' else 'delivered_at DESC, created_at DESC'
 
         cur.execute(
-            f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at "
+            f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
             f"FROM {SCHEMA}.shipments WHERE status = %s ORDER BY {order_clause} LIMIT 2000",
             (db_status,),
         )
@@ -621,10 +627,10 @@ def handler(event: dict, context) -> dict:
         if export == 'csv':
             buffer = io.StringIO()
             writer = csv.writer(buffer, delimiter=';')
-            writer.writerow(['Номер посылки', 'ФИО клиента', 'Телефон', 'Дата доставки', 'Дата возврата', 'Статус', 'Дата выдачи'])
+            writer.writerow(['Номер посылки', 'ФИО клиента', 'Телефон', 'Email', 'Дата доставки', 'Дата возврата', 'Статус', 'Дата выдачи'])
             for s in shipments:
                 writer.writerow([
-                    s['trackingNumber'], s['customerName'], s['customerPhone'],
+                    s['trackingNumber'], s['customerName'], s['customerPhone'], s.get('customerEmail') or '',
                     s['deliveredAt'] or '', s['returnAt'] or '',
                     'Выдано' if s['status'] == 'issued' else 'Отправлено в Москву',
                     s['issuedAt'] or '',

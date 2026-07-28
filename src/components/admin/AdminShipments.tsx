@@ -22,6 +22,7 @@ interface Shipment {
   trackingNumber: string;
   customerName: string;
   customerPhone: string;
+  customerEmail?: string | null;
   deliveredAt: string | null;
   returnAt: string | null;
   status: string;
@@ -68,6 +69,7 @@ const AdminShipments = ({ token, role }: Props) => {
   const [formTracking, setFormTracking] = useState('');
   const [formName, setFormName] = useState('');
   const [formPhone, setFormPhone] = useState('');
+  const [formEmail, setFormEmail] = useState('');
   const [formDate, setFormDate] = useState(todayISO());
   const [saving, setSaving] = useState(false);
 
@@ -116,6 +118,7 @@ const AdminShipments = ({ token, role }: Props) => {
           trackingNumber: formTracking.trim(),
           customerName: formName.trim(),
           customerPhone: formPhone,
+          customerEmail: formEmail.trim(),
           deliveredAt: formDate,
         }),
       });
@@ -128,6 +131,7 @@ const AdminShipments = ({ token, role }: Props) => {
       setFormTracking('');
       setFormName('');
       setFormPhone('');
+      setFormEmail('');
       setFormDate(todayISO());
       if (view === 'active') load('active');
     } catch {
@@ -231,6 +235,7 @@ const AdminShipments = ({ token, role }: Props) => {
         (s) =>
           s.trackingNumber.toLowerCase().includes(query) ||
           s.customerName.toLowerCase().includes(query) ||
+          (s.customerEmail || '').toLowerCase().includes(query) ||
           s.customerPhone.replace(/\D/g, '').includes(query.replace(/\D/g, '')),
       )
     : shipments;
@@ -280,6 +285,17 @@ const AdminShipments = ({ token, role }: Props) => {
               />
             </div>
             <div>
+              <Label htmlFor="ship-email">Email клиента</Label>
+              <Input
+                id="ship-email"
+                type="email"
+                value={formEmail}
+                onChange={(e) => setFormEmail(e.target.value)}
+                placeholder="client@example.com"
+                className="mt-1.5"
+              />
+            </div>
+            <div>
               <Label htmlFor="ship-date">Дата доставки в Москву</Label>
               <Input
                 id="ship-date"
@@ -319,8 +335,8 @@ const AdminShipments = ({ token, role }: Props) => {
               {importing ? 'Загружаем…' : 'Загрузить из Excel'}
             </Button>
             <p className="text-xs text-muted-foreground">
-              Файл .xlsx с колонками: Номер посылки, ФИО клиента, Телефон клиента, Дата доставки в
-              Москву (те же поля, что и в форме выше)
+              Файл .xlsx с колонками: Номер посылки, ФИО клиента, Телефон клиента, Email
+              (необязательно), Дата доставки в Москву (те же поля, что и в форме выше)
             </p>
           </div>
         </div>
@@ -357,7 +373,7 @@ const AdminShipments = ({ token, role }: Props) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder="Поиск по номеру, ФИО, телефону"
+              placeholder="Поиск по номеру, ФИО, телефону, email"
               className="h-9 w-64 rounded-full"
             />
             {role === 'vdnh' && (
@@ -381,10 +397,11 @@ const AdminShipments = ({ token, role }: Props) => {
           </div>
         ) : (
           <div className="mt-4 overflow-hidden rounded-2xl border border-border">
-            <div className="hidden grid-cols-[1fr_1fr_140px_110px_110px_130px_110px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
+            <div className="hidden grid-cols-[1fr_1fr_140px_160px_110px_110px_130px_110px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
               <span>Номер посылки</span>
               <span>ФИО клиента</span>
               <span>Телефон</span>
+              <span>Email</span>
               <span>Доставлено</span>
               <span>Возврат</span>
               {view === 'closed' && <span>Выдано</span>}
@@ -398,13 +415,14 @@ const AdminShipments = ({ token, role }: Props) => {
             {paginated.map((s) => (
               <div
                 key={s.id}
-                className={`grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[1fr_1fr_140px_110px_110px_130px_110px] sm:items-center sm:gap-3 ${
+                className={`grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[1fr_1fr_140px_160px_110px_110px_130px_110px] sm:items-center sm:gap-3 ${
                   view === 'closed' && role !== 'vdnh' ? '' : ''
                 }`}
               >
                 <span className="font-medium">№ {s.trackingNumber}</span>
                 <span>{s.customerName}</span>
                 <span className="text-muted-foreground">{s.customerPhone}</span>
+                <span className="text-muted-foreground">{s.customerEmail || '—'}</span>
                 <span>{fmtDate(s.deliveredAt)}</span>
                 <span>{fmtDate(s.returnAt)}</span>
                 {view === 'closed' && <span>{fmtDate(s.issuedAt)}</span>}
