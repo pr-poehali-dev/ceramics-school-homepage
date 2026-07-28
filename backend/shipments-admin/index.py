@@ -102,6 +102,16 @@ def _auto_archive(cur):
     )
 
 
+def _auto_return(cur):
+    """Переводит посылки в статус 'returned' (Возврат), если с даты доставки в Москву
+    (delivered_at) прошло 30 дней (return_at < текущей даты), а клиент так и не забрал
+    изделие (статус всё ещё 'shipped'). Такие посылки попадают в раздел «Закрытые»."""
+    cur.execute(
+        f"UPDATE {SCHEMA}.shipments SET status = 'returned' "
+        f"WHERE status = 'shipped' AND return_at < CURRENT_DATE",
+    )
+
+
 def _fetch_pickup_info(cur):
     """Достаёт адрес и часы работы выдачи из CMS-контента страницы moscow-info (с фолбэком)."""
     address = 'ВДНХ, проспект Мира, 119, строение 186'
@@ -170,7 +180,10 @@ def handler(event: dict, context) -> dict:
     '''
     Управление посылками с готовыми керамическими изделиями для менеджеров Суздаля и ВДНХ.
     Доступ защищён токеном сессии менеджера (общая таблица managers/manager_sessions).
-    GET ?status=active|closed — список посылок (активные или выданные), доступно обеим ролям.
+    GET ?status=active|closed — список посылок (активные или закрытые: выданные/возврат),
+      доступно обеим ролям. При каждом вызове автоматически переводит в статус 'returned'
+      (Возврат) посылки, не выданные клиенту в течение 30 дней с даты доставки в Москву
+      (return_at < текущей даты) — такие посылки попадают в раздел «Закрытые».
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
     GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
@@ -678,14 +691,20 @@ def handler(event: dict, context) -> dict:
                 'body': json.dumps({'requests': [_archived_dict(r) for r in archived_rows], 'role': role}, ensure_ascii=False),
             }
 
-        db_status = 'issued' if status_filter == 'closed' else 'shipped'
-        order_clause = 'issued_at DESC, delivered_at DESC' if status_filter == 'closed' else 'delivered_at DESC, created_at DESC'
+        _auto_return(cur)
+        conn.commit()
 
-        cur.execute(
-            f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
-            f"FROM {SCHEMA}.shipments WHERE status = %s ORDER BY {order_clause} LIMIT 2000",
-            (db_status,),
-        )
+        if status_filter == 'closed':
+            order_clause = 'issued_at DESC, return_at DESC, delivered_at DESC'
+            cur.execute(
+                f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
+                f"FROM {SCHEMA}.shipments WHERE status IN ('issued', 'returned') ORDER BY {order_clause} LIMIT 2000",
+            )
+        else:
+            cur.execute(
+                f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
+                f"FROM {SCHEMA}.shipments WHERE status = 'shipped' ORDER BY delivered_at DESC, created_at DESC LIMIT 2000",
+            )
         rows = cur.fetchall()
         shipments = [_shipment_dict(r) for r in rows]
 
@@ -693,11 +712,12 @@ def handler(event: dict, context) -> dict:
             buffer = io.StringIO()
             writer = csv.writer(buffer, delimiter=';')
             writer.writerow(['Номер посылки', 'ФИО клиента', 'Телефон', 'Email', 'Дата доставки', 'Дата возврата', 'Статус', 'Дата выдачи'])
+            status_labels = {'issued': 'Выдано', 'returned': 'Возврат', 'shipped': 'Отправлено в Москву'}
             for s in shipments:
                 writer.writerow([
                     s['trackingNumber'], s['customerName'], s['customerPhone'], s.get('customerEmail') or '',
                     s['deliveredAt'] or '', s['returnAt'] or '',
-                    'Выдано' if s['status'] == 'issued' else 'Отправлено в Москву',
+                    status_labels.get(s['status'], s['status']),
                     s['issuedAt'] or '',
                 ])
             csv_content = '\ufeff' + buffer.getvalue()

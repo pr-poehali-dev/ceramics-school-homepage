@@ -404,7 +404,7 @@ const AdminShipments = ({ token, role }: Props) => {
               <span>Email</span>
               <span>Доставлено</span>
               <span>Возврат</span>
-              {view === 'closed' && <span>Выдано</span>}
+              {view === 'closed' && <span>Статус</span>}
               {view === 'active' && role === 'vdnh' && <span>Действие</span>}
             </div>
 
@@ -425,7 +425,15 @@ const AdminShipments = ({ token, role }: Props) => {
                 <span className="text-muted-foreground">{s.customerEmail || '—'}</span>
                 <span>{fmtDate(s.deliveredAt)}</span>
                 <span>{fmtDate(s.returnAt)}</span>
-                {view === 'closed' && <span>{fmtDate(s.issuedAt)}</span>}
+                {view === 'closed' && (
+                  <span>
+                    {s.status === 'returned' ? (
+                      <span className="text-destructive">Возврат</span>
+                    ) : (
+                      `Выдано ${fmtDate(s.issuedAt)}`
+                    )}
+                  </span>
+                )}
                 {view === 'active' && role === 'vdnh' && (
                   <Button
                     size="sm"
