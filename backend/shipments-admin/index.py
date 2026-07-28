@@ -3,12 +3,17 @@ import csv
 import io
 import json
 import os
+import smtplib
+import ssl
 from datetime import date, datetime, timedelta
+from email.header import Header
+from email.mime.text import MIMEText
 
 import openpyxl
 import psycopg2
 
 SCHEMA = 't_p90609946_ceramics_school_home'
+SITE_URL = 'https://dymovceramicschool.ru'
 
 
 def _auth(cur, token: str):
@@ -61,7 +66,62 @@ def _confirmed_dict(r):
         'deliveredAt': r[6].isoformat() if r[6] else None,
         'returnAt': r[7].isoformat() if r[7] else None,
         'status': r[8],
+        'readyAt': r[9].isoformat() if r[9] else None,
     }
+
+
+def _fetch_pickup_info(cur):
+    """Достаёт адрес и часы работы выдачи из CMS-контента страницы moscow-info (с фолбэком)."""
+    address = 'ВДНХ, проспект Мира, 119, строение 186'
+    work_hours = 'Ежедневно с 11:00 до 20:00'
+    try:
+        cur.execute(
+            f"SELECT fields->>'address', fields->>'workHours' "
+            f"FROM {SCHEMA}.page_content WHERE page_key = 'moscow-info'",
+        )
+        row = cur.fetchone()
+        if row:
+            address = row[0] or address
+            work_hours = row[1] or work_hours
+    except Exception:
+        pass
+    return address, work_hours
+
+
+def _send_ready_email(customer_email: str, tracking_number: str, address: str, work_hours: str) -> None:
+    smtp_host = os.environ.get('SMTP_HOST')
+    smtp_port = int(os.environ.get('SMTP_PORT') or 465)
+    smtp_user = os.environ.get('SMTP_USER')
+    smtp_password = os.environ.get('SMTP_PASSWORD')
+
+    if not all([smtp_host, smtp_user, smtp_password, customer_email]):
+        return
+
+    text = (
+        'Уважаемый клиент!\n\n'
+        'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг '
+        'и готово к выдаче.\n\n'
+        f'Номер посылки: {tracking_number}\n'
+        f'Адрес: {address}\n'
+        f'Время работы: {work_hours}\n\n'
+        f'Контакты: {SITE_URL}/moscow/contacts'
+    )
+
+    msg = MIMEText(text, 'plain', 'utf-8')
+    msg['Subject'] = Header('Ваше изделие готово к выдаче', 'utf-8')
+    msg['From'] = smtp_user
+    msg['To'] = customer_email
+
+    context_ssl = ssl.create_default_context()
+    if smtp_port == 465:
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, [customer_email], msg.as_string())
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls(context=context_ssl)
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, [customer_email], msg.as_string())
 
 
 def handler(event: dict, context) -> dict:
@@ -71,8 +131,9 @@ def handler(event: dict, context) -> dict:
     GET ?status=active|closed — список посылок (активные или выданные), доступно обеим ролям.
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
-    GET ?status=confirmed — заявки клиентов, подтверждённые администратором и вставшие
-      в очередь на обжиг (статус 'shipped', source='client'), доступно только роли 'vdnh'.
+    GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
+      или 'issued', source='client'); ready_at показывает, отмечено ли изделие готовым к выдаче,
+      доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
     POST { action: 'create', trackingNumber, customerName, customerPhone, deliveredAt } —
       добавление посылки, доступно только роли 'suzdal'.
@@ -83,6 +144,9 @@ def handler(event: dict, context) -> dict:
     POST { action: 'approve_request', id, deliveredAt } — подтвердить заявку клиента и
       перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
     POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
+    POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client') готовой
+      к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом
+      и часами работы студии, доступно только роли 'vdnh'.
     Args: event с httpMethod, headers (X-Session-Token), queryStringParameters, body
           context — объект с request_id
     Returns: HTTP-ответ со списком посылок либо результатом операции
@@ -390,6 +454,51 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'ok': True}, ensure_ascii=False),
                 }
 
+            if action == 'ready_for_pickup':
+                if role != 'vdnh':
+                    return {
+                        'statusCode': 403,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Отмечать готовность может только менеджер ВДНХ'}, ensure_ascii=False),
+                    }
+
+                shipment_id = body.get('id')
+                if not shipment_id:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
+                    }
+
+                cur.execute(
+                    f"UPDATE {SCHEMA}.shipments SET ready_at = NOW() "
+                    f"WHERE id = %s AND source = 'client' AND status = 'shipped' AND ready_at IS NULL "
+                    f"RETURNING tracking_number, customer_email",
+                    (shipment_id,),
+                )
+                row = cur.fetchone()
+                if not row:
+                    return {
+                        'statusCode': 404,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Заявка не найдена или уже отмечена готовой'}, ensure_ascii=False),
+                    }
+                conn.commit()
+
+                tracking_number, customer_email = row
+                if customer_email:
+                    try:
+                        address, work_hours = _fetch_pickup_info(cur)
+                        _send_ready_email(customer_email, tracking_number, address, work_hours)
+                    except Exception:
+                        pass
+
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'ok': True}, ensure_ascii=False),
+                }
+
             if action == 'issue':
                 if role != 'vdnh':
                     return {
@@ -476,7 +585,7 @@ def handler(event: dict, context) -> dict:
         if status_filter == 'confirmed':
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-                f"delivered_at, return_at, status "
+                f"delivered_at, return_at, status, ready_at "
                 f"FROM {SCHEMA}.shipments WHERE source = 'client' AND status IN ('shipped', 'issued') "
                 f"ORDER BY delivered_at DESC LIMIT 500",
             )

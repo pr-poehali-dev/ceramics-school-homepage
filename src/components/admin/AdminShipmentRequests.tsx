@@ -29,6 +29,7 @@ interface ShipmentRequest {
   deliveredAt?: string | null;
   returnAt?: string | null;
   status?: string;
+  readyAt?: string | null;
 }
 
 interface Props {
@@ -75,6 +76,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
   const [rejectTarget, setRejectTarget] = useState<ShipmentRequest | null>(null);
   const [rejecting, setRejecting] = useState(false);
+
+  const [readyTarget, setReadyTarget] = useState<ShipmentRequest | null>(null);
+  const [markingReady, setMarkingReady] = useState(false);
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -126,7 +130,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
         toast({ title: data.error || 'Не удалось подтвердить заявку' });
         return;
       }
-      toast({ title: 'Заявка подтверждена', description: `№ ${approveTarget.trackingNumber} теперь в очереди на обжиг` });
+      toast({ title: 'Заявка подтверждена', description: `№ ${approveTarget.trackingNumber} добавлена в подтверждённые` });
       setRequests((prev) => prev.filter((r) => r.id !== approveTarget.id));
       setApproveTarget(null);
     } catch {
@@ -157,6 +161,35 @@ const AdminShipmentRequests = ({ token }: Props) => {
       toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
     } finally {
       setRejecting(false);
+    }
+  };
+
+  const confirmReady = async () => {
+    if (!readyTarget) return;
+    setMarkingReady(true);
+    try {
+      const resp = await fetch(func2url['shipments-admin'], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ action: 'ready_for_pickup', id: readyTarget.id }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        toast({ title: data.error || 'Не удалось отметить готовность' });
+        return;
+      }
+      toast({
+        title: 'Изделие готово к выдаче',
+        description: `№ ${readyTarget.trackingNumber} — клиенту отправлено уведомление`,
+      });
+      setConfirmed((prev) =>
+        prev.map((r) => (r.id === readyTarget.id ? { ...r, readyAt: new Date().toISOString() } : r)),
+      );
+      setReadyTarget(null);
+    } catch {
+      toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
+    } finally {
+      setMarkingReady(false);
     }
   };
 
@@ -197,8 +230,8 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
       <p className="mt-3 text-sm text-muted-foreground">
         {view === 'requests'
-          ? 'Заявки, которые клиенты отправили самостоятельно со страницы отслеживания. Проверьте фото и подтвердите — изделие встанет в очередь на обжиг и станет видно клиенту.'
-          : 'Заявки клиентов, которые уже подтверждены и встали в очередь на обжиг.'}
+          ? 'Заявки, которые клиенты отправили самостоятельно со страницы отслеживания. Проверьте фото и подтвердите.'
+          : 'Заявки клиентов, которые уже подтверждены. Когда изделие пройдёт обжиг, нажмите «Готово» — клиенту придёт письмо с адресом и часами работы для получения.'}
       </p>
 
       {view === 'confirmed' && (
@@ -241,7 +274,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                     <TableHead>Статус</TableHead>
                   </>
                 )}
-                {view === 'requests' && <TableHead className="text-right">Действия</TableHead>}
+                <TableHead className="text-right">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -275,12 +308,12 @@ const AdminShipmentRequests = ({ token }: Props) => {
                       <TableCell className="text-sm text-muted-foreground">{fmtDate(r.deliveredAt)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{fmtDate(r.returnAt)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {r.status === 'issued' ? 'Выдано' : 'В очереди на обжиг'}
+                        {r.status === 'issued' ? 'Выдано' : r.readyAt ? 'Готово к выдаче' : 'Готовится'}
                       </TableCell>
                     </>
                   )}
-                  {view === 'requests' && (
-                    <TableCell className="text-right">
+                  <TableCell className="text-right">
+                    {view === 'requests' ? (
                       <div className="flex justify-end gap-2">
                         <Button size="sm" className="rounded-full" onClick={() => openApprove(r)}>
                           <Icon name="Check" size={14} className="mr-1.5" /> Подтвердить
@@ -294,8 +327,15 @@ const AdminShipmentRequests = ({ token }: Props) => {
                           <Icon name="X" size={14} className="mr-1.5" /> Отклонить
                         </Button>
                       </div>
-                    </TableCell>
-                  )}
+                    ) : (
+                      !r.readyAt &&
+                      r.status !== 'issued' && (
+                        <Button size="sm" className="rounded-full" onClick={() => setReadyTarget(r)}>
+                          <Icon name="Check" size={14} className="mr-1.5" /> Готово
+                        </Button>
+                      )
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -368,6 +408,25 @@ const AdminShipmentRequests = ({ token }: Props) => {
             <AlertDialogCancel>Отмена</AlertDialogCancel>
             <AlertDialogAction onClick={confirmReject} disabled={rejecting}>
               {rejecting ? 'Отклоняем…' : 'Отклонить'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ГОТОВНОСТЬ К ВЫДАЧЕ */}
+      <AlertDialog open={!!readyTarget} onOpenChange={(v) => !v && setReadyTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Изделие готово к выдаче?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Заявка № {readyTarget?.trackingNumber} клиента {readyTarget?.customerName}. Клиенту
+              автоматически придёт письмо с адресом и часами работы для получения изделия.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmReady} disabled={markingReady}>
+              {markingReady ? 'Отправляем…' : 'Готово'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
