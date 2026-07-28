@@ -105,6 +105,16 @@ const Tracking = () => {
             </p>
           </div>
 
+          {mode === 'add' && (
+            <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-amber-600" />
+              <p className="text-sm text-amber-800">
+                Сюда добавляются только изделия, сделанные на мастер-классе в Москве. Изделия,
+                сделанные в Суздале, уже учтены — их не нужно добавлять повторно.
+              </p>
+            </div>
+          )}
+
           {/* MODE SWITCH */}
           <div className="mx-auto mt-8 grid w-full max-w-md grid-cols-2 gap-2 rounded-full border border-border bg-secondary/40 p-1.5">
             <button
