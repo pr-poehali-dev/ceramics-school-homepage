@@ -36,15 +36,32 @@ def _shipment_dict(r):
     }
 
 
+def _request_dict(r):
+    return {
+        'id': r[0],
+        'trackingNumber': r[1],
+        'customerName': r[2],
+        'customerPhone': r[3],
+        'customerEmail': r[4],
+        'photoUrl': r[5],
+        'createdAt': r[6].isoformat() if r[6] else None,
+    }
+
+
 def handler(event: dict, context) -> dict:
     '''
     Управление посылками с готовыми керамическими изделиями для менеджеров Суздаля и ВДНХ.
     Доступ защищён токеном сессии менеджера (общая таблица managers/manager_sessions).
     GET ?status=active|closed — список посылок (активные или выданные), доступно обеим ролям.
+    GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
+      доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
     POST { action: 'create', trackingNumber, customerName, customerPhone, deliveredAt } —
       добавление посылки, доступно только роли 'suzdal'.
     POST { action: 'issue', id } — пометить посылку выданной, доступно только роли 'vdnh'.
+    POST { action: 'approve_request', id, deliveredAt } — подтвердить заявку клиента и
+      перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
+    POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
     Args: event с httpMethod, headers (X-Session-Token), queryStringParameters, body
           context — объект с request_id
     Returns: HTTP-ответ со списком посылок либо результатом операции
@@ -144,6 +161,86 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'ok': True, 'id': new_id}, ensure_ascii=False),
                 }
 
+            if action == 'approve_request':
+                if role != 'vdnh':
+                    return {
+                        'statusCode': 403,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Подтверждать заявки может только менеджер ВДНХ'}, ensure_ascii=False),
+                    }
+
+                request_id = body.get('id')
+                delivered_at = body.get('deliveredAt') or datetime.utcnow().date().isoformat()
+                if not request_id:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
+                    }
+                try:
+                    delivered_date = datetime.strptime(delivered_at[:10], '%Y-%m-%d').date()
+                except ValueError:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Неверный формат даты'}, ensure_ascii=False),
+                    }
+                return_date = delivered_date + timedelta(days=30)
+
+                cur.execute(
+                    f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s "
+                    f"WHERE id = %s AND status = 'pending_review'",
+                    (delivered_date, return_date, request_id),
+                )
+                if cur.rowcount == 0:
+                    return {
+                        'statusCode': 404,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Заявка не найдена или уже обработана'}, ensure_ascii=False),
+                    }
+                conn.commit()
+
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'ok': True}, ensure_ascii=False),
+                }
+
+            if action == 'reject_request':
+                if role != 'vdnh':
+                    return {
+                        'statusCode': 403,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Отклонять заявки может только менеджер ВДНХ'}, ensure_ascii=False),
+                    }
+
+                request_id = body.get('id')
+                if not request_id:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
+                    }
+
+                cur.execute(
+                    f"UPDATE {SCHEMA}.shipments SET status = 'rejected' "
+                    f"WHERE id = %s AND status = 'pending_review'",
+                    (request_id,),
+                )
+                if cur.rowcount == 0:
+                    return {
+                        'statusCode': 404,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Заявка не найдена или уже обработана'}, ensure_ascii=False),
+                    }
+                conn.commit()
+
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'ok': True}, ensure_ascii=False),
+                }
+
             if action == 'issue':
                 if role != 'vdnh':
                     return {
@@ -196,11 +293,29 @@ def handler(event: dict, context) -> dict:
                 'headers': cors_headers,
                 'body': json.dumps({'error': 'Раздел «Закрытые» доступен только менеджеру ВДНХ'}, ensure_ascii=False),
             }
+        if status_filter == 'requests' and role != 'vdnh':
+            return {
+                'statusCode': 403,
+                'headers': cors_headers,
+                'body': json.dumps({'error': 'Заявки клиентов доступны только менеджеру ВДНХ'}, ensure_ascii=False),
+            }
         if export and role != 'vdnh':
             return {
                 'statusCode': 403,
                 'headers': cors_headers,
                 'body': json.dumps({'error': 'Экспорт доступен только менеджеру ВДНХ'}, ensure_ascii=False),
+            }
+
+        if status_filter == 'requests':
+            cur.execute(
+                f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, created_at "
+                f"FROM {SCHEMA}.shipments WHERE status = 'pending_review' ORDER BY created_at DESC LIMIT 500",
+            )
+            requests_rows = cur.fetchall()
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'requests': [_request_dict(r) for r in requests_rows], 'role': role}, ensure_ascii=False),
             }
 
         db_status = 'issued' if status_filter == 'closed' else 'shipped'

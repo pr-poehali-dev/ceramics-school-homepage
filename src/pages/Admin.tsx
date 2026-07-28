@@ -9,6 +9,7 @@ import AdminBanner from '@/components/admin/AdminBanner';
 import AdminOrders from '@/components/admin/AdminOrders';
 import AdminLeads from '@/components/admin/AdminLeads';
 import AdminShipments from '@/components/admin/AdminShipments';
+import AdminShipmentRequests from '@/components/admin/AdminShipmentRequests';
 import { Order, Lead } from '@/components/admin/adminHelpers';
 import func2url from '../../backend/func2url.json';
 
@@ -32,7 +33,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [tab, setTab] = useState<'orders' | 'leads' | 'content' | 'shipments'>('orders');
+  const [tab, setTab] = useState<'orders' | 'leads' | 'content' | 'shipments' | 'shipment-requests'>('orders');
   const [ordersPage, setOrdersPage] = useState(1);
   const ORDERS_PER_PAGE = 10;
   const [cityFilter, setCityFilter] = useState<'moscow' | 'suzdal' | 'all'>('moscow');
@@ -306,6 +307,16 @@ const Admin = () => {
           >
             Посылки
           </button>
+          {managerRole === 'vdnh' && (
+            <button
+              onClick={() => setTab('shipment-requests')}
+              className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                tab === 'shipment-requests' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+              }`}
+            >
+              Заявки на посылки
+            </button>
+          )}
 
           <div className="ml-auto">
             <AdminBanner
@@ -323,6 +334,10 @@ const Admin = () => {
 
         {tab === 'shipments' && token && managerRole && (
           <AdminShipments token={token} role={managerRole} />
+        )}
+
+        {tab === 'shipment-requests' && token && managerRole === 'vdnh' && (
+          <AdminShipmentRequests token={token} />
         )}
 
         {tab === 'orders' && (

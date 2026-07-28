@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import AddShipmentRequestSheet from '@/components/AddShipmentRequestSheet';
 import { useCity } from '@/hooks/useCity';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { formatPhoneInput } from '@/lib/phoneMask';
@@ -54,6 +55,7 @@ const Tracking = () => {
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [error, setError] = useState('');
   const [courierConfirmOpen, setCourierConfirmOpen] = useState(false);
+  const [addRequestOpen, setAddRequestOpen] = useState(false);
 
   const isValid = phone.replace(/\D/g, '').length === 11;
 
@@ -125,6 +127,19 @@ const Tracking = () => {
                 )}
               </Button>
             </form>
+
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4">
+              <p className="text-sm text-muted-foreground">Хотите добавить посылку?</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                onClick={() => setAddRequestOpen(true)}
+              >
+                <Icon name="Plus" size={15} className="mr-1.5" /> Добавить
+              </Button>
+            </div>
           </div>
 
           {/* RESULTS */}
@@ -144,6 +159,15 @@ const Tracking = () => {
                   <p className="mt-1 text-sm text-muted-foreground">
                     Проверьте правильность номера телефона или свяжитесь с нами.
                   </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-4 rounded-full"
+                    onClick={() => setAddRequestOpen(true)}
+                  >
+                    <Icon name="Plus" size={15} className="mr-1.5" /> Добавить посылку
+                  </Button>
                 </div>
               )}
 
@@ -241,6 +265,8 @@ const Tracking = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AddShipmentRequestSheet open={addRequestOpen} onOpenChange={setAddRequestOpen} />
 
       <SiteFooter />
     </div>
