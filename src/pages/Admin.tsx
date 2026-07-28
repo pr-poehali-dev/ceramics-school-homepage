@@ -273,17 +273,7 @@ const Admin = () => {
           </div>
         </div>
 
-        {/* УПРАВЛЕНИЕ ПЛАШКОЙ */}
-        <AdminBanner
-          bannerEnabled={bannerEnabled}
-          setBannerEnabled={setBannerEnabled}
-          bannerText={bannerText}
-          setBannerText={setBannerText}
-          savingBanner={savingBanner}
-          onSave={saveBanner}
-        />
-
-        <div className="mt-6 flex gap-2">
+        <div className="mt-6 flex flex-wrap items-center gap-2">
           <button
             onClick={() => setTab('orders')}
             className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
@@ -316,6 +306,17 @@ const Admin = () => {
           >
             Посылки
           </button>
+
+          <div className="ml-auto">
+            <AdminBanner
+              bannerEnabled={bannerEnabled}
+              setBannerEnabled={setBannerEnabled}
+              bannerText={bannerText}
+              setBannerText={setBannerText}
+              savingBanner={savingBanner}
+              onSave={saveBanner}
+            />
+          </div>
         </div>
 
         {tab === 'content' && token && <PageContentEditor token={token} />}
