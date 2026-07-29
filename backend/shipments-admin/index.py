@@ -53,6 +53,9 @@ def _request_dict(r):
         'customerEmail': r[4],
         'photoUrl': r[5],
         'createdAt': r[6].isoformat() if r[6] else None,
+        'visitNumber': r[7],
+        'parentId': r[8],
+        'parentTrackingNumber': r[9],
     }
 
 
@@ -71,6 +74,9 @@ def _confirmed_dict(r):
         'readyAt': r[9].isoformat() if r[9] else None,
         'createdAt': created_at.isoformat() if created_at else None,
         'storageUntil': (created_at.date() + timedelta(days=60)).isoformat() if created_at else None,
+        'visitNumber': r[11],
+        'parentId': r[12],
+        'parentTrackingNumber': r[13],
     }
 
 
@@ -190,6 +196,8 @@ def handler(event: dict, context) -> dict:
       или 'issued', source='client', archived_at IS NULL); ready_at показывает, отмечено ли
       изделие готовым к выдаче, доступно только роли 'vdnh'. При каждом вызове автоматически
       архивирует (archived_at=NOW()) заявки, у которых ready_at был более 3 месяцев назад.
+      visitNumber/parentId/parentTrackingNumber показывают связь с предыдущим посещением
+      клиента (повторная заявка после росписи, source shipment-request с isRepeatVisit=true).
     GET ?status=archived — архив заявок клиентов (source='client', archived_at IS NOT NULL) —
       заявки, отмеченные готовыми к выдаче более 3 месяцев назад, доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
@@ -648,8 +656,10 @@ def handler(event: dict, context) -> dict:
 
         if status_filter == 'requests':
             cur.execute(
-                f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, created_at "
-                f"FROM {SCHEMA}.shipments WHERE status = 'pending_review' ORDER BY created_at DESC LIMIT 500",
+                f"SELECT s.id, s.tracking_number, s.customer_name, s.customer_phone, s.customer_email, "
+                f"s.photo_url, s.created_at, s.visit_number, s.parent_id, p.tracking_number "
+                f"FROM {SCHEMA}.shipments s LEFT JOIN {SCHEMA}.shipments p ON p.id = s.parent_id "
+                f"WHERE s.status = 'pending_review' ORDER BY s.created_at DESC LIMIT 500",
             )
             requests_rows = cur.fetchall()
             return {
@@ -662,11 +672,13 @@ def handler(event: dict, context) -> dict:
             _auto_archive(cur)
             conn.commit()
             cur.execute(
-                f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-                f"delivered_at, return_at, status, ready_at, created_at "
-                f"FROM {SCHEMA}.shipments WHERE source = 'client' AND status IN ('shipped', 'issued') "
-                f"AND archived_at IS NULL "
-                f"ORDER BY delivered_at DESC, created_at DESC LIMIT 500",
+                f"SELECT s.id, s.tracking_number, s.customer_name, s.customer_phone, s.customer_email, s.photo_url, "
+                f"s.delivered_at, s.return_at, s.status, s.ready_at, s.created_at, "
+                f"s.visit_number, s.parent_id, p.tracking_number "
+                f"FROM {SCHEMA}.shipments s LEFT JOIN {SCHEMA}.shipments p ON p.id = s.parent_id "
+                f"WHERE s.source = 'client' AND s.status IN ('shipped', 'issued') "
+                f"AND s.archived_at IS NULL "
+                f"ORDER BY s.delivered_at DESC, s.created_at DESC LIMIT 500",
             )
             confirmed_rows = cur.fetchall()
             return {

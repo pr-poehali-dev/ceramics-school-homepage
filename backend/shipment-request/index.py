@@ -41,7 +41,12 @@ def handler(event: dict, context) -> dict:
     керамическим изделием: ФИО, телефон, email и фото. Заявка попадает в очередь на
     подтверждение менеджеру ВДНХ (статус 'pending_review'), после подтверждения становится
     обычной отслеживаемой посылкой.
-    POST { customerName, customerPhone, customerEmail, photoData (base64), contentType }
+    Если isRepeatVisit=true (клиент уже расписывал ранее слепленное изделие и снова сдаёт
+    его на обжиг) — требуются только телефон и фото; заявка автоматически привязывается
+    (parent_id) к последней заявке этого клиента по номеру телефона, ФИО/email берутся из
+    неё же, и сразу получает статус 'shipped' без проверки менеджером.
+    POST { customerName, customerPhone, customerEmail, photoData (base64), contentType,
+           isRepeatVisit }
     Args: event с httpMethod, body
           context — объект с request_id
     Returns: HTTP-ответ с временным номером заявки, либо ошибкой
@@ -55,13 +60,14 @@ def handler(event: dict, context) -> dict:
         return {'statusCode': 405, 'headers': _cors(), 'body': json.dumps({'error': 'Method not allowed'})}
 
     body = json.loads(event.get('body') or '{}')
+    is_repeat_visit = bool(body.get('isRepeatVisit'))
     customer_name = (body.get('customerName') or '').strip()
     customer_phone = (body.get('customerPhone') or '').strip()
     customer_email = (body.get('customerEmail') or '').strip()
     photo_data = body.get('photoData') or ''
     content_type = body.get('contentType') or 'image/jpeg'
 
-    if not customer_name or not customer_email:
+    if not is_repeat_visit and (not customer_name or not customer_email):
         return {
             'statusCode': 400,
             'headers': _cors(),
@@ -128,6 +134,31 @@ def handler(event: dict, context) -> dict:
     conn = psycopg2.connect(os.environ['DATABASE_URL'])
     try:
         cur = conn.cursor()
+
+        parent_id = None
+        visit_number = 1
+        if is_repeat_visit:
+            cur.execute(
+                f"SELECT id, customer_name, customer_email, visit_number FROM {SCHEMA}.shipments "
+                f"WHERE regexp_replace(customer_phone, '[^0-9]', '', 'g') LIKE %s "
+                f"ORDER BY created_at DESC LIMIT 1",
+                ('%' + phone_digits[-10:],),
+            )
+            parent_row = cur.fetchone()
+            if not parent_row:
+                return {
+                    'statusCode': 404,
+                    'headers': _cors(),
+                    'body': json.dumps(
+                        {'error': 'Не нашли предыдущую заявку по этому номеру телефона. Проверьте номер или заполните форму как первое посещение.'},
+                        ensure_ascii=False,
+                    ),
+                }
+            parent_id, parent_name, parent_email, parent_visit_number = parent_row
+            customer_name = parent_name
+            customer_email = parent_email or customer_email
+            visit_number = (parent_visit_number or 1) + 1
+
         tracking_number = None
         for _ in range(5):
             candidate = f'REQ-{secrets.token_hex(3).upper()}'
@@ -144,19 +175,25 @@ def handler(event: dict, context) -> dict:
                 'body': json.dumps({'error': 'Не удалось создать заявку, попробуйте ещё раз'}, ensure_ascii=False),
             }
 
+        status = 'shipped' if is_repeat_visit else 'pending_review'
+
         cur.execute(
             f"INSERT INTO {SCHEMA}.shipments "
             f"(tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-            f"delivered_at, return_at, status, source) "
-            f"VALUES (%s, %s, %s, %s, %s, %s, %s, 'pending_review', 'client')",
-            (tracking_number, customer_name, customer_phone, customer_email, photo_url, today, placeholder_return),
+            f"delivered_at, return_at, status, source, parent_id, visit_number) "
+            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s)",
+            (tracking_number, customer_name, customer_phone, customer_email, photo_url,
+             today, placeholder_return, status, parent_id, visit_number),
         )
         conn.commit()
 
         return {
             'statusCode': 200,
             'headers': _cors(),
-            'body': json.dumps({'ok': True, 'trackingNumber': tracking_number}, ensure_ascii=False),
+            'body': json.dumps(
+                {'ok': True, 'trackingNumber': tracking_number, 'isRepeatVisit': is_repeat_visit},
+                ensure_ascii=False,
+            ),
         }
     finally:
         conn.close()

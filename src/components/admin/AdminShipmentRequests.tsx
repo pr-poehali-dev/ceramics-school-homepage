@@ -32,6 +32,9 @@ interface ShipmentRequest {
   emailSent?: boolean;
   storageUntil?: string | null;
   archivedAt?: string | null;
+  visitNumber?: number;
+  parentId?: number | null;
+  parentTrackingNumber?: string | null;
 }
 
 interface Props {
@@ -211,10 +214,19 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
   const baseList = view === 'requests' ? requests : view === 'confirmed' ? confirmed : archived;
   const searchDigits = search.replace(/\D/g, '');
-  const list =
+  const filteredList =
     view !== 'requests' && searchDigits
       ? baseList.filter((r) => r.customerPhone.replace(/\D/g, '').includes(searchDigits))
       : baseList;
+
+  // Группируем повторные посещения под родительской заявкой (первое изделие -> роспись)
+  const byId = new Map(baseList.map((r) => [r.id, r]));
+  const childrenOf = (id: number) =>
+    baseList
+      .filter((r) => r.parentId === id)
+      .sort((a, b) => (a.visitNumber || 1) - (b.visitNumber || 1));
+  const list = filteredList.filter((r) => !(r.parentId && byId.has(r.parentId)));
+
   const totalPages = Math.max(1, Math.ceil(list.length / PER_PAGE));
   const paginated = list.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -313,80 +325,97 @@ const AdminShipmentRequests = ({ token }: Props) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginated.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell>
-                    <button
-                      type="button"
-                      onClick={() => setPhotoPreview(r.photoUrl)}
-                      className="block overflow-hidden rounded-lg border border-border"
-                    >
-                      <img
-                        src={r.photoUrl}
-                        alt="Фото изделия"
-                        className="h-14 w-14 object-cover transition-transform hover:scale-105"
-                      />
-                    </button>
-                  </TableCell>
-                  <TableCell className="font-medium">№ {r.trackingNumber}</TableCell>
-                  <TableCell>{r.customerName}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    <p>{r.customerPhone}</p>
-                    <p>{r.customerEmail}</p>
-                  </TableCell>
-                  {view === 'requests' ? (
-                    <TableCell className="text-sm text-muted-foreground">
-                      {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
-                    </TableCell>
-                  ) : view === 'confirmed' ? (
-                    <>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{fmtDate(r.storageUntil)}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {r.status === 'issued' ? 'Выдано' : r.readyAt ? 'Готово к выдаче' : 'Готовится'}
-                        {r.readyAt && r.status !== 'issued' && r.emailSent && (
-                          <p className="mt-0.5 text-xs text-green-600">Письмо отправлено</p>
-                        )}
-                      </TableCell>
-                    </>
-                  ) : (
-                    <>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {r.createdAt ? fmtDateTime(r.createdAt) : '—'}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {r.archivedAt ? fmtDateTime(r.archivedAt) : '—'}
-                      </TableCell>
-                    </>
-                  )}
-                  <TableCell className="text-right">
-                    {view === 'requests' ? (
-                      <div className="flex justify-end gap-2">
-                        <Button size="sm" className="rounded-full" onClick={() => openApprove(r)}>
-                          <Icon name="Check" size={14} className="mr-1.5" /> Подтвердить
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="rounded-full"
-                          onClick={() => setRejectTarget(r)}
+              {paginated.map((r) => {
+                const children = childrenOf(r.id);
+                const rows = [r, ...children];
+                return rows.map((row, idx) => {
+                  const isChild = idx > 0;
+                  return (
+                    <TableRow key={row.id} className={isChild ? 'bg-secondary/20' : ''}>
+                      <TableCell>
+                        <button
+                          type="button"
+                          onClick={() => setPhotoPreview(row.photoUrl)}
+                          className={`block overflow-hidden rounded-lg border border-border ${isChild ? 'ml-4' : ''}`}
                         >
-                          <Icon name="X" size={14} className="mr-1.5" /> Отклонить
-                        </Button>
-                      </div>
-                    ) : view === 'confirmed' ? (
-                      !r.readyAt &&
-                      r.status !== 'issued' && (
-                        <Button size="sm" className="rounded-full" onClick={() => setReadyTarget(r)}>
-                          <Icon name="Check" size={14} className="mr-1.5" /> Готово
-                        </Button>
-                      )
-                    ) : null}
-                  </TableCell>
-                </TableRow>
-              ))}
+                          <img
+                            src={row.photoUrl}
+                            alt="Фото изделия"
+                            className="h-14 w-14 object-cover transition-transform hover:scale-105"
+                          />
+                        </button>
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        <div className={isChild ? 'ml-4 flex items-center gap-1.5' : ''}>
+                          {isChild && <Icon name="CornerDownRight" size={14} className="text-muted-foreground" />}
+                          № {row.trackingNumber}
+                          {(row.visitNumber || 1) > 1 && (
+                            <span className="ml-1.5 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                              Посещение {row.visitNumber}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>{row.customerName}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        <p>{row.customerPhone}</p>
+                        <p>{row.customerEmail}</p>
+                      </TableCell>
+                      {view === 'requests' ? (
+                        <TableCell className="text-sm text-muted-foreground">
+                          {row.createdAt ? fmtDateTime(row.createdAt) : '—'}
+                        </TableCell>
+                      ) : view === 'confirmed' ? (
+                        <>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {row.createdAt ? fmtDateTime(row.createdAt) : '—'}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{fmtDate(row.storageUntil)}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {row.status === 'issued' ? 'Выдано' : row.readyAt ? 'Готово к выдаче' : 'Готовится'}
+                            {row.readyAt && row.status !== 'issued' && row.emailSent && (
+                              <p className="mt-0.5 text-xs text-green-600">Письмо отправлено</p>
+                            )}
+                          </TableCell>
+                        </>
+                      ) : (
+                        <>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {row.createdAt ? fmtDateTime(row.createdAt) : '—'}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {row.archivedAt ? fmtDateTime(row.archivedAt) : '—'}
+                          </TableCell>
+                        </>
+                      )}
+                      <TableCell className="text-right">
+                        {view === 'requests' ? (
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" className="rounded-full" onClick={() => openApprove(row)}>
+                              <Icon name="Check" size={14} className="mr-1.5" /> Подтвердить
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="rounded-full"
+                              onClick={() => setRejectTarget(row)}
+                            >
+                              <Icon name="X" size={14} className="mr-1.5" /> Отклонить
+                            </Button>
+                          </div>
+                        ) : view === 'confirmed' ? (
+                          !row.readyAt &&
+                          row.status !== 'issued' && (
+                            <Button size="sm" className="rounded-full" onClick={() => setReadyTarget(row)}>
+                              <Icon name="Check" size={14} className="mr-1.5" /> Готово
+                            </Button>
+                          )
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  );
+                });
+              })}
             </TableBody>
           </Table>
         </div>

@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { formatPhoneInput } from '@/lib/phoneMask';
 import func2url from '../../backend/func2url.json';
@@ -24,6 +25,7 @@ interface Props {
 
 const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже необожжённого полуфабриката.' }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isRepeatVisit, setIsRepeatVisit] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -31,6 +33,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<string | null>(null);
+  const [doneRepeat, setDoneRepeat] = useState(false);
 
   const reset = () => {
     setName('');
@@ -39,6 +42,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
     setPhoto(null);
     setPhotoPreview(null);
     setDone(null);
+    setDoneRepeat(false);
   };
 
   const handlePhotoPick = (file: File | undefined) => {
@@ -55,11 +59,12 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
     setPhotoPreview(URL.createObjectURL(file));
   };
 
-  const isValid =
-    name.trim().length > 2 &&
-    phone.replace(/\D/g, '').length === 11 &&
-    /\S+@\S+\.\S+/.test(email) &&
-    !!photo;
+  const isValid = isRepeatVisit
+    ? phone.replace(/\D/g, '').length === 11 && !!photo
+    : name.trim().length > 2 &&
+      phone.replace(/\D/g, '').length === 11 &&
+      /\S+@\S+\.\S+/.test(email) &&
+      !!photo;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +76,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          isRepeatVisit,
           customerName: name.trim(),
           customerPhone: phone,
           customerEmail: email.trim(),
@@ -84,6 +90,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
         return;
       }
       setDone(data.trackingNumber);
+      setDoneRepeat(isRepeatVisit);
     } catch {
       toast({ title: 'Ошибка отправки', description: 'Попробуйте позже.' });
     } finally {
@@ -99,9 +106,19 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
         </span>
         <h3 className="mt-4 font-display text-xl font-semibold">Заявка отправлена!</h3>
         <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-          Ваш временный номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
-          Менеджер проверит фото и подтвердит, после чего вы сможете отслеживать статус заявки
-          по номеру телефона.
+          {doneRepeat ? (
+            <>
+              Номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
+              Изделие связано с вашим предыдущим посещением и отправлено на обжиг — статус
+              можно отследить по номеру телефона.
+            </>
+          ) : (
+            <>
+              Ваш временный номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
+              Менеджер проверит фото и подтвердит, после чего вы сможете отслеживать статус заявки
+              по номеру телефона.
+            </>
+          )}
         </p>
         <Button className="mt-6 rounded-full" onClick={reset}>
           Добавить ещё одну
@@ -112,17 +129,34 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="req-name">ФИО *</Label>
-        <Input
-          id="req-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Иванова Мария Сергеевна"
-          className="mt-1.5"
-          required
+      <label className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 p-3.5">
+        <Checkbox
+          checked={isRepeatVisit}
+          onCheckedChange={(v) => setIsRepeatVisit(v === true)}
+          className="mt-0.5"
         />
-      </div>
+        <span className="text-sm leading-snug">
+          <span className="font-medium text-foreground">Это моё повторное посещение</span>
+          <br />
+          <span className="text-muted-foreground">
+            Я уже сдавал(а) изделие и расписал(а) его — теперь сдаю на обжиг снова
+          </span>
+        </span>
+      </label>
+
+      {!isRepeatVisit && (
+        <div>
+          <Label htmlFor="req-name">ФИО *</Label>
+          <Input
+            id="req-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Иванова Мария Сергеевна"
+            className="mt-1.5"
+            required
+          />
+        </div>
+      )}
       <div>
         <Label htmlFor="req-phone">Телефон *</Label>
         <Input
@@ -135,19 +169,27 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
           className="mt-1.5"
           required
         />
+        {isRepeatVisit && (
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            Укажите номер телефона, который вы указывали в первый раз — по нему мы найдём вашу
+            заявку.
+          </p>
+        )}
       </div>
-      <div>
-        <Label htmlFor="req-email">Email *</Label>
-        <Input
-          id="req-email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          className="mt-1.5"
-          required
-        />
-      </div>
+      {!isRepeatVisit && (
+        <div>
+          <Label htmlFor="req-email">Email *</Label>
+          <Input
+            id="req-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="mt-1.5"
+            required
+          />
+        </div>
+      )}
 
       <div>
         <Label>Фото изделия *</Label>
