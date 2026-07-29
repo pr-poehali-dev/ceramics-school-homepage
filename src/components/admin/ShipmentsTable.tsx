@@ -2,6 +2,9 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Shipment, fmtDate } from './shipmentTypes';
+import { SortConfig } from '@/hooks/useSortableData';
+
+type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'returnAt';
 
 interface Props {
   view: 'active' | 'closed';
@@ -19,7 +22,39 @@ interface Props {
   totalPages: number;
   onIssueTarget: (s: Shipment) => void;
   PER_PAGE: number;
+  sort: SortConfig<SortKey>;
+  onSort: (key: SortKey) => void;
 }
+
+const SortHeader = ({
+  label,
+  sortKey,
+  sort,
+  onSort,
+}: {
+  label: string;
+  sortKey: SortKey;
+  sort: SortConfig<SortKey>;
+  onSort: (key: SortKey) => void;
+}) => {
+  const active = sort.key === sortKey;
+  return (
+    <button
+      type="button"
+      onClick={() => onSort(sortKey)}
+      className={`flex items-center gap-1 text-left transition-colors hover:text-foreground ${
+        active ? 'text-foreground' : ''
+      }`}
+    >
+      {label}
+      <Icon
+        name={active && sort.direction === 'desc' ? 'ArrowDown' : active ? 'ArrowUp' : 'ArrowUpDown'}
+        size={12}
+        className={active ? 'text-primary' : 'text-muted-foreground/50'}
+      />
+    </button>
+  );
+};
 
 const ShipmentsTable = ({
   view,
@@ -37,6 +72,8 @@ const ShipmentsTable = ({
   totalPages,
   onIssueTarget,
   PER_PAGE,
+  sort,
+  onSort,
 }: Props) => {
   return (
     <div>
@@ -94,12 +131,12 @@ const ShipmentsTable = ({
       ) : (
         <div className="mt-4 overflow-hidden rounded-2xl border border-border">
           <div className="hidden grid-cols-[1fr_1fr_140px_160px_110px_110px_130px_110px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
-            <span>Номер посылки</span>
-            <span>ФИО клиента</span>
+            <SortHeader label="Номер посылки" sortKey="trackingNumber" sort={sort} onSort={onSort} />
+            <SortHeader label="ФИО клиента" sortKey="customerName" sort={sort} onSort={onSort} />
             <span>Телефон</span>
             <span>Email</span>
-            <span>Доставлено</span>
-            <span>Возврат</span>
+            <SortHeader label="Доставлено" sortKey="deliveredAt" sort={sort} onSort={onSort} />
+            <SortHeader label="Возврат" sortKey="returnAt" sort={sort} onSort={onSort} />
             {view === 'closed' && <span>Статус</span>}
             {view === 'active' && role === 'vdnh' && <span>Действие</span>}
           </div>

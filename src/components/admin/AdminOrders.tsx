@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Order, fmtDate, paymentLabel, cityBadge, statusBadge } from './adminHelpers';
+import { SortConfig } from '@/hooks/useSortableData';
+
+type OrderSortKey = 'number' | 'name' | 'created_at' | 'total' | 'status';
 
 interface Props {
   orders: Order[];
@@ -19,7 +22,17 @@ interface Props {
   onSaveCertificateNumber: (orderId: number) => void;
   checkingPaymentId: number | null;
   onCheckPayment: (orderId: number) => void;
+  sort: SortConfig<OrderSortKey>;
+  onSort: (key: OrderSortKey) => void;
 }
+
+const SORT_OPTIONS: { key: OrderSortKey; label: string }[] = [
+  { key: 'created_at', label: 'Дате' },
+  { key: 'number', label: 'Номеру' },
+  { key: 'name', label: 'Клиенту' },
+  { key: 'total', label: 'Сумме' },
+  { key: 'status', label: 'Статусу' },
+];
 
 const AdminOrders = ({
   orders,
@@ -36,6 +49,8 @@ const AdminOrders = ({
   onSaveCertificateNumber,
   checkingPaymentId,
   onCheckPayment,
+  sort,
+  onSort,
 }: Props) => {
   return (
     <>
@@ -57,6 +72,27 @@ const AdminOrders = ({
             {' '}({(c === 'all' ? orders : orders.filter((o) => o.city === c)).length})
           </button>
         ))}
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+        Сортировать по:
+        {SORT_OPTIONS.map((opt) => {
+          const active = sort.key === opt.key;
+          return (
+            <button
+              key={opt.key}
+              onClick={() => onSort(opt.key)}
+              className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                active ? 'bg-primary/10 text-primary' : 'bg-secondary hover:text-foreground'
+              }`}
+            >
+              {opt.label}
+              {active && (
+                <Icon name={sort.direction === 'desc' ? 'ArrowDown' : 'ArrowUp'} size={12} />
+              )}
+            </button>
+          );
+        })}
       </div>
 
       <div className="mt-6 space-y-4">

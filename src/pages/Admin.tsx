@@ -10,6 +10,7 @@ import AdminLeads from '@/components/admin/AdminLeads';
 import AdminShipments from '@/components/admin/AdminShipments';
 import AdminShipmentRequests from '@/components/admin/AdminShipmentRequests';
 import { Order, Lead } from '@/components/admin/adminHelpers';
+import { useSortableData } from '@/hooks/useSortableData';
 import func2url from '../../backend/func2url.json';
 
 const SESSION_KEY = 'manager-session-token';
@@ -218,13 +219,38 @@ const Admin = () => {
     setLeads([]);
   };
 
-  const filteredOrders =
+  const filteredOrdersRaw =
     cityFilter === 'all' ? orders : orders.filter((o) => o.city === cityFilter);
+
+  type OrderSortKey = 'number' | 'name' | 'created_at' | 'total' | 'status';
+  const { sorted: filteredOrders, sort: ordersSort, toggleSort: toggleOrdersSort } = useSortableData<
+    Order,
+    OrderSortKey
+  >(filteredOrdersRaw, (item, key) => {
+    if (key === 'number') return item.number || '';
+    if (key === 'name') return item.name || '';
+    if (key === 'created_at') return new Date(item.created_at).getTime();
+    if (key === 'total') return item.total || 0;
+    if (key === 'status') return item.status || '';
+    return '';
+  });
+
   const totalOrdersPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PER_PAGE));
   const paginatedOrders = filteredOrders.slice(
     (ordersPage - 1) * ORDERS_PER_PAGE,
     ordersPage * ORDERS_PER_PAGE,
   );
+
+  type LeadSortKey = 'service' | 'created_at' | 'people';
+  const { sorted: sortedLeads, sort: leadsSort, toggleSort: toggleLeadsSort } = useSortableData<
+    Lead,
+    LeadSortKey
+  >(leads, (item, key) => {
+    if (key === 'service') return item.service || '';
+    if (key === 'created_at') return new Date(item.created_at).getTime();
+    if (key === 'people') return item.people || 0;
+    return '';
+  });
 
   if (checkingSession) {
     return (
@@ -354,10 +380,14 @@ const Admin = () => {
             onSaveCertificateNumber={saveCertificateNumber}
             checkingPaymentId={checkingPaymentId}
             onCheckPayment={checkPayment}
+            sort={ordersSort}
+            onSort={toggleOrdersSort}
           />
         )}
 
-        {tab === 'leads' && <AdminLeads leads={leads} />}
+        {tab === 'leads' && (
+          <AdminLeads leads={sortedLeads} sort={leadsSort} onSort={toggleLeadsSort} />
+        )}
       </div>
     </div>
   );

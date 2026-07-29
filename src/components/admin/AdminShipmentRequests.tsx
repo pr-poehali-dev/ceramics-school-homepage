@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import SortableTableHead from './SortableTableHead';
+import { useSortableData } from '@/hooks/useSortableData';
 import { toast } from '@/hooks/use-toast';
 import func2url from '../../../backend/func2url.json';
 
@@ -239,7 +241,20 @@ const AdminShipmentRequests = ({ token }: Props) => {
     baseList
       .filter((r) => r.parentId === id)
       .sort((a, b) => (a.visitNumber || 1) - (b.visitNumber || 1));
-  const list = filteredList.filter((r) => !(r.parentId && byId.has(r.parentId)));
+  const parentsOnly = filteredList.filter((r) => !(r.parentId && byId.has(r.parentId)));
+
+  type SortKey = 'trackingNumber' | 'customerName' | 'createdAt' | 'storageUntil' | 'archivedAt';
+  const { sorted: list, sort, toggleSort } = useSortableData<ShipmentRequest, SortKey>(
+    parentsOnly,
+    (item, key) => {
+      if (key === 'trackingNumber') return item.trackingNumber || '';
+      if (key === 'customerName') return item.customerName || '';
+      if (key === 'createdAt') return item.createdAt ? new Date(item.createdAt).getTime() : 0;
+      if (key === 'storageUntil') return item.storageUntil ? new Date(item.storageUntil).getTime() : 0;
+      if (key === 'archivedAt') return item.archivedAt ? new Date(item.archivedAt).getTime() : 0;
+      return '';
+    },
+  );
 
   const totalPages = Math.max(1, Math.ceil(list.length / PER_PAGE));
   const paginated = list.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -318,21 +333,21 @@ const AdminShipmentRequests = ({ token }: Props) => {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-20">Фото</TableHead>
-                <TableHead>№ заявки</TableHead>
-                <TableHead>Клиент</TableHead>
+                <SortableTableHead label="№ заявки" sortKey="trackingNumber" sort={sort} onSort={toggleSort} />
+                <SortableTableHead label="Клиент" sortKey="customerName" sort={sort} onSort={toggleSort} />
                 <TableHead>Контакты</TableHead>
                 {view === 'requests' ? (
-                  <TableHead>Заявка от</TableHead>
+                  <SortableTableHead label="Заявка от" sortKey="createdAt" sort={sort} onSort={toggleSort} />
                 ) : view === 'confirmed' ? (
                   <>
-                    <TableHead>Заявка создана</TableHead>
-                    <TableHead>Хранение до</TableHead>
+                    <SortableTableHead label="Заявка создана" sortKey="createdAt" sort={sort} onSort={toggleSort} />
+                    <SortableTableHead label="Хранение до" sortKey="storageUntil" sort={sort} onSort={toggleSort} />
                     <TableHead>Статус</TableHead>
                   </>
                 ) : (
                   <>
-                    <TableHead>Заявка создана</TableHead>
-                    <TableHead>В архиве с</TableHead>
+                    <SortableTableHead label="Заявка создана" sortKey="createdAt" sort={sort} onSort={toggleSort} />
+                    <SortableTableHead label="В архиве с" sortKey="archivedAt" sort={sort} onSort={toggleSort} />
                   </>
                 )}
                 <TableHead className="text-right">Действия</TableHead>

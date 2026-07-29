@@ -5,6 +5,7 @@ import { Shipment } from './shipmentTypes';
 import ShipmentCreateForm from './ShipmentCreateForm';
 import ShipmentsTable from './ShipmentsTable';
 import ShipmentIssueDialog from './ShipmentIssueDialog';
+import { useSortableData } from '@/hooks/useSortableData';
 
 interface Props {
   token: string;
@@ -208,8 +209,17 @@ const AdminShipments = ({ token, role }: Props) => {
       )
     : shipments;
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'returnAt';
+  const { sorted, sort, toggleSort } = useSortableData<Shipment, SortKey>(filtered, (item, key) => {
+    if (key === 'trackingNumber') return item.trackingNumber || '';
+    if (key === 'customerName') return item.customerName || '';
+    if (key === 'deliveredAt') return item.deliveredAt ? new Date(item.deliveredAt).getTime() : 0;
+    if (key === 'returnAt') return item.returnAt ? new Date(item.returnAt).getTime() : 0;
+    return '';
+  });
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PER_PAGE));
+  const paginated = sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
     <div className="mt-6 space-y-6">
@@ -251,6 +261,8 @@ const AdminShipments = ({ token, role }: Props) => {
         totalPages={totalPages}
         onIssueTarget={setIssueTarget}
         PER_PAGE={PER_PAGE}
+        sort={sort}
+        onSort={toggleSort}
       />
 
       <ShipmentIssueDialog
