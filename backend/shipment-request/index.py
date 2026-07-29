@@ -119,19 +119,39 @@ def handler(event: dict, context) -> dict:
     key = f'shipment-requests/{secrets.token_hex(12)}.{ext}'
 
     access_key = os.environ['AWS_ACCESS_KEY_ID']
-    s3 = boto3.client(
-        's3',
-        endpoint_url='https://bucket.poehali.dev',
-        aws_access_key_id=access_key,
-        aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-    )
-    s3.put_object(Bucket='files', Key=key, Body=raw, ContentType=content_type)
+    try:
+        s3 = boto3.client(
+            's3',
+            endpoint_url='https://bucket.poehali.dev',
+            aws_access_key_id=access_key,
+            aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+        )
+        s3.put_object(Bucket='files', Key=key, Body=raw, ContentType=content_type)
+    except Exception:
+        return {
+            'statusCode': 502,
+            'headers': _cors(),
+            'body': json.dumps(
+                {'error': 'Не удалось сохранить фото на сервере. Попробуйте отправить заявку ещё раз через пару минут.'},
+                ensure_ascii=False,
+            ),
+        }
     photo_url = f'https://cdn.poehali.dev/projects/{access_key}/bucket/{key}'
 
     today = datetime.utcnow().date()
     placeholder_return = today + timedelta(days=30)
 
-    conn = psycopg2.connect(os.environ['DATABASE_URL'])
+    try:
+        conn = psycopg2.connect(os.environ['DATABASE_URL'])
+    except Exception:
+        return {
+            'statusCode': 503,
+            'headers': _cors(),
+            'body': json.dumps(
+                {'error': 'Сервер временно недоступен. Попробуйте отправить заявку ещё раз через пару минут.'},
+                ensure_ascii=False,
+            ),
+        }
     try:
         cur = conn.cursor()
 
@@ -192,6 +212,15 @@ def handler(event: dict, context) -> dict:
             'headers': _cors(),
             'body': json.dumps(
                 {'ok': True, 'trackingNumber': tracking_number, 'isRepeatVisit': is_repeat_visit},
+                ensure_ascii=False,
+            ),
+        }
+    except Exception:
+        return {
+            'statusCode': 500,
+            'headers': _cors(),
+            'body': json.dumps(
+                {'error': 'Не удалось сохранить заявку на сервере. Попробуйте отправить её ещё раз.'},
                 ensure_ascii=False,
             ),
         }

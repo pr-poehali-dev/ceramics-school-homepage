@@ -54,7 +54,14 @@ def handler(event: dict, context) -> dict:
     if not token:
         return {'statusCode': 401, 'headers': _cors(), 'body': json.dumps({'error': 'Требуется авторизация'})}
 
-    conn = psycopg2.connect(os.environ['DATABASE_URL'])
+    try:
+        conn = psycopg2.connect(os.environ['DATABASE_URL'])
+    except Exception:
+        return {
+            'statusCode': 503,
+            'headers': _cors(),
+            'body': json.dumps({'error': 'Сервер временно недоступен. Попробуйте ещё раз через пару минут.'}),
+        }
     try:
         cur = conn.cursor()
         cur.execute(
@@ -92,13 +99,20 @@ def handler(event: dict, context) -> dict:
     key = f'page-content/{secrets.token_hex(12)}.{ext}'
 
     access_key = os.environ['AWS_ACCESS_KEY_ID']
-    s3 = boto3.client(
-        's3',
-        endpoint_url='https://bucket.poehali.dev',
-        aws_access_key_id=access_key,
-        aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-    )
-    s3.put_object(Bucket='files', Key=key, Body=raw, ContentType=content_type)
+    try:
+        s3 = boto3.client(
+            's3',
+            endpoint_url='https://bucket.poehali.dev',
+            aws_access_key_id=access_key,
+            aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+        )
+        s3.put_object(Bucket='files', Key=key, Body=raw, ContentType=content_type)
+    except Exception:
+        return {
+            'statusCode': 502,
+            'headers': _cors(),
+            'body': json.dumps({'error': 'Не удалось сохранить файл на сервере. Попробуйте ещё раз через пару минут.'}),
+        }
 
     cdn_url = f'https://cdn.poehali.dev/projects/{access_key}/bucket/{key}'
 

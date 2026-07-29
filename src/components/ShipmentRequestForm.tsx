@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { formatPhoneInput } from '@/lib/phoneMask';
 import { compressImage } from '@/lib/imageCompress';
+import { fetchWithFriendlyErrors, describeError } from '@/lib/networkError';
 import func2url from '../../backend/func2url.json';
 
 const MAX_SIZE = 20 * 1024 * 1024;
@@ -64,31 +65,43 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
     if (!isValid || !photo) return;
     setSubmitting(true);
     try {
-      const { dataUrl } = await compressImage(photo);
-      const resp = await fetch(func2url['shipment-request'], {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          isRepeatVisit,
-          customerName: name.trim(),
-          customerPhone: phone,
-          customerEmail: email.trim(),
-          photoData: dataUrl,
-          contentType: 'image/jpeg',
-        }),
-      });
+      let dataUrl: string;
+      try {
+        ({ dataUrl } = await compressImage(photo));
+      } catch (err) {
+        toast({ title: 'Не удалось обработать фото', description: describeError(err) });
+        return;
+      }
+
+      let resp: Response;
+      try {
+        resp = await fetchWithFriendlyErrors(func2url['shipment-request'], {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            isRepeatVisit,
+            customerName: name.trim(),
+            customerPhone: phone,
+            customerEmail: email.trim(),
+            photoData: dataUrl,
+            contentType: 'image/jpeg',
+          }),
+        });
+      } catch (err) {
+        toast({ title: 'Не удалось отправить заявку', description: describeError(err) });
+        return;
+      }
+
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok) {
-        toast({ title: data.error || `Не удалось отправить заявку (ошибка ${resp.status})` });
+        toast({
+          title: data.error || 'Не удалось отправить заявку',
+          description: data.error ? undefined : `Ошибка сервера (${resp.status}). Попробуйте ещё раз через пару минут.`,
+        });
         return;
       }
       setDone(data.trackingNumber);
       setDoneRepeat(isRepeatVisit);
-    } catch (err) {
-      toast({
-        title: 'Ошибка отправки',
-        description: err instanceof Error ? err.message : 'Попробуйте позже.',
-      });
     } finally {
       setSubmitting(false);
     }

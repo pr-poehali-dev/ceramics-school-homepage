@@ -8,6 +8,8 @@ import { toast } from '@/hooks/use-toast';
 import AdminBanner from '@/components/admin/AdminBanner';
 import func2url from '../../../backend/func2url.json';
 import { PAGE_SCHEMAS, getPageSchema } from '@/data/pageContentSchemas';
+import { compressImage } from '@/lib/imageCompress';
+import { fetchWithFriendlyErrors, describeError } from '@/lib/networkError';
 
 interface Props {
   token: string;
@@ -80,23 +82,36 @@ const PageContentEditor = ({
     kind: 'картинку' | 'видео' = 'картинку',
   ) => {
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      const resp = await fetch(func2url['upload-image'], {
+      let fileData: string;
+      let contentType: string;
+
+      if (kind === 'картинку' && file.type !== 'image/svg+xml') {
+        // Сжимаем растровые изображения на клиенте — грузятся быстрее и гарантированно
+        // проходят лимит сервера, даже если фото снято прямо на камеру телефона.
+        const { dataUrl } = await compressImage(file, 2000, 0.85);
+        fileData = dataUrl;
+        contentType = 'image/jpeg';
+      } else {
+        fileData = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
+          reader.readAsDataURL(file);
+        });
+        contentType = file.type;
+      }
+
+      const resp = await fetchWithFriendlyErrors(func2url['upload-image'], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
-        body: JSON.stringify({ fileData: base64, contentType: file.type }),
-      });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || 'fail');
+        body: JSON.stringify({ fileData, contentType }),
+      }, kind === 'видео' ? 60000 : 25000);
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) throw new Error(data.error || `Ошибка сервера (${resp.status})`);
       onSuccess(data.url);
       toast({ title: `Файл загружен` });
-    } catch {
-      toast({ title: `Не удалось загрузить ${kind}`, description: 'Попробуйте другой файл.' });
+    } catch (err) {
+      toast({ title: `Не удалось загрузить ${kind}`, description: describeError(err) });
     }
   };
 
