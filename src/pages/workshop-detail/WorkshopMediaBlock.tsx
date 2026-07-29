@@ -25,12 +25,42 @@ const WorkshopMediaBlock = ({ galleryEnabled, videoEnabled, video, gallery }: Pr
 
   if (!hasImages && !hasVideo) return null;
 
+  const photoOnly = hasImages && !hasVideo;
+
   const togglePlay = () => {
     const v = videoRef.current;
     if (!v) return;
     if (v.paused) v.play();
     else v.pause();
   };
+
+  if (photoOnly) {
+    return (
+      <div className="mt-8">
+        <Carousel opts={{ loop: images.length > 3, align: 'start' }} className="w-full">
+          <CarouselContent className="-ml-4">
+            {images.map((src, i) => (
+              <CarouselItem key={src} className="basis-[85%] pl-4 sm:basis-1/2 lg:basis-1/3">
+                <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm">
+                  <img
+                    src={src}
+                    alt={`Фото ${i + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {images.length > 1 && (
+            <>
+              <CarouselPrevious className="left-3 h-10 w-10 border-none bg-white/90 text-primary shadow-lg hover:bg-white" />
+              <CarouselNext className="right-3 h-10 w-10 border-none bg-white/90 text-primary shadow-lg hover:bg-white" />
+            </>
+          )}
+        </Carousel>
+      </div>
+    );
+  }
 
   return (
     <div
