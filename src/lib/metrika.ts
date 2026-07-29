@@ -38,6 +38,7 @@ export const GOALS = {
   BOOKING_WIDGET_CLOSED: 'booking_widget_closed',
   PHONE_CLICK: 'phone_click',
   WHATSAPP_CLICK: 'whatsapp_click',
+  QR_TABLE_SCAN: 'qr_table_scan',
 } as const;
 
 /**
