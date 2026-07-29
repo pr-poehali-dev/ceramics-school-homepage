@@ -26,6 +26,7 @@ const WorkshopMediaBlock = ({ galleryEnabled, videoEnabled, video, gallery }: Pr
   if (!hasImages && !hasVideo) return null;
 
   const photoOnly = hasImages && !hasVideo;
+  const videoOnly = hasVideo && !hasImages;
 
   const togglePlay = () => {
     const v = videoRef.current;
@@ -58,6 +59,37 @@ const WorkshopMediaBlock = ({ galleryEnabled, videoEnabled, video, gallery }: Pr
             </>
           )}
         </Carousel>
+      </div>
+    );
+  }
+
+  if (videoOnly) {
+    return (
+      <div className="mt-8 mx-auto max-w-md">
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm">
+          <video
+            ref={videoRef}
+            controls
+            preload="metadata"
+            className="absolute inset-0 h-full w-full object-cover"
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          >
+            <source src={`${video}#t=0.1`} type="video/mp4" />
+          </video>
+          {!isPlaying && (
+            <button
+              type="button"
+              onClick={togglePlay}
+              aria-label="Воспроизвести видео"
+              className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors hover:bg-black/20"
+            >
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-transform hover:scale-105">
+                <Icon name="Play" size={28} className="ml-1" />
+              </span>
+            </button>
+          )}
+        </div>
       </div>
     );
   }

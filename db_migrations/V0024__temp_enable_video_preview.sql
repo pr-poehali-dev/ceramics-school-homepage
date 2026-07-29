@@ -1,0 +1,1 @@
+UPDATE page_content SET fields = jsonb_set(fields, '{mediaVideoEnabled}', '"true"') WHERE page_key = 'moscow-workshops-krug';
