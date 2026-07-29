@@ -771,7 +771,7 @@ def handler(event: dict, context) -> dict:
                 f"FROM {SCHEMA}.shipments s LEFT JOIN {SCHEMA}.shipments p ON p.id = s.parent_id "
                 f"WHERE s.source = 'client' AND s.status IN ('shipped', 'issued') "
                 f"AND s.archived_at IS NULL "
-                f"ORDER BY s.delivered_at DESC, s.created_at DESC LIMIT 500",
+                f"ORDER BY s.created_at DESC LIMIT 500",
             )
             confirmed_rows = cur.fetchall()
             return {
