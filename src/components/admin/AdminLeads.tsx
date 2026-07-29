@@ -19,15 +19,15 @@ const SORT_OPTIONS: { key: LeadSortKey; label: string }[] = [
 const AdminLeads = ({ leads, sort, onSort }: Props) => {
   return (
     <div className="mt-6 space-y-3">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        Сортировать по:
+      <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 text-sm text-muted-foreground sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+        <span className="shrink-0">Сортировать по:</span>
         {SORT_OPTIONS.map((opt) => {
           const active = sort.key === opt.key;
           return (
             <button
               key={opt.key}
               onClick={() => onSort(opt.key)}
-              className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 active ? 'bg-primary/10 text-primary' : 'bg-secondary hover:text-foreground'
               }`}
             >

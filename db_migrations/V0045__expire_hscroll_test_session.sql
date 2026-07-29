@@ -1,0 +1,1 @@
+UPDATE t_p90609946_ceramics_school_home.manager_sessions SET expires_at = NOW() - INTERVAL '1 hour' WHERE token = 'hscroll-test-token-abcdef1234567890abcdef12345';

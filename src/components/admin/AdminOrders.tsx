@@ -54,7 +54,7 @@ const AdminOrders = ({
 }: Props) => {
   return (
     <>
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="-mx-4 mt-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {(['moscow', 'suzdal', 'all'] as const).map((c) => (
           <button
             key={c}
@@ -62,7 +62,7 @@ const AdminOrders = ({
               setCityFilter(c);
               setOrdersPage(() => 1);
             }}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               cityFilter === c
                 ? 'bg-foreground text-background'
                 : 'bg-secondary text-muted-foreground'
@@ -74,15 +74,15 @@ const AdminOrders = ({
         ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        Сортировать по:
+      <div className="-mx-4 mt-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 text-sm text-muted-foreground sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+        <span className="shrink-0">Сортировать по:</span>
         {SORT_OPTIONS.map((opt) => {
           const active = sort.key === opt.key;
           return (
             <button
               key={opt.key}
               onClick={() => onSort(opt.key)}
-              className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 active ? 'bg-primary/10 text-primary' : 'bg-secondary hover:text-foreground'
               }`}
             >

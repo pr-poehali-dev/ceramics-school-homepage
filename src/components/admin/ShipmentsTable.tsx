@@ -78,10 +78,10 @@ const ShipmentsTable = ({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-2">
+        <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           <button
             onClick={() => setView('active')}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               view === 'active' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
             }`}
           >
@@ -90,7 +90,7 @@ const ShipmentsTable = ({
           {role === 'vdnh' && (
             <button
               onClick={() => setView('closed')}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 view === 'closed' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
               }`}
             >
