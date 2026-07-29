@@ -126,23 +126,21 @@ const Tracking = () => {
             <button
               type="button"
               onClick={() => setMode('find')}
-              className={`flex items-center justify-center gap-1 whitespace-nowrap rounded-full px-2 py-2.5 text-xs font-semibold transition-colors sm:gap-1.5 sm:px-4 sm:text-sm ${
+              className={`flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-semibold transition-colors sm:gap-1.5 sm:px-4 ${
                 mode === 'find' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <Icon name="Search" size={14} className="shrink-0 sm:hidden" />
-              <Icon name="Search" size={15} className="hidden shrink-0 sm:block" />
+              <Icon name="Search" size={16} className="shrink-0" />
               Найти
             </button>
             <button
               type="button"
               onClick={() => setMode('add')}
-              className={`flex items-center justify-center gap-1 whitespace-nowrap rounded-full px-2 py-2.5 text-xs font-semibold transition-colors sm:gap-1.5 sm:px-4 sm:text-sm ${
+              className={`flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-semibold transition-colors sm:gap-1.5 sm:px-4 ${
                 mode === 'add' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <Icon name="Camera" size={14} className="shrink-0 sm:hidden" />
-              <Icon name="Camera" size={15} className="hidden shrink-0 sm:block" />
+              <Icon name="Camera" size={16} className="shrink-0" />
               Добавить
             </button>
           </div>
