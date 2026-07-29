@@ -387,7 +387,8 @@ const SuzdalWorkshopDetail = () => {
 
         {/* ФОТО И ВИДЕО */}
         <WorkshopMediaBlock
-          enabled={c.mediaEnabled}
+          galleryEnabled={c.mediaGalleryEnabled}
+          videoEnabled={c.mediaVideoEnabled}
           video={c.mediaVideo}
           gallery={c.mediaGallery}
         />

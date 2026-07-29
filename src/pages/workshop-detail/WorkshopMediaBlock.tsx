@@ -9,20 +9,19 @@ import {
 } from '@/components/ui/carousel';
 
 interface Props {
-  enabled?: string;
+  galleryEnabled?: string;
+  videoEnabled?: string;
   video?: string;
   gallery?: string;
 }
 
-const WorkshopMediaBlock = ({ enabled, video, gallery }: Props) => {
+const WorkshopMediaBlock = ({ galleryEnabled, videoEnabled, video, gallery }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  if (enabled === 'false') return null;
-
   const images = (gallery || '').split('\n').filter(Boolean);
-  const hasImages = images.length > 0;
-  const hasVideo = Boolean(video);
+  const hasImages = galleryEnabled !== 'false' && images.length > 0;
+  const hasVideo = videoEnabled !== 'false' && Boolean(video);
 
   if (!hasImages && !hasVideo) return null;
 
