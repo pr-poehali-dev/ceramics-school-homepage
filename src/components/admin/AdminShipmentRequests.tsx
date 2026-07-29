@@ -483,7 +483,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                                 ? 'Готово к выдаче'
                                 : row.requiresPainting
                                   ? 'Ожидает росписи'
-                                  : 'Готовится'}
+                                  : 'Идёт обжиг'}
                             {row.readyAt && row.status !== 'issued' && row.emailSent && (
                               <p className="mt-0.5 text-xs text-green-600">Письмо отправлено</p>
                             )}
