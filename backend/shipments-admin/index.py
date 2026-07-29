@@ -77,6 +77,8 @@ def _confirmed_dict(r):
         'visitNumber': r[11],
         'parentId': r[12],
         'parentTrackingNumber': r[13],
+        'requiresPainting': r[14],
+        'paintingReminderSentAt': r[15].isoformat() if r[15] else None,
     }
 
 
@@ -134,6 +136,84 @@ def _fetch_pickup_info(cur):
     except Exception:
         pass
     return address, work_hours
+
+
+def _send_painting_reminder_email(customer_email: str, tracking_number: str, phone: str) -> None:
+    smtp_host = os.environ.get('SMTP_HOST')
+    smtp_port = int(os.environ.get('SMTP_PORT') or 465)
+    smtp_user = os.environ.get('SMTP_USER')
+    smtp_password = os.environ.get('SMTP_PASSWORD')
+
+    missing = [
+        name for name, val in [
+            ('SMTP_HOST', smtp_host), ('SMTP_USER', smtp_user),
+            ('SMTP_PASSWORD', smtp_password), ('customerEmail', customer_email),
+        ] if not val
+    ]
+    if missing:
+        raise RuntimeError(f"Не заданы параметры: {', '.join(missing)}")
+
+    text = (
+        'Уважаемый клиент!\n\n'
+        'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг.\n\n'
+        f'Номер заявки: {tracking_number}\n\n'
+        'Если Вы хотите расписать изделие — запишитесь на мастер-класс «Роспись ангобами» '
+        f'на сайте {SITE_URL}/moscow/workshops/angoby или по телефону {phone}.\n\n'
+        'Если роспись не требуется — Вы можете просто приехать и забрать готовое изделие.\n\n'
+        f'Контакты: {SITE_URL}/moscow/contacts'
+    )
+
+    msg = MIMEText(text, 'plain', 'utf-8')
+    msg['Subject'] = Header('Ваше изделие прошло обжиг', 'utf-8')
+    msg['From'] = smtp_user
+    msg['To'] = customer_email
+
+    context_ssl = ssl.create_default_context()
+    if smtp_port == 465:
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, [customer_email], msg.as_string())
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls(context=context_ssl)
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, [customer_email], msg.as_string())
+
+
+def _auto_send_painting_reminders(cur):
+    """Отправляет письмо «изделие прошло обжиг, запишитесь на роспись» по заявкам,
+    подтверждённым как «требует росписи» (requires_painting=true), у которых прошло
+    16 дней с момента подтверждения (confirmed_at) и письмо ещё не отправлялось."""
+    cur.execute(
+        f"SELECT id, tracking_number, customer_email FROM {SCHEMA}.shipments "
+        f"WHERE source = 'client' AND requires_painting = true AND status = 'shipped' "
+        f"AND painting_reminder_sent_at IS NULL "
+        f"AND confirmed_at IS NOT NULL AND confirmed_at < NOW() - INTERVAL '16 days'",
+    )
+    rows = cur.fetchall()
+    if not rows:
+        return
+    try:
+        cur.execute(
+            f"SELECT fields->>'phone' FROM {SCHEMA}.page_content WHERE page_key = 'moscow-info'",
+        )
+        phone_row = cur.fetchone()
+        phone = (phone_row[0] if phone_row else None) or '+7 (985) 419-89-03'
+    except Exception:
+        phone = '+7 (985) 419-89-03'
+
+    for shipment_id, tracking_number, customer_email in rows:
+        if customer_email:
+            try:
+                _send_painting_reminder_email(customer_email, tracking_number, phone)
+                print(f"[painting_reminder] email sent to {customer_email} for {tracking_number}")
+            except Exception as e:
+                print(f"[painting_reminder] email send failed for {customer_email}: {e!r}")
+                continue
+        cur.execute(
+            f"UPDATE {SCHEMA}.shipments SET painting_reminder_sent_at = NOW() WHERE id = %s",
+            (shipment_id,),
+        )
 
 
 def _send_ready_email(customer_email: str, tracking_number: str, address: str, work_hours: str, storage_until: str) -> None:
@@ -195,9 +275,14 @@ def handler(event: dict, context) -> dict:
     GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
       или 'issued', source='client', archived_at IS NULL); ready_at показывает, отмечено ли
       изделие готовым к выдаче, доступно только роли 'vdnh'. При каждом вызове автоматически
-      архивирует (archived_at=NOW()) заявки, у которых ready_at был более 3 месяцев назад.
+      архивирует (archived_at=NOW()) заявки, у которых ready_at был более 3 месяцев назад,
+      и отправляет письмо-напоминание про роспись (requires_painting=true, 16 дней после
+      confirmed_at, см. _auto_send_painting_reminders).
       visitNumber/parentId/parentTrackingNumber показывают связь с предыдущим посещением
       клиента (повторная заявка после росписи, source shipment-request с isRepeatVisit=true).
+      requiresPainting=true — заявка на необожжённое изделие под роспись: кнопки «Готово» нет,
+      клиенту автоматически летит письмо с приглашением записаться на роспись через 16 дней.
+      requiresPainting=false — обычная заявка на готовое изделие: доступна кнопка «Готово».
     GET ?status=archived — архив заявок клиентов (source='client', archived_at IS NOT NULL) —
       заявки, отмеченные готовыми к выдаче более 3 месяцев назад, доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
@@ -207,8 +292,12 @@ def handler(event: dict, context) -> dict:
       Excel-файла с колонками «Номер посылки», «ФИО клиента», «Телефон клиента», «Email»
       (необязательно), «Дата доставки в Москву», доступно только роли 'suzdal'.
     POST { action: 'issue', id } — пометить посылку выданной, доступно только роли 'vdnh'.
-    POST { action: 'approve_request', id, deliveredAt } — подтвердить заявку клиента и
-      перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
+    POST { action: 'approve_request', id, deliveredAt, requiresPainting } — подтвердить заявку
+      клиента и перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
+      requiresPainting=true — изделие сдано под роспись (пока просто обожжено): без кнопки
+      «Готово», через 16 дней после подтверждения клиенту автоматически уходит письмо с
+      приглашением записаться на роспись. requiresPainting=false — обычное готовое изделие,
+      доступна кнопка «Готово» (ready_for_pickup).
     POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
     POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client') готовой
       к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом,
@@ -456,6 +545,7 @@ def handler(event: dict, context) -> dict:
 
                 request_id = body.get('id')
                 delivered_at = body.get('deliveredAt') or datetime.utcnow().date().isoformat()
+                requires_painting = bool(body.get('requiresPainting'))
                 if not request_id:
                     return {
                         'statusCode': 400,
@@ -473,9 +563,10 @@ def handler(event: dict, context) -> dict:
                 return_date = delivered_date + timedelta(days=30)
 
                 cur.execute(
-                    f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s "
+                    f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s, "
+                    f"requires_painting = %s, confirmed_at = NOW() "
                     f"WHERE id = %s AND status = 'pending_review'",
-                    (delivered_date, return_date, request_id),
+                    (delivered_date, return_date, requires_painting, request_id),
                 )
                 if cur.rowcount == 0:
                     return {
@@ -670,11 +761,13 @@ def handler(event: dict, context) -> dict:
 
         if status_filter == 'confirmed':
             _auto_archive(cur)
+            _auto_send_painting_reminders(cur)
             conn.commit()
             cur.execute(
                 f"SELECT s.id, s.tracking_number, s.customer_name, s.customer_phone, s.customer_email, s.photo_url, "
                 f"s.delivered_at, s.return_at, s.status, s.ready_at, s.created_at, "
-                f"s.visit_number, s.parent_id, p.tracking_number "
+                f"s.visit_number, s.parent_id, p.tracking_number, "
+                f"s.requires_painting, s.painting_reminder_sent_at "
                 f"FROM {SCHEMA}.shipments s LEFT JOIN {SCHEMA}.shipments p ON p.id = s.parent_id "
                 f"WHERE s.source = 'client' AND s.status IN ('shipped', 'issued') "
                 f"AND s.archived_at IS NULL "

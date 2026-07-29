@@ -35,6 +35,8 @@ interface ShipmentRequest {
   visitNumber?: number;
   parentId?: number | null;
   parentTrackingNumber?: string | null;
+  requiresPainting?: boolean;
+  paintingReminderSentAt?: string | null;
 }
 
 interface Props {
@@ -78,6 +80,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
   const [approveTarget, setApproveTarget] = useState<ShipmentRequest | null>(null);
   const [approveDate, setApproveDate] = useState(todayISO());
+  const [approveRequiresPainting, setApproveRequiresPainting] = useState(false);
   const [approving, setApproving] = useState(false);
 
   const [rejectTarget, setRejectTarget] = useState<ShipmentRequest | null>(null);
@@ -122,6 +125,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const openApprove = (r: ShipmentRequest) => {
     setApproveTarget(r);
     setApproveDate(todayISO());
+    setApproveRequiresPainting(false);
   };
 
   const confirmApprove = async () => {
@@ -131,14 +135,24 @@ const AdminShipmentRequests = ({ token }: Props) => {
       const resp = await fetch(func2url['shipments-admin'], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
-        body: JSON.stringify({ action: 'approve_request', id: approveTarget.id, deliveredAt: approveDate }),
+        body: JSON.stringify({
+          action: 'approve_request',
+          id: approveTarget.id,
+          deliveredAt: approveDate,
+          requiresPainting: approveRequiresPainting,
+        }),
       });
       const data = await resp.json();
       if (!resp.ok) {
         toast({ title: data.error || 'Не удалось подтвердить заявку' });
         return;
       }
-      toast({ title: 'Заявка подтверждена', description: `№ ${approveTarget.trackingNumber} добавлена в подтверждённые` });
+      toast({
+        title: 'Заявка подтверждена',
+        description: approveRequiresPainting
+          ? `№ ${approveTarget.trackingNumber} — через 16 дней клиенту автоматически придёт письмо про запись на роспись`
+          : `№ ${approveTarget.trackingNumber} добавлена в подтверждённые`,
+      });
       setRequests((prev) => prev.filter((r) => r.id !== approveTarget.id));
       setApproveTarget(null);
     } catch {
@@ -372,9 +386,22 @@ const AdminShipmentRequests = ({ token }: Props) => {
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">{fmtDate(row.storageUntil)}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">
-                            {row.status === 'issued' ? 'Выдано' : row.readyAt ? 'Готово к выдаче' : 'Готовится'}
+                            {row.status === 'issued'
+                              ? 'Выдано'
+                              : row.readyAt
+                                ? 'Готово к выдаче'
+                                : row.requiresPainting
+                                  ? 'Ожидает росписи'
+                                  : 'Готовится'}
                             {row.readyAt && row.status !== 'issued' && row.emailSent && (
                               <p className="mt-0.5 text-xs text-green-600">Письмо отправлено</p>
+                            )}
+                            {row.requiresPainting && !row.readyAt && row.status !== 'issued' && (
+                              <p className="mt-0.5 text-xs text-muted-foreground">
+                                {row.paintingReminderSentAt
+                                  ? 'Письмо про роспись отправлено'
+                                  : 'Письмо про роспись придёт через 16 дней'}
+                              </p>
                             )}
                           </TableCell>
                         </>
@@ -405,7 +432,8 @@ const AdminShipmentRequests = ({ token }: Props) => {
                           </div>
                         ) : view === 'confirmed' ? (
                           !row.readyAt &&
-                          row.status !== 'issued' && (
+                          row.status !== 'issued' &&
+                          !row.requiresPainting && (
                             <Button size="sm" className="rounded-full" onClick={() => setReadyTarget(row)}>
                               <Icon name="Check" size={14} className="mr-1.5" /> Готово
                             </Button>
@@ -452,7 +480,44 @@ const AdminShipmentRequests = ({ token }: Props) => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Подтвердить заявку?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Что видно на фото № {approveTarget?.trackingNumber}?
+            </AlertDialogDescription>
           </AlertDialogHeader>
+
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => setApproveRequiresPainting(false)}
+              className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                !approveRequiresPainting
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:bg-secondary/40'
+              }`}
+            >
+              <p className="text-sm font-medium text-foreground">Готовое изделие</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Обжиг — и всё, изделие полностью готово. Появится кнопка «Готово», которую нажмёте
+                после обжига.
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setApproveRequiresPainting(true)}
+              className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                approveRequiresPainting
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:bg-secondary/40'
+              }`}
+            >
+              <p className="text-sm font-medium text-foreground">Требуется роспись</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Изделие ещё не расписано. Кнопки «Готово» не будет — через 16 дней клиенту
+                автоматически придёт письмо с приглашением записаться на роспись.
+              </p>
+            </button>
+          </div>
+
           <AlertDialogFooter>
             <AlertDialogCancel>Отмена</AlertDialogCancel>
             <AlertDialogAction onClick={confirmApprove} disabled={approving}>

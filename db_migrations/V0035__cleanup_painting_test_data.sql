@@ -1,0 +1,2 @@
+UPDATE t_p90609946_ceramics_school_home.manager_sessions SET expires_at = NOW() - INTERVAL '1 hour' WHERE token = 'test-verify-token-abcdef1234567890abcdef1234567890';
+UPDATE t_p90609946_ceramics_school_home.shipments SET status = 'rejected' WHERE tracking_number = 'REQ-4A6971';
