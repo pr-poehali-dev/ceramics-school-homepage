@@ -93,6 +93,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [galleryMode, setGalleryMode] = useState(false);
 
   const load = async (v: 'requests' | 'confirmed' | 'archived') => {
     setLoading(true);
@@ -301,7 +302,24 @@ const AdminShipmentRequests = ({ token }: Props) => {
             : 'Заявки, отмеченные готовыми к выдаче более 3 месяцев назад, переносятся сюда автоматически.'}
       </p>
 
-      {view !== 'requests' && (
+      {view === 'confirmed' && (
+        <Button
+          onClick={() => setGalleryMode((v) => !v)}
+          variant={galleryMode ? 'default' : 'outline'}
+          className="mt-4 w-full rounded-xl sm:w-auto"
+          size="lg"
+        >
+          <Icon
+            name={galleryMode ? 'LayoutList' : 'GalleryHorizontal'}
+            fallback={galleryMode ? 'List' : 'Images'}
+            size={18}
+            className="mr-2"
+          />
+          {galleryMode ? 'Показать таблицей' : 'Найти изделие по фото у стола'}
+        </Button>
+      )}
+
+      {!(view === 'confirmed' && galleryMode) && view !== 'requests' && (
         <div className="mt-3 max-w-xs">
           <Input
             value={search}
@@ -319,6 +337,64 @@ const AdminShipmentRequests = ({ token }: Props) => {
         <div className="mt-8 flex justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
+      ) : view === 'confirmed' && galleryMode ? (
+        (() => {
+          const galleryItems = confirmed.filter(
+            (r) => !r.readyAt && r.status !== 'issued' && !r.requiresPainting,
+          );
+          if (galleryItems.length === 0) {
+            return (
+              <p className="mt-8 text-center text-sm text-muted-foreground">
+                Изделий, ожидающих обжига, не найдено — все уже готовы или ждут росписи.
+              </p>
+            );
+          }
+          return (
+            <div className="mt-4">
+              <p className="mb-3 text-sm text-muted-foreground">
+                Найдено изделий: {galleryItems.length}. Пролистайте фото и нажмите «Готово» под нужным.
+              </p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {galleryItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setPhotoPreview(item.photoUrl)}
+                      className="block w-full"
+                    >
+                      <img
+                        src={item.photoUrl}
+                        alt="Фото изделия"
+                        className="aspect-square w-full object-cover"
+                      />
+                    </button>
+                    <div className="p-3">
+                      <p className="font-medium">
+                        № {item.trackingNumber}
+                        {(item.visitNumber || 1) > 1 && (
+                          <span className="ml-1.5 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                            Посещение {item.visitNumber}
+                          </span>
+                        )}
+                      </p>
+                      <p className="truncate text-sm text-muted-foreground">{item.customerName}</p>
+                      <Button
+                        size="lg"
+                        className="mt-3 w-full rounded-xl"
+                        onClick={() => setReadyTarget(item)}
+                      >
+                        <Icon name="Check" size={18} className="mr-2" /> Готово
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()
       ) : list.length === 0 ? (
         <p className="mt-8 text-center text-sm text-muted-foreground">
           {view === 'requests'
