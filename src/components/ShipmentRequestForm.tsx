@@ -6,18 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { formatPhoneInput } from '@/lib/phoneMask';
+import { compressImage } from '@/lib/imageCompress';
 import func2url from '../../backend/func2url.json';
 
-const MAX_SIZE = 8 * 1024 * 1024;
+const MAX_SIZE = 20 * 1024 * 1024;
 const ALLOWED = ['image/png', 'image/jpeg', 'image/webp'];
-
-const fileToBase64 = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 
 interface Props {
   photoHint?: string;
@@ -52,7 +45,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
       return;
     }
     if (file.size > MAX_SIZE) {
-      toast({ title: 'Фото слишком большое', description: 'Максимум 8 МБ.' });
+      toast({ title: 'Фото слишком большое', description: 'Максимум 20 МБ.' });
       return;
     }
     setPhoto(file);
@@ -71,7 +64,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
     if (!isValid || !photo) return;
     setSubmitting(true);
     try {
-      const base64 = await fileToBase64(photo);
+      const { dataUrl } = await compressImage(photo);
       const resp = await fetch(func2url['shipment-request'], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,19 +73,22 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
           customerName: name.trim(),
           customerPhone: phone,
           customerEmail: email.trim(),
-          photoData: base64,
-          contentType: photo.type,
+          photoData: dataUrl,
+          contentType: 'image/jpeg',
         }),
       });
-      const data = await resp.json();
+      const data = await resp.json().catch(() => ({}));
       if (!resp.ok) {
-        toast({ title: data.error || 'Не удалось отправить заявку' });
+        toast({ title: data.error || `Не удалось отправить заявку (ошибка ${resp.status})` });
         return;
       }
       setDone(data.trackingNumber);
       setDoneRepeat(isRepeatVisit);
-    } catch {
-      toast({ title: 'Ошибка отправки', description: 'Попробуйте позже.' });
+    } catch (err) {
+      toast({
+        title: 'Ошибка отправки',
+        description: err instanceof Error ? err.message : 'Попробуйте позже.',
+      });
     } finally {
       setSubmitting(false);
     }
