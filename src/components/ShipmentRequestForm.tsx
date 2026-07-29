@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ interface Props {
 
 const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже необожжённого полуфабриката.' }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
   const [isRepeatVisit, setIsRepeatVisit] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -28,6 +29,12 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<string | null>(null);
   const [doneRepeat, setDoneRepeat] = useState(false);
+
+  useEffect(() => {
+    if (done) {
+      successRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [done]);
 
   const reset = () => {
     setName('');
@@ -109,7 +116,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
 
   if (done) {
     return (
-      <div className="flex flex-col items-center py-8 text-center">
+      <div ref={successRef} className="flex flex-col items-center py-8 text-center">
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
           <Icon name="CheckCircle2" size={32} />
         </span>
