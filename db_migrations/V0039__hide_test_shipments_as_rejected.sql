@@ -1,0 +1,7 @@
+UPDATE t_p90609946_ceramics_school_home.shipments
+SET status = 'rejected'
+WHERE tracking_number IN (
+  'REQ-CD9271','REQ-6D89FE','REQ-19BB12','REQ-A094FA','REQ-DEMO02','REQ-B9D5E6',
+  'REQ-97266A','REQ-470F08','REQ-9C8544','REQ-B6655A','REQ-A30F63','REQ-EE3F65',
+  'SZD-1001','REQ-DEMO01','XLS-TEST-002','XLS-TEST-001'
+);
