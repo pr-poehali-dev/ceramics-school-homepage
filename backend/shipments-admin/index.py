@@ -266,10 +266,12 @@ def handler(event: dict, context) -> dict:
     '''
     Управление посылками с готовыми керамическими изделиями для менеджеров Суздаля и ВДНХ.
     Доступ защищён токеном сессии менеджера (общая таблица managers/manager_sessions).
-    GET ?status=active|closed — список посылок (активные или закрытые: выданные/возврат),
-      доступно обеим ролям. При каждом вызове автоматически переводит в статус 'returned'
-      (Возврат) посылки, не выданные клиенту в течение 30 дней с даты доставки в Москву
-      (return_at < текущей даты) — такие посылки попадают в раздел «Закрытые».
+    GET ?status=active|closed — список посылок, добавленных менеджером Суздаля вручную
+      (source='manager'; активные или закрытые: выданные/возврат), доступно обеим ролям.
+      Заявки клиентов с сайта (source='client', раздел «Изделия (Москва)») сюда не попадают —
+      это два независимых списка. При каждом вызове автоматически переводит в статус
+      'returned' (Возврат) посылки, не выданные клиенту в течение 30 дней с даты доставки
+      в Москву (return_at < текущей даты) — такие посылки попадают в раздел «Закрытые».
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
     GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
@@ -686,7 +688,7 @@ def handler(event: dict, context) -> dict:
 
                 cur.execute(
                     f"UPDATE {SCHEMA}.shipments SET status = 'issued', issued_at = NOW(), issued_by = %s "
-                    f"WHERE id = %s AND status = 'shipped'",
+                    f"WHERE id = %s AND status = 'shipped' AND source = 'manager'",
                     (manager_id, shipment_id),
                 )
                 if cur.rowcount == 0:
@@ -803,12 +805,14 @@ def handler(event: dict, context) -> dict:
             order_clause = 'issued_at DESC, return_at DESC, delivered_at DESC'
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
-                f"FROM {SCHEMA}.shipments WHERE status IN ('issued', 'returned') ORDER BY {order_clause} LIMIT 2000",
+                f"FROM {SCHEMA}.shipments WHERE status IN ('issued', 'returned') AND source = 'manager' "
+                f"ORDER BY {order_clause} LIMIT 2000",
             )
         else:
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
-                f"FROM {SCHEMA}.shipments WHERE status = 'shipped' ORDER BY delivered_at DESC, created_at DESC LIMIT 2000",
+                f"FROM {SCHEMA}.shipments WHERE status = 'shipped' AND source = 'manager' "
+                f"ORDER BY delivered_at DESC, created_at DESC LIMIT 2000",
             )
         rows = cur.fetchall()
         shipments = [_shipment_dict(r) for r in rows]
