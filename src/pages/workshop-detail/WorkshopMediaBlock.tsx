@@ -42,7 +42,7 @@ const WorkshopMediaBlock = ({ galleryEnabled, videoEnabled, video, gallery }: Pr
           <CarouselContent className="-ml-4">
             {images.map((src, i) => (
               <CarouselItem key={src} className="basis-[85%] pl-4 sm:basis-1/2 lg:basis-1/3">
-                <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm">
+                <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
                   <img
                     src={src}
                     alt={`Фото ${i + 1}`}
@@ -101,7 +101,7 @@ const WorkshopMediaBlock = ({ galleryEnabled, videoEnabled, video, gallery }: Pr
       }`}
     >
       {hasImages && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm lg:aspect-auto lg:h-[340px]">
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-white shadow-sm lg:aspect-auto lg:h-[340px]">
           <Carousel opts={{ loop: images.length > 2, align: 'start' }} className="h-full w-full">
             <CarouselContent className="-ml-2 h-full">
               {images.map((src, i) => (
