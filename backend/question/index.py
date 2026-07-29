@@ -85,8 +85,10 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'success': True, 'emailSent': False}),
         }
 
+    city_label = 'Суздаль' if city == 'suzdal' else 'Москва'
     text = (
         'Новый вопрос с сайта.\n\n'
+        f'Город: {city_label}\n'
         f'Email клиента: {email}\n'
         f'Телефон клиента: {phone}\n'
         f'Комментарий: {comment or "—"}\n'

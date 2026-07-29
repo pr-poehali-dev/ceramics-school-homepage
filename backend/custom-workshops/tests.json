@@ -1,0 +1,27 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "GET публичный список",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {"workshops": []},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "POST без авторизации — отказ",
+      "method": "POST",
+      "path": "/",
+      "body": {"action": "create", "city": "moscow", "label": "Тест"},
+      "expectedStatus": 401,
+      "expectedBody": {"error": "string"},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

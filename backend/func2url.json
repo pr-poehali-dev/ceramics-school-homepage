@@ -1,4 +1,5 @@
 {
+  "custom-workshops": "https://functions.poehali.dev/7d77fdf1-c3c2-4040-adc6-c90cddb1ac6d",
   "shipment-request": "https://functions.poehali.dev/c70f2270-39e4-47bb-b45c-20fdb78bd099",
   "shipments-admin": "https://functions.poehali.dev/719a8065-5334-4127-aaa6-b7dd4aa82014",
   "shipments-tracking": "https://functions.poehali.dev/e4a99ee4-2cbf-4619-bfb5-da4bcf177c07",

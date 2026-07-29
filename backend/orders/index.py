@@ -45,8 +45,10 @@ def _send_notification(name: str, email: str, phone: str, comment: str, payment:
     lines_text = '\n'.join(
         f"- {i.get('title', '')} x{i.get('qty', 1)} — {i.get('price', 0)} ₽" for i in items
     )
+    city_label = 'Суздаль' if city == 'suzdal' else 'Москва'
     text = (
         'Новый заказ с сайта.\n\n'
+        f'Город: {city_label}\n'
         f'Имя: {name}\n'
         f'Email: {email}\n'
         f'Телефон: {phone}\n'
