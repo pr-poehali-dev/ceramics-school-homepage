@@ -102,14 +102,14 @@ const WorkshopMediaBlock = ({ galleryEnabled, videoEnabled, video, gallery }: Pr
     >
       {hasImages && (
         <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm lg:aspect-auto lg:h-[340px]">
-          <Carousel opts={{ loop: images.length > 1 }} className="h-full w-full">
-            <CarouselContent className="ml-0 h-full">
+          <Carousel opts={{ loop: images.length > 2, align: 'start' }} className="h-full w-full">
+            <CarouselContent className="-ml-2 h-full">
               {images.map((src, i) => (
-                <CarouselItem key={src} className="h-full pl-0">
+                <CarouselItem key={src} className="h-full basis-full pl-2 sm:basis-1/2">
                   <img
                     src={src}
                     alt={`Фото ${i + 1}`}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full rounded-xl object-cover"
                   />
                 </CarouselItem>
               ))}
