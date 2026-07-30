@@ -381,6 +381,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
                         )}
                       </p>
                       <p className="truncate text-sm text-muted-foreground">{item.customerName}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        Заявка создана: {item.createdAt ? fmtDateTime(item.createdAt) : '—'}
+                      </p>
                       <Button
                         size="lg"
                         className="mt-3 w-full rounded-xl"
