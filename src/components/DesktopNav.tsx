@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { useNavClick } from '@/hooks/useNavClick';
 import { useCity } from '@/hooks/useCity';
+import { useCustomWorkshops } from '@/hooks/useCustomWorkshops';
 import {
   MOSCOW_WORKSHOP_LINKS,
   MOSCOW_NAV_LINKS,
@@ -30,7 +31,15 @@ const DesktopNav = ({ active }: DesktopNavProps) => {
 
   const isSuzdal = city === 'suzdal';
   const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
-  const workshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
+  const baseWorkshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
+  const customWorkshops = useCustomWorkshops(isSuzdal ? 'suzdal' : 'moscow');
+  const workshopLinks = [
+    ...baseWorkshopLinks,
+    ...customWorkshops.map((w) => ({
+      label: w.label,
+      to: `${workshopsHome}/${w.slug}`,
+    })),
+  ];
   const navLinks = isSuzdal ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
 
   return (

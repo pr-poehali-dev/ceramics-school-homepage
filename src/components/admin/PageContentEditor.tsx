@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import AdminBanner from '@/components/admin/AdminBanner';
+import AdminCustomWorkshops from '@/components/admin/AdminCustomWorkshops';
 import func2url from '../../../backend/func2url.json';
 import { PAGE_SCHEMAS, getPageSchema } from '@/data/pageContentSchemas';
 import { compressImage } from '@/lib/imageCompress';
@@ -245,6 +246,11 @@ const PageContentEditor = ({
             </div>
           );
         })}
+
+        <div>
+          <h3 className="mb-3 text-sm font-medium text-muted-foreground">Новые мастер-классы (Москва и Суздаль)</h3>
+          <AdminCustomWorkshops token={token} onOpenEditor={setSelectedKey} />
+        </div>
       </div>
     );
   }

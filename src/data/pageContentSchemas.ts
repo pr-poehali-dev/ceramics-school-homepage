@@ -2054,4 +2054,138 @@ export const PAGE_SCHEMAS: PageSchema[] = [
   },
 ];
 
-export const getPageSchema = (key: string) => PAGE_SCHEMAS.find((p) => p.key === key);
+/** Общий набор полей для любого мастер-класса Москвы — используется как шаблон и для
+ * изначально зашитых 4 МК, и для новых, созданных через админку. */
+const MOSCOW_WORKSHOP_FIELDS: ContentFieldSchema[] = [
+  { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
+  { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
+  { key: 'title', label: 'Название', type: 'text' },
+  { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
+  { key: 'price', label: 'Цена', type: 'price' },
+  { key: 'img', label: 'Картинка', type: 'image' },
+  { key: 'description', label: 'Блок «О мастер-классе» — абзацы (каждый с новой строки)', type: 'textarea' },
+  { key: 'benefit', label: 'Блок «Дети на мастер-классе» — текст', type: 'textarea' },
+  { key: 'discountText', label: 'Блок «Льготникам — скидка» — текст', type: 'textarea' },
+  { key: 'bookButtonText', label: 'Кнопка «Записаться» — текст', type: 'text' },
+  { key: 'certificateButtonText', label: 'Кнопка «Купить сертификат» — текст', type: 'text' },
+  { key: 'miniCtaTitle', label: 'Мини-блок записи — заголовок', type: 'text' },
+  { key: 'miniCtaText', label: 'Мини-блок записи — текст', type: 'text' },
+  { key: 'ctaTitle', label: 'Нижний блок — заголовок «Остались вопросы?»', type: 'text' },
+  { key: 'ctaText', label: 'Нижний блок — текст', type: 'textarea' },
+  { key: 'ctaPhone', label: 'Нижний блок — телефон', type: 'text' },
+  { key: 'mediaGalleryEnabled', label: 'Показывать блок «Фото»', type: 'boolean' },
+  { key: 'mediaVideoEnabled', label: 'Показывать блок «Видео»', type: 'boolean' },
+  { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+  { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
+];
+
+const MOSCOW_WORKSHOP_DEFAULTS: Record<string, string> = {
+  metaTitle: '',
+  metaDescription: '',
+  title: '',
+  subtitle: '',
+  price: '',
+  img: '',
+  description: '',
+  benefit: '',
+  discountText:
+    'Социальная скидка для пенсионеров, студентов, именинников в день рождения, членов многодетных семей и инвалидов всех групп. Не суммируется, действует при предъявлении документа.',
+  bookButtonText: 'Записаться',
+  certificateButtonText: 'Купить сертификат',
+  miniCtaTitle: 'Готовы попробовать?',
+  miniCtaText: 'Запишитесь на удобное время — поможем с выбором.',
+  ctaTitle: 'Остались вопросы?',
+  ctaText: 'Поможем выбрать удобное время, уточним расписание и ответим на любые вопросы.',
+  ctaPhone: '+7 (985) 419-89-03',
+  mediaGalleryEnabled: 'false',
+  mediaVideoEnabled: 'false',
+  mediaVideo: '',
+  mediaGallery: '',
+};
+
+/** Общий набор полей для любого мастер-класса Суздаля — шаблон для изначальных 9 МК
+ * и новых, созданных через админку. */
+const SUZDAL_WORKSHOP_FIELDS: ContentFieldSchema[] = [
+  { key: 'metaTitle', label: 'Title (для поисковиков)', type: 'text' },
+  { key: 'metaDescription', label: 'Description (для поисковиков)', type: 'textarea' },
+  { key: 'title', label: 'Название', type: 'text' },
+  { key: 'subtitle', label: 'Подзаголовок', type: 'textarea' },
+  { key: 'price', label: 'Цена', type: 'price' },
+  { key: 'img', label: 'Картинка', type: 'image' },
+  { key: 'age', label: 'Возраст (в шапке)', type: 'text' },
+  { key: 'duration', label: 'Длительность', type: 'text' },
+  { key: 'description', label: 'Блок «О мастер-классе» — абзацы (каждый с новой строки)', type: 'textarea' },
+  { key: 'extraServicePrice', label: 'Доп. услуга «Обжиг» — цена', type: 'text' },
+  { key: 'extraServiceNote', label: 'Блок «Доп. услуги» — сноска про сроки', type: 'textarea' },
+  { key: 'pickupAddressText', label: 'Блок «Готовое изделие» — адрес/телефон выдачи', type: 'textarea' },
+  { key: 'pickupDeliveryText', label: 'Блок «Готовое изделие» — доставка', type: 'textarea' },
+  { key: 'pickupNotifyText', label: 'Блок «Готовое изделие» — про уведомление', type: 'textarea' },
+  { key: 'pickupStorageText', label: 'Блок «Готовое изделие» — про срок хранения', type: 'textarea' },
+  { key: 'mediaGalleryEnabled', label: 'Показывать блок «Фото»', type: 'boolean' },
+  { key: 'mediaVideoEnabled', label: 'Показывать блок «Видео»', type: 'boolean' },
+  { key: 'mediaVideo', label: 'Блок «Фото и видео» — видео', type: 'video' },
+  { key: 'mediaGallery', label: 'Блок «Фото и видео» — фотографии', type: 'gallery' },
+  { key: 'bookingPhone', label: 'Блок «Запись по телефону» — номер', type: 'text' },
+  { key: 'ageNoteText', label: 'Блок «Возраст участников» — текст', type: 'textarea' },
+];
+
+const SUZDAL_WORKSHOP_DEFAULTS: Record<string, string> = {
+  metaTitle: '',
+  metaDescription: '',
+  title: '',
+  subtitle: '',
+  price: '',
+  img: '',
+  age: 'Уточняйте у администратора',
+  duration: '1 час',
+  description: '',
+  extraServicePrice: '200 руб. / изделие',
+  extraServiceNote: 'Выполнение дополнительных услуг занимает (в зависимости от вида и размера изделия) от 60 дней.',
+  pickupAddressText:
+    'В мастерской «Дымов Керамика» в Москве на ВДНХ, Проспект Мира, д. 119, стр. 186, пн–пт с 11:00 до 19:00 (бесплатная доставка), контактный телефон +7 (495) 500-01-71.',
+  pickupDeliveryText: 'Воспользовавшись услугами транспортной компании. Отправка осуществляется за счёт получателя (клиента).',
+  pickupNotifyText: 'Как только ваши изделия доставят в Москву из Суздаля (в течение 60 дней), вы будете оповещены по телефону.',
+  pickupStorageText:
+    'Готовые изделия хранятся в мастерской ВДНХ 2 месяца с момента доставки. По истечении этого срока мы оставляем за собой право утилизовать их, либо передать на благотворительную ярмарку. Не забывайте забирать свои работы!',
+  mediaGalleryEnabled: 'false',
+  mediaVideoEnabled: 'false',
+  mediaVideo: '',
+  mediaGallery: '',
+  bookingPhone: '+7 (915) 157-64-85',
+  ageNoteText: '',
+};
+
+/** Строит схему "на лету" для мастер-класса, добавленного через админку — такие ключи
+ * не прописаны заранее в PAGE_SCHEMAS, но соответствуют шаблону {city}-workshops-{slug}. */
+const buildDynamicWorkshopSchema = (key: string): PageSchema | undefined => {
+  if (key.startsWith('moscow-workshops-')) {
+    const slug = key.slice('moscow-workshops-'.length);
+    if (!slug) return undefined;
+    return {
+      key,
+      title: `Москва — МК «${slug}»`,
+      city: 'moscow',
+      status: 'ready',
+      path: `/moscow/workshops/${slug}`,
+      fields: MOSCOW_WORKSHOP_FIELDS,
+      defaults: MOSCOW_WORKSHOP_DEFAULTS,
+    };
+  }
+  if (key.startsWith('suzdal-workshops-')) {
+    const slug = key.slice('suzdal-workshops-'.length);
+    if (!slug) return undefined;
+    return {
+      key,
+      title: `Суздаль — МК «${slug}»`,
+      city: 'suzdal',
+      status: 'ready',
+      path: `/suzdal/workshops/${slug}`,
+      fields: SUZDAL_WORKSHOP_FIELDS,
+      defaults: SUZDAL_WORKSHOP_DEFAULTS,
+    };
+  }
+  return undefined;
+};
+
+export const getPageSchema = (key: string) =>
+  PAGE_SCHEMAS.find((p) => p.key === key) || buildDynamicWorkshopSchema(key);

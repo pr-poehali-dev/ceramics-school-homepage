@@ -8,14 +8,74 @@ import { usePageContent } from '@/hooks/usePageContent';
 import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
+import { useCustomWorkshops } from '@/hooks/useCustomWorkshops';
 import { SUZDAL_WORKSHOP_DETAILS } from './SuzdalWorkshopDetail';
 
 const WORKSHOPS_BASE = Object.values(SUZDAL_WORKSHOP_DETAILS);
+
+const CustomSuzdalWorkshopCard = ({
+  slug,
+  label,
+  onAddToCart,
+}: {
+  slug: string;
+  label: string;
+  onAddToCart: (e: React.MouseEvent, title: string, price: number, slug: string) => void;
+}) => {
+  const wc = usePageContent(`suzdal-workshops-${slug}`);
+  const price = wc.price ? Number(wc.price) || 0 : 0;
+  return (
+    <Link
+      to={`/suzdal/workshops/${slug}`}
+      className="group animate-fade-in block rounded-2xl border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl md:p-8"
+    >
+      <div className="flex flex-col gap-6 md:flex-row md:items-start">
+        {wc.img && (
+          <div className="h-40 w-full shrink-0 overflow-hidden rounded-2xl md:h-32 md:w-44">
+            <img
+              src={wc.img}
+              alt={wc.title || label}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+        )}
+        <div className="flex-1">
+          <div>
+            <h2 className="font-display text-3xl font-semibold">{wc.title || label}</h2>
+            {wc.subtitle && <p className="mt-1 text-muted-foreground">{wc.subtitle}</p>}
+          </div>
+          {price > 0 && (
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+              <span className="flex items-center gap-2 font-semibold text-primary">
+                <Icon name="Tag" size={16} /> {price.toLocaleString('ru-RU')} ₽
+              </span>
+            </div>
+          )}
+          <div className="mt-6 flex flex-wrap gap-3">
+            {price > 0 && (
+              <Button
+                onClick={(e) => onAddToCart(e, wc.title || label, price, slug)}
+                className="rounded-full"
+              >
+                <Icon name="ShoppingCart" size={16} className="mr-2" /> В корзину
+              </Button>
+            )}
+            <Button variant="outline" className="rounded-full">
+              Подробнее
+              <Icon name="ArrowRight" size={16} className="ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+};
 
 const SuzdalWorkshops = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const c = usePageContent('suzdal-workshops');
+  const customWorkshops = useCustomWorkshops('suzdal');
 
   usePageMeta({
     title: c.metaTitle,
@@ -45,6 +105,14 @@ const SuzdalWorkshops = () => {
       qty: 1,
     });
     toast({ title: 'Добавлено в корзину', description: w.title });
+    navigate('/suzdal/checkout');
+  };
+
+  const handleAddCustomToCart = (e: React.MouseEvent, title: string, price: number, slug: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id: `suzdal-${slug}`, title, details: 'Билет «Разовый»', price, qty: 1 });
+    toast({ title: 'Добавлено в корзину', description: title });
     navigate('/suzdal/checkout');
   };
 
@@ -117,6 +185,14 @@ const SuzdalWorkshops = () => {
                 </div>
               </div>
             </Link>
+          ))}
+          {customWorkshops.map((w) => (
+            <CustomSuzdalWorkshopCard
+              key={w.slug}
+              slug={w.slug}
+              label={w.label}
+              onAddToCart={handleAddCustomToCart}
+            />
           ))}
         </div>
 

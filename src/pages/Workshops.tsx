@@ -6,6 +6,7 @@ import SiteFooter from '@/components/SiteFooter';
 import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useCustomWorkshops } from '@/hooks/useCustomWorkshops';
 
 const WORKSHOPS_BASE = [
   {
@@ -58,8 +59,49 @@ const WORKSHOPS_BASE = [
   },
 ];
 
+const CustomWorkshopCard = ({ slug, label }: { slug: string; label: string }) => {
+  const wc = usePageContent(`moscow-workshops-${slug}`);
+  return (
+    <div className="group animate-fade-in rounded-2xl border border-border bg-card p-7 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl md:p-8">
+      <div className="flex flex-col gap-6 md:flex-row md:items-start">
+        {wc.img && (
+          <div className="h-40 w-full shrink-0 overflow-hidden rounded-2xl md:h-32 md:w-44">
+            <img
+              src={wc.img}
+              alt={wc.title || label}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+        )}
+        <div className="flex-1">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 className="font-display text-3xl font-semibold">{wc.title || label}</h2>
+              {wc.subtitle && <p className="mt-1 text-muted-foreground">{wc.subtitle}</p>}
+            </div>
+            <Link to={`/moscow/workshops/${slug}`}>
+              <Button variant="outline" className="rounded-full">
+                Подробнее
+                <Icon name="ArrowRight" size={16} className="ml-2" />
+              </Button>
+            </Link>
+          </div>
+          {wc.price && (
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+              <span className="flex items-center gap-2 font-semibold text-primary">
+                <Icon name="Tag" size={16} /> от {wc.price}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Workshops = () => {
   const c = usePageContent('moscow-workshops');
+  const customWorkshops = useCustomWorkshops('moscow');
   const lepka = usePageContent('moscow-workshops-lepka');
   const krug = usePageContent('moscow-workshops-krug');
   const angoby = usePageContent('moscow-workshops-angoby');
@@ -171,6 +213,9 @@ const Workshops = () => {
                 </div>
               </div>
             </div>
+          ))}
+          {customWorkshops.map((w) => (
+            <CustomWorkshopCard key={w.slug} slug={w.slug} label={w.label} />
           ))}
         </div>
 

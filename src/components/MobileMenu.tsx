@@ -7,6 +7,7 @@ import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import { useNavClick } from '@/hooks/useNavClick';
 import { useCity } from '@/hooks/useCity';
+import { useCustomWorkshops } from '@/hooks/useCustomWorkshops';
 import { openBooking } from '@/lib/booking';
 import {
   CITIES,
@@ -53,7 +54,15 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
   const navLinks = isSuzdal ? SUZDAL_NAV_LINKS : MOSCOW_NAV_LINKS;
   const contacts = isSuzdal ? SUZDAL_CONTACTS : MOSCOW_CONTACTS;
   const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
-  const workshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
+  const baseWorkshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
+  const customWorkshops = useCustomWorkshops(isSuzdal ? 'suzdal' : 'moscow');
+  const workshopLinks = [
+    ...baseWorkshopLinks,
+    ...customWorkshops.map((w) => ({
+      label: w.label,
+      to: `${workshopsHome}/${w.slug}`,
+    })),
+  ];
 
   const handleLink = (to: string) => (e: React.MouseEvent) => {
     navClick(to)(e);

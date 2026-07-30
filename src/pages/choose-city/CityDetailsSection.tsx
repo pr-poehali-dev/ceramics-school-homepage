@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { CITIES, MOSCOW_WORKSHOP_LINKS, SUZDAL_WORKSHOP_LINKS, type City } from '@/lib/cities';
+import { useCustomWorkshops } from '@/hooks/useCustomWorkshops';
 
 interface Props {
   city: City;
@@ -31,11 +32,14 @@ const CityDetailsSection = ({
   reversed,
 }: Props) => {
   const cityConfig = CITIES[city];
-  const workshopLinks = (city === 'moscow' ? MOSCOW_WORKSHOP_LINKS : SUZDAL_WORKSHOP_LINKS).slice(
-    0,
-    6,
-  );
   const isSuzdal = city === 'suzdal';
+  const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
+  const baseWorkshopLinks = city === 'moscow' ? MOSCOW_WORKSHOP_LINKS : SUZDAL_WORKSHOP_LINKS;
+  const customWorkshops = useCustomWorkshops(city);
+  const workshopLinks = [
+    ...baseWorkshopLinks,
+    ...customWorkshops.map((w) => ({ label: w.label, to: `${workshopsHome}/${w.slug}` })),
+  ].slice(0, 6);
 
   return (
     <div className="overflow-hidden rounded-[2rem] border border-border bg-card">

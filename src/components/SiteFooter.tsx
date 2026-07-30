@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 import Logo from '@/components/Logo';
 import SocialLinks from '@/components/SocialLinks';
 import { useCity } from '@/hooks/useCity';
+import { useCustomWorkshops } from '@/hooks/useCustomWorkshops';
 import {
   CITIES,
   MOSCOW_WORKSHOP_LINKS,
@@ -57,7 +58,16 @@ const SiteFooter = () => {
   const cityConfig = CITIES[city];
   const isSuzdal = city === 'suzdal';
 
-  const workshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
+  const baseWorkshopLinks = isSuzdal ? SUZDAL_WORKSHOP_LINKS : MOSCOW_WORKSHOP_LINKS;
+  const customWorkshops = useCustomWorkshops(city);
+  const workshopsHome = isSuzdal ? '/suzdal/workshops' : '/moscow/workshops';
+  const workshopLinks = [
+    ...baseWorkshopLinks,
+    ...customWorkshops.map((w) => ({
+      label: w.label,
+      to: `${workshopsHome}/${w.slug}`,
+    })),
+  ];
   const sectionLinks = isSuzdal
     ? [{ label: 'Все мастер-классы', to: '/suzdal/workshops' }, ...SUZDAL_NAV_LINKS]
     : [{ label: 'Все мастер-классы', to: '/moscow/workshops' }, ...MOSCOW_NAV_LINKS];

@@ -8,6 +8,7 @@ import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useCustomWorkshopsWithLoading } from '@/hooks/useCustomWorkshops';
 import { useJsonLd } from '@/hooks/useJsonLd';
 import { workshopSchema, breadcrumbSchema } from '@/lib/schemaOrg';
 import WorkshopMediaBlock from '@/pages/workshop-detail/WorkshopMediaBlock';
@@ -252,9 +253,34 @@ export const SUZDAL_WORKSHOP_DETAILS: Record<string, SuzdalWorkshopData> = {
   },
 };
 
+/** Заглушка для мастер-класса, созданного через админку (нет захардкоженных данных —
+ * всё берётся из CMS-контента suzdal-workshops-{slug}, эта заглушка только даёт
+ * разумные значения по умолчанию, пока контент не заполнен). */
+const buildCustomSuzdalWorkshopData = (slug: string, label: string, badgeIcon: string): SuzdalWorkshopData => ({
+  slug,
+  sku: '',
+  badgeIcon,
+  title: label,
+  subtitle: 'Запишитесь на мастер-класс — подробности уточняйте у администратора.',
+  img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/f1276934-81b2-4761-a942-5591d7f8e338.jpg',
+  price: 0,
+  age: 'Уточняйте у администратора',
+  duration: '1 час',
+  paragraphs: ['Описание мастер-класса скоро появится.'],
+  extraServices: [],
+  metaTitle: label,
+  metaDescription: 'Мастер-класс в Суздале.',
+});
+
 const SuzdalWorkshopDetail = () => {
   const { slug } = useParams();
-  const data = slug ? SUZDAL_WORKSHOP_DETAILS[slug] : undefined;
+  const [customWorkshops, customLoading] = useCustomWorkshopsWithLoading('suzdal');
+  const customMatch = slug ? customWorkshops.find((w) => w.slug === slug) : undefined;
+  const isHardcoded = slug ? Boolean(SUZDAL_WORKSHOP_DETAILS[slug]) : false;
+  const data = slug
+    ? SUZDAL_WORKSHOP_DETAILS[slug] ||
+      (customMatch ? buildCustomSuzdalWorkshopData(slug, customMatch.label, customMatch.badgeIcon) : undefined)
+    : undefined;
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [qty, setQty] = useState(1);
@@ -288,6 +314,9 @@ const SuzdalWorkshopDetail = () => {
   );
 
   if (!data) {
+    // Пока список кастомных мастер-классов ещё не загрузился, не редиректим —
+    // возможно, этот slug просто ждёт данных с сервера.
+    if (!isHardcoded && customLoading) return null;
     return <Navigate to="/suzdal/workshops" replace />;
   }
 

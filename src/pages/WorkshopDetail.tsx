@@ -9,6 +9,7 @@ import AskQuestionDialog from '@/components/AskQuestionDialog';
 import { openBooking } from '@/lib/booking';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
+import { useCustomWorkshopsWithLoading } from '@/hooks/useCustomWorkshops';
 import { useJsonLd } from '@/hooks/useJsonLd';
 import { workshopSchema, breadcrumbSchema } from '@/lib/schemaOrg';
 
@@ -131,9 +132,31 @@ export const WORKSHOP_DETAILS: Record<string, WorkshopData> = {
   },
 };
 
+/** Заглушка для мастер-класса, созданного через админку (нет захардкоженных данных —
+ * всё берётся из CMS-контента moscow-workshops-{slug}, эта заглушка только даёт
+ * разумные значения по умолчанию, пока контент не заполнен). */
+const buildCustomWorkshopData = (slug: string, label: string, badgeIcon: string): WorkshopData => ({
+  slug,
+  badgeIcon,
+  title: label,
+  subtitle: 'Запишитесь на мастер-класс — подробности уточняйте у администратора.',
+  img: 'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/031d0b25-5ce6-4c27-8e82-d33ec3b0b178.png',
+  stats: [
+    { icon: 'Tag', text: 'Цена уточняется' },
+    { icon: 'Clock', text: '1 час' },
+  ],
+  paragraphs: ['Описание мастер-класса скоро появится.'],
+  benefit: null,
+});
+
 const WorkshopDetail = () => {
   const { slug } = useParams();
-  const data = slug ? WORKSHOP_DETAILS[slug] : undefined;
+  const [customWorkshops, customLoading] = useCustomWorkshopsWithLoading('moscow');
+  const customMatch = slug ? customWorkshops.find((w) => w.slug === slug) : undefined;
+  const isHardcoded = slug ? Boolean(WORKSHOP_DETAILS[slug]) : false;
+  const data = slug
+    ? WORKSHOP_DETAILS[slug] || (customMatch ? buildCustomWorkshopData(slug, customMatch.label, customMatch.badgeIcon) : undefined)
+    : undefined;
   const meta = slug ? WORKSHOP_META[slug] : undefined;
   const c = usePageContent(`moscow-workshops-${slug || 'lepka'}`);
 
@@ -167,6 +190,9 @@ const WorkshopDetail = () => {
   );
 
   if (!data) {
+    // Пока список кастомных мастер-классов ещё не загрузился, не редиректим —
+    // возможно, этот slug просто ждёт данных с сервера.
+    if (!isHardcoded && customLoading) return null;
     return <Navigate to="/moscow/workshops" replace />;
   }
 
