@@ -58,12 +58,6 @@ const SuzdalContacts = () => {
               href: `tel:${(content.phone || '+79151576485').replace(/[^\d+]/g, '')}`,
             },
             {
-              icon: 'Send',
-              label: 'Телеграм',
-              lines: ['Напишите нам в Телеграм'],
-              href: 'https://t.me/dymovceramicschool',
-            },
-            {
               icon: 'Mail',
               label: 'E-mail',
               lines: [content.email || 'mk@dymovceramicschool.ru'],
@@ -156,15 +150,6 @@ const SuzdalContacts = () => {
           >
             <Icon name="Users" size={20} className="text-primary" />
             ВКонтакте
-          </a>
-          <a
-            href={content.telegramUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex flex-1 items-center justify-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 font-medium transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5"
-          >
-            <Icon name="Send" size={20} className="text-primary" />
-            Telegram
           </a>
         </div>
       </div>

@@ -1999,8 +1999,8 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'outageNotice', label: 'Предупреждение о перебоях (например: «WhatsApp работает с перебоями, пишите в Telegram»). Пусто = не показывать', type: 'text' },
     ],
     defaults: {
-      whatsappLink: 'https://wa.me/79854198903',
-      telegramLink: 'https://t.me/+79854198903',
+      whatsappLink: 'https://wa.me/79151576485',
+      telegramLink: 'https://t.me/+79151576485',
       maxLink: '',
       outageNotice: '',
       preferredLabel: 'Предпочтительнее',
