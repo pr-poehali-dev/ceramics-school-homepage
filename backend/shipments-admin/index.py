@@ -38,21 +38,22 @@ def _shipment_dict(r):
         'customerName': r[2],
         'customerPhone': r[3],
         'deliveredAt': r[4].isoformat() if r[4] else None,
-        'returnAt': r[5].isoformat() if r[5] else None,
-        'status': r[6],
-        'issuedAt': r[7].isoformat() if r[7] else None,
-        'customerEmail': r[8],
+        'status': r[5],
+        'issuedAt': r[6].isoformat() if r[6] else None,
+        'customerEmail': r[7],
     }
 
 
 def _suzdal_shipment_dict(r):
-    """Строка новой единой таблицы Суздаля: Фото / № заявки / Клиент / Контакты /
-    Заявка создана / Дата возврата / Статус / Действие. Объединяет старые записи
-    (заведённые вручную, status уже 'shipped'/'issued'/'returned', photo_url обычно NULL)
-    и новые от клиентов (status 'in_progress' до отправки на ВДНХ, затем 'shipped').
+    """Строка единой таблицы Суздаля: Фото / № заявки / Клиент / Контакты /
+    Заявка создана / Отправлено в Москву / Статус / Действие. Объединяет старые записи
+    (заведённые вручную, status 'shipped'/'issued', photo_url обычно NULL) и новые от
+    клиентов (status 'in_progress' до отправки на ВДНХ, затем 'shipped').
     'Заявка создана' — это visit_date (дата посещения мастер-класса из формы клиента),
-    если она есть, иначе created_at (дата, когда менеджер вручную завёл запись)."""
-    created_at, visit_date = r[6], r[11]
+    если она есть, иначе created_at (дата, когда менеджер вручную завёл запись).
+    'Отправлено в Москву' — это delivered_at (дата, когда менеджер Суздаля нажал
+    «Отправить на ВДНХ»), заполняется только после отправки."""
+    created_at, visit_date = r[6], r[10]
     return {
         'id': r[0],
         'trackingNumber': r[1],
@@ -63,8 +64,7 @@ def _suzdal_shipment_dict(r):
         'createdAt': (visit_date or created_at).isoformat() if (visit_date or created_at) else None,
         'status': r[7],
         'deliveredAt': r[8].isoformat() if r[8] else None,
-        'returnAt': r[9].isoformat() if r[9] else None,
-        'issuedAt': r[10].isoformat() if r[10] else None,
+        'issuedAt': r[9].isoformat() if r[9] else None,
     }
 
 
@@ -133,16 +133,6 @@ def _auto_archive(cur):
         f"UPDATE {SCHEMA}.shipments SET archived_at = NOW() "
         f"WHERE source = 'client' AND archived_at IS NULL "
         f"AND ready_at IS NOT NULL AND ready_at < NOW() - INTERVAL '3 months'",
-    )
-
-
-def _auto_return(cur):
-    """Переводит посылки в статус 'returned' (Возврат), если с даты доставки в Москву
-    (delivered_at) прошло 30 дней (return_at < текущей даты), а клиент так и не забрал
-    изделие (статус всё ещё 'shipped'). Такие посылки попадают в раздел «Закрытые»."""
-    cur.execute(
-        f"UPDATE {SCHEMA}.shipments SET status = 'returned' "
-        f"WHERE status = 'shipped' AND return_at < CURRENT_DATE",
     )
 
 
@@ -344,13 +334,12 @@ def handler(event: dict, context) -> dict:
     GET ?status=active|closed|all — единая таблица менеджера Суздаля (city='suzdal'):
       объединяет посылки, заведённые вручную (source='manager', как раньше), и новые заявки,
       поданные клиентами через форму на сайте Суздаля (source='client', статус 'in_progress'
-      до отправки на ВДНХ). active — только отправленные и не выданные; closed — выданные или
-      возврат; all — единый список со всеми статусами кроме отклонённых (используется панелью
-      Суздаля, где статус отображается отдельной колонкой: В работе / Отправлено в Москву /
-      Выдано / Возврат), включает photoUrl и createdAt. Доступно обеим ролям, но по city='suzdal'
-      относится к разделу Суздаля независимо от роли. При каждом вызове автоматически переводит
-      в статус 'returned' (Возврат) посылки, не выданные клиенту в течение 30 дней с даты
-      доставки в Москву (return_at < текущей даты).
+      до отправки на ВДНХ). active — только отправленные и не выданные; closed — выданные;
+      all — единый список со всеми статусами кроме отклонённых (используется панелью Суздаля,
+      где статус отображается отдельной колонкой: В работе / Отправлено в Москву / Выдано),
+      включает photoUrl и createdAt. Доступно обеим ролям, но по city='suzdal' относится к
+      разделу Суздаля независимо от роли. Изделия из Суздаля хранятся на ВДНХ 60 дней и
+      выдаются там же — обратно в Суздаль не возвращаются, статуса «Возврат» больше нет.
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
     GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
@@ -391,11 +380,7 @@ def handler(event: dict, context) -> dict:
       3 месяца, доступно только роли 'vdnh'.
     POST { action: 'send_to_vdnh', id } — менеджер Суздаля отмечает, что изделие клиента
       (статус 'in_progress', city='suzdal') отправлено в Москву: статус меняется на 'shipped',
-      проставляются delivered_at (сегодня) и return_at (+30 дней), клиенту отправляется письмо
-      с адресом и часами работы студии, доступно только роли 'suzdal'.
-    POST { action: 'resend_to_vdnh', id } — повторная отправка изделия, которое уже вернулось
-      в Суздаль (статус 'returned', city='suzdal'): статус снова меняется на 'shipped',
-      delivered_at/return_at пересчитываются от сегодняшней даты, клиенту повторно уходит
+      проставляется delivered_at (сегодня — дата отправки в Москву), клиенту отправляется
       письмо с адресом и часами работы студии, доступно только роли 'suzdal'.
     Args: event с httpMethod, headers (X-Session-Token), queryStringParameters, body
           context — объект с request_id
@@ -514,7 +499,10 @@ def handler(event: dict, context) -> dict:
                     }
 
                 today = datetime.utcnow().date()
-                return_date = today + timedelta(days=30)
+                # return_at больше не используется в интерфейсе (изделия не возвращаются в
+                # Суздаль — храним 60 дней на ВДНХ), но столбец в БД остаётся NOT NULL по
+                # историческим причинам, поэтому заполняем его технической датой-плейсхолдером.
+                return_date = today + timedelta(days=60)
 
                 cur.execute(
                     f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s "
@@ -543,59 +531,6 @@ def handler(event: dict, context) -> dict:
                     except Exception as e:
                         email_error = str(e)
                         print(f"[send_to_vdnh] email send failed for {customer_email}: {e!r}")
-
-                return {
-                    'statusCode': 200,
-                    'headers': cors_headers,
-                    'body': json.dumps({'ok': True, 'emailError': email_error}, ensure_ascii=False),
-                }
-
-            if action == 'resend_to_vdnh':
-                if role != 'suzdal':
-                    return {
-                        'statusCode': 403,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Отправлять изделия в Москву может только менеджер Суздаля'}, ensure_ascii=False),
-                    }
-
-                shipment_id = body.get('id')
-                if not shipment_id:
-                    return {
-                        'statusCode': 400,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
-                    }
-
-                today = datetime.utcnow().date()
-                return_date = today + timedelta(days=30)
-
-                cur.execute(
-                    f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s "
-                    f"WHERE id = %s AND city = 'suzdal' AND status = 'returned' "
-                    f"RETURNING tracking_number, customer_email",
-                    (today, return_date, shipment_id),
-                )
-                row = cur.fetchone()
-                if not row:
-                    return {
-                        'statusCode': 404,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Заявка не найдена или не в статусе «Возврат»'}, ensure_ascii=False),
-                    }
-                conn.commit()
-
-                tracking_number, customer_email = row
-                email_error = None
-                if not customer_email:
-                    email_error = 'У заявки не указан email клиента'
-                else:
-                    try:
-                        address, work_hours = _fetch_pickup_info(cur)
-                        _send_sent_to_vdnh_email(customer_email, tracking_number, address, work_hours)
-                        print(f"[resend_to_vdnh] email sent to {customer_email} for {tracking_number}")
-                    except Exception as e:
-                        email_error = str(e)
-                        print(f"[resend_to_vdnh] email send failed for {customer_email}: {e!r}")
 
                 return {
                     'statusCode': 200,
@@ -1026,14 +961,11 @@ def handler(event: dict, context) -> dict:
                 'body': json.dumps({'requests': [_archived_dict(r) for r in archived_rows], 'role': role}, ensure_ascii=False),
             }
 
-        _auto_return(cur)
-        conn.commit()
-
         if status_filter == 'closed':
-            order_clause = 'issued_at DESC, return_at DESC, delivered_at DESC'
+            order_clause = 'issued_at DESC, delivered_at DESC'
             cur.execute(
-                f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
-                f"FROM {SCHEMA}.shipments WHERE status IN ('issued', 'returned') AND city = 'suzdal' "
+                f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, status, issued_at, customer_email "
+                f"FROM {SCHEMA}.shipments WHERE status = 'issued' AND city = 'suzdal' "
                 f"ORDER BY {order_clause} LIMIT 2000",
             )
             rows = cur.fetchall()
@@ -1044,7 +976,7 @@ def handler(event: dict, context) -> dict:
             # 'in_progress' (заявка клиента, ещё не отправленная на ВДНХ).
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-                f"created_at, status, delivered_at, return_at, issued_at, visit_date "
+                f"created_at, status, delivered_at, issued_at, visit_date "
                 f"FROM {SCHEMA}.shipments WHERE city = 'suzdal' AND status != 'rejected' "
                 f"ORDER BY created_at DESC LIMIT 2000",
             )
@@ -1052,7 +984,7 @@ def handler(event: dict, context) -> dict:
             shipments = [_suzdal_shipment_dict(r) for r in rows]
         else:
             cur.execute(
-                f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
+                f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, status, issued_at, customer_email "
                 f"FROM {SCHEMA}.shipments WHERE status = 'shipped' AND city = 'suzdal' "
                 f"ORDER BY delivered_at DESC, created_at DESC LIMIT 2000",
             )
@@ -1062,12 +994,12 @@ def handler(event: dict, context) -> dict:
         if export == 'csv':
             buffer = io.StringIO()
             writer = csv.writer(buffer, delimiter=';')
-            writer.writerow(['Номер посылки', 'ФИО клиента', 'Телефон', 'Email', 'Дата доставки', 'Дата возврата', 'Статус', 'Дата выдачи'])
-            status_labels = {'issued': 'Выдано', 'returned': 'Возврат', 'shipped': 'Отправлено в Москву', 'in_progress': 'В работе'}
+            writer.writerow(['Номер посылки', 'ФИО клиента', 'Телефон', 'Email', 'Отправлено в Москву', 'Статус', 'Дата выдачи'])
+            status_labels = {'issued': 'Выдано', 'shipped': 'Отправлено в Москву', 'in_progress': 'В работе'}
             for s in shipments:
                 writer.writerow([
                     s['trackingNumber'], s['customerName'], s['customerPhone'], s.get('customerEmail') or '',
-                    s['deliveredAt'] or '', s['returnAt'] or '',
+                    s['deliveredAt'] or '',
                     status_labels.get(s['status'], s['status']),
                     s['issuedAt'] or '',
                 ])

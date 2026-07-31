@@ -57,7 +57,7 @@ def handler(event: dict, context) -> dict:
     try:
         cur = conn.cursor()
         cur.execute(
-            f"SELECT tracking_number, status, delivered_at, return_at "
+            f"SELECT tracking_number, status, delivered_at "
             f"FROM {SCHEMA}.shipments "
             f"WHERE regexp_replace(customer_phone, '[^0-9]', '', 'g') LIKE %s "
             f"AND status = 'shipped' "
@@ -71,7 +71,6 @@ def handler(event: dict, context) -> dict:
                 'trackingNumber': r[0],
                 'status': r[1],
                 'deliveredAt': r[2].isoformat() if r[2] else None,
-                'returnAt': r[3].isoformat() if r[3] else None,
             }
             for r in rows
         ]

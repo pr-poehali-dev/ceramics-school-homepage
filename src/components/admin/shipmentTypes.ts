@@ -5,7 +5,6 @@ export interface Shipment {
   customerPhone: string;
   customerEmail?: string | null;
   deliveredAt: string | null;
-  returnAt: string | null;
   status: string;
   issuedAt: string | null;
   photoUrl?: string | null;
@@ -16,7 +15,6 @@ export const SUZDAL_STATUS_LABEL: Record<string, { label: string; className: str
   in_progress: { label: 'В работе', className: 'text-amber-600' },
   shipped: { label: 'Отправлено в Москву', className: 'text-sky-600' },
   issued: { label: 'Выдано', className: 'text-emerald-600' },
-  returned: { label: 'Возврат', className: 'text-destructive' },
 };
 
 export const SUZDAL_STATUS_FILTERS: { value: string; label: string }[] = [
@@ -24,7 +22,6 @@ export const SUZDAL_STATUS_FILTERS: { value: string; label: string }[] = [
   { value: 'in_progress', label: 'В работе' },
   { value: 'shipped', label: 'Отправлено в Москву' },
   { value: 'issued', label: 'Выдано' },
-  { value: 'returned', label: 'Возврат' },
 ];
 
 export const fmtDate = (s: string | null) => {

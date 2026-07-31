@@ -11,7 +11,7 @@ import {
 import { Shipment, fmtDate, SUZDAL_STATUS_LABEL, SUZDAL_STATUS_FILTERS } from './shipmentTypes';
 import { SortConfig } from '@/hooks/useSortableData';
 
-type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'returnAt';
+type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt';
 
 interface Props {
   view: 'active' | 'closed' | 'all';
@@ -29,7 +29,6 @@ interface Props {
   totalPages: number;
   onIssueTarget: (s: Shipment) => void;
   onSendToVdnhTarget?: (s: Shipment) => void;
-  onResendToVdnhTarget?: (s: Shipment) => void;
   onPhotoPreview?: (url: string) => void;
   statusFilter?: string;
   setStatusFilter?: (v: string) => void;
@@ -84,7 +83,6 @@ const ShipmentsTable = ({
   totalPages,
   onIssueTarget,
   onSendToVdnhTarget,
-  onResendToVdnhTarget,
   onPhotoPreview,
   statusFilter,
   setStatusFilter,
@@ -177,7 +175,7 @@ const ShipmentsTable = ({
             <SortHeader label="Клиент" sortKey="customerName" sort={sort} onSort={onSort} />
             <span>Контакты</span>
             <span>Заявка создана</span>
-            <SortHeader label="Дата возврата" sortKey="returnAt" sort={sort} onSort={onSort} />
+            <SortHeader label="Отправлено в Москву" sortKey="deliveredAt" sort={sort} onSort={onSort} />
             <span>Статус</span>
             <span>Действие</span>
           </div>
@@ -213,17 +211,12 @@ const ShipmentsTable = ({
                   <p className="truncate">{s.customerEmail || '—'}</p>
                 </div>
                 <span className="text-muted-foreground">{fmtDate(s.createdAt || null)}</span>
-                <span className="text-muted-foreground">{fmtDate(s.returnAt)}</span>
+                <span className="text-muted-foreground">{fmtDate(s.deliveredAt)}</span>
                 <span className={statusInfo.className}>{statusInfo.label}</span>
                 <span>
                   {s.status === 'in_progress' && onSendToVdnhTarget && (
                     <Button size="sm" className="w-fit rounded-full" onClick={() => onSendToVdnhTarget(s)}>
                       Отправить на ВДНХ
-                    </Button>
-                  )}
-                  {s.status === 'returned' && onResendToVdnhTarget && (
-                    <Button size="sm" className="w-fit rounded-full" onClick={() => onResendToVdnhTarget(s)}>
-                      Отправить повторно
                     </Button>
                   )}
                 </span>
@@ -233,13 +226,12 @@ const ShipmentsTable = ({
         </div>
       ) : (
         <div className="mt-4 overflow-hidden rounded-2xl border border-border">
-          <div className="hidden grid-cols-[1fr_1fr_140px_160px_110px_110px_130px_110px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
+          <div className="hidden grid-cols-[1fr_1fr_140px_160px_110px_130px_110px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
             <SortHeader label="Номер посылки" sortKey="trackingNumber" sort={sort} onSort={onSort} />
             <SortHeader label="ФИО клиента" sortKey="customerName" sort={sort} onSort={onSort} />
             <span>Телефон</span>
             <span>Email</span>
-            <SortHeader label="Доставлено" sortKey="deliveredAt" sort={sort} onSort={onSort} />
-            <SortHeader label="Возврат" sortKey="returnAt" sort={sort} onSort={onSort} />
+            <SortHeader label="Отправлено в Москву" sortKey="deliveredAt" sort={sort} onSort={onSort} />
             {view === 'closed' && <span>Статус</span>}
             {view === 'active' && <span>Действие</span>}
           </div>
@@ -251,23 +243,14 @@ const ShipmentsTable = ({
           {paginated.map((s) => (
             <div
               key={s.id}
-              className="grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[1fr_1fr_140px_160px_110px_110px_130px_110px] sm:items-center sm:gap-3"
+              className="grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[1fr_1fr_140px_160px_110px_130px_110px] sm:items-center sm:gap-3"
             >
               <span className="font-medium">№ {s.trackingNumber}</span>
               <span>{s.customerName}</span>
               <span className="text-muted-foreground">{s.customerPhone}</span>
               <span className="text-muted-foreground">{s.customerEmail || '—'}</span>
               <span>{fmtDate(s.deliveredAt)}</span>
-              <span>{fmtDate(s.returnAt)}</span>
-              {view === 'closed' && (
-                <span>
-                  {s.status === 'returned' ? (
-                    <span className="text-destructive">Возврат</span>
-                  ) : (
-                    `Выдано ${fmtDate(s.issuedAt)}`
-                  )}
-                </span>
-              )}
+              {view === 'closed' && <span>{`Выдано ${fmtDate(s.issuedAt)}`}</span>}
               {view === 'active' && (
                 <Button
                   size="sm"

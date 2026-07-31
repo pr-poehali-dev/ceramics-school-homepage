@@ -28,7 +28,6 @@ interface Shipment {
   trackingNumber: string;
   status: string;
   deliveredAt: string | null;
-  returnAt: string | null;
 }
 
 const fmtDate = (s: string | null) => {
@@ -237,24 +236,12 @@ const Tracking = () => {
                             <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">
                               Срок хранения
                             </p>
-                            <p className="mt-1 font-medium">30 календарных дней</p>
+                            <p className="mt-1 font-medium">60 календарных дней</p>
                           </div>
                         </div>
 
                         {s.status !== 'issued' && (
                           <>
-                            <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
-                              <Icon name="AlertTriangle" size={18} className="mt-0.5 shrink-0 text-amber-600" />
-                              <div>
-                                <p className="text-sm text-amber-800">
-                                  По истечении 30 календарных дней посылка автоматически возвращается на хранение в Суздаль
-                                </p>
-                                <p className="mt-1.5 text-sm font-semibold text-amber-900">
-                                  Дата возврата в Суздаль: {fmtDate(s.returnAt)}
-                                </p>
-                              </div>
-                            </div>
-
                             <div className="mt-5 grid gap-3 sm:grid-cols-2">
                               <div>
                                 <Button
