@@ -1,13 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 
-interface ImageLightboxProps {
-  images: string[];
-  altPrefix?: string;
-}
-
-/** Хук для управления состоянием лайтбокса (какое фото открыто). */
+/** Хук состояния лайтбокса: current — индекс открытой картинки (null = закрыт). */
 export const useLightbox = () => {
   const [current, setCurrent] = useState<number | null>(null);
   return { current, setCurrent };
@@ -16,114 +11,100 @@ export const useLightbox = () => {
 interface LightboxModalProps {
   images: string[];
   current: number | null;
-  setCurrent: (i: number | null) => void;
+  setCurrent: (index: number | null) => void;
   altPrefix?: string;
 }
 
-/** Полноэкранная модалка просмотра фото с листанием — вставляется в любой блок с галереей. */
-export const LightboxModal = ({ images, current, setCurrent, altPrefix = 'Фото' }: LightboxModalProps) => {
-  const close = useCallback(() => setCurrent(null), [setCurrent]);
-  const prev = useCallback(
-    () => setCurrent(current === null ? current : (current - 1 + images.length) % images.length),
-    [current, images.length, setCurrent],
-  );
-  const next = useCallback(
-    () => setCurrent(current === null ? current : (current + 1) % images.length),
-    [current, images.length, setCurrent],
-  );
+/**
+ * Лайтбокс для просмотра картинок на весь экран: увеличенное фото, стрелки/клавиши
+ * влево-вправо и свайп для переключения между картинками, счётчик "N из M", закрытие
+ * по клику на крестик, вне фото или клавише Esc.
+ */
+export const LightboxModal = ({ images, current, setCurrent, altPrefix = '' }: LightboxModalProps) => {
+  const open = current !== null;
+  const total = images.length;
+
+  const goPrev = () => {
+    if (current === null) return;
+    setCurrent((current - 1 + total) % total);
+  };
+  const goNext = () => {
+    if (current === null) return;
+    setCurrent((current + 1) % total);
+  };
 
   useEffect(() => {
-    if (current === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close();
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext();
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [current, close, prev, next]);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, current, total]);
 
-  if (current === null) return null;
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 animate-fade-in"
-      onClick={close}
-    >
-      <button
-        onClick={close}
-        aria-label="Закрыть"
-        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-      >
-        <Icon name="X" size={22} />
-      </button>
-
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          prev();
-        }}
-        aria-label="Назад"
-        className="absolute left-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 md:left-8"
-      >
-        <Icon name="ChevronLeft" size={26} />
-      </button>
-
-      <img
-        src={images[current]}
-        alt={`${altPrefix} ${current + 1}`}
-        onClick={(e) => e.stopPropagation()}
-        className="max-h-[85vh] max-w-full rounded-2xl object-contain"
-      />
-
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          next();
-        }}
-        aria-label="Вперёд"
-        className="absolute right-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 md:right-8"
-      >
-        <Icon name="ChevronRight" size={26} />
-      </button>
-
-      <span className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-sm text-white">
-        {current + 1} / {images.length}
-      </span>
-    </div>,
-    document.body,
-  );
-};
-
-/** Готовая сетка миниатюр + лайтбокс (для случаев без карусели). */
-const ImageLightbox = ({ images, altPrefix = 'Фото' }: ImageLightboxProps) => {
-  const { current, setCurrent } = useLightbox();
+  if (!open || current === null) return null;
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-        {images.map((src, i) => (
-          <button
-            key={src}
-            onClick={() => setCurrent(i)}
-            className="group relative aspect-square overflow-hidden rounded-2xl"
-          >
-            <img
-              src={src}
-              alt={`${altPrefix} ${i + 1}`}
-              loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/30 group-hover:opacity-100">
-              <Icon name="Expand" size={26} className="text-white" />
-            </span>
-          </button>
-        ))}
-      </div>
+    <Dialog open={open} onOpenChange={(v) => !v && setCurrent(null)}>
+      <DialogContent
+        showCloseButton={false}
+        className="flex h-[100dvh] max-h-none w-screen max-w-none items-center justify-center border-none bg-black/95 p-0 sm:rounded-none"
+        onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
+        onTouchEnd={(e) => {
+          if (touchStartX === null) return;
+          const diff = e.changedTouches[0].clientX - touchStartX;
+          if (diff > 50) goPrev();
+          else if (diff < -50) goNext();
+          setTouchStartX(null);
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setCurrent(null)}
+          aria-label="Закрыть"
+          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+        >
+          <Icon name="X" size={20} />
+        </button>
 
-      <LightboxModal images={images} current={current} setCurrent={setCurrent} altPrefix={altPrefix} />
-    </>
+        {total > 1 && (
+          <span className="absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white">
+            {current + 1} / {total}
+          </span>
+        )}
+
+        {total > 1 && (
+          <button
+            type="button"
+            onClick={goPrev}
+            aria-label="Предыдущее фото"
+            className="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:left-4"
+          >
+            <Icon name="ChevronLeft" size={24} />
+          </button>
+        )}
+
+        <img
+          src={images[current]}
+          alt={`${altPrefix} ${current + 1}`.trim()}
+          className="max-h-[90dvh] max-w-[92vw] select-none rounded-lg object-contain"
+        />
+
+        {total > 1 && (
+          <button
+            type="button"
+            onClick={goNext}
+            aria-label="Следующее фото"
+            className="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:right-4"
+          >
+            <Icon name="ChevronRight" size={24} />
+          </button>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
-
-export default ImageLightbox;

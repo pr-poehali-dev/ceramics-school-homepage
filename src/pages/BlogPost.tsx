@@ -3,6 +3,7 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import { LightboxModal, useLightbox } from '@/components/ImageLightbox';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import func2url from '../../backend/func2url.json';
 
@@ -31,6 +32,14 @@ const BlogPost = () => {
   const [post, setPost] = useState<BlogPostFull | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const { current: lightboxIndex, setCurrent: setLightboxIndex } = useLightbox();
+
+  // Обложка и фото галереи открываются в одном общем лайтбоксе — стрелками можно
+  // пролистать все картинки статьи подряд, независимо от того, откуда начали просмотр.
+  const allImages = [
+    ...(post?.coverImage ? [post.coverImage] : []),
+    ...(post?.gallery || []),
+  ];
 
   usePageMeta({
     title: post ? `${post.title} — Блог «Дымов Керамика»` : 'Блог «Дымов Керамика»',
@@ -91,9 +100,18 @@ const BlogPost = () => {
             </h1>
 
             {post.coverImage && (
-              <div className="mt-7 overflow-hidden rounded-2xl">
-                <img src={post.coverImage} alt={post.title} className="w-full object-cover" />
-              </div>
+              <button
+                type="button"
+                onClick={() => setLightboxIndex(0)}
+                className="group mt-7 block w-full overflow-hidden rounded-2xl"
+                aria-label="Увеличить фото"
+              >
+                <img
+                  src={post.coverImage}
+                  alt={post.title}
+                  className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </button>
             )}
 
             <div className="mt-8 space-y-4 leading-relaxed text-foreground/90">
@@ -107,16 +125,36 @@ const BlogPost = () => {
 
             {post.gallery && post.gallery.length > 0 && (
               <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {post.gallery.map((src) => (
-                  <div key={src} className="aspect-square overflow-hidden rounded-xl">
-                    <img src={src} alt={post.title} className="h-full w-full object-cover" />
-                  </div>
-                ))}
+                {post.gallery.map((src, i) => {
+                  const coverOffset = post.coverImage ? 1 : 0;
+                  return (
+                    <button
+                      key={src}
+                      type="button"
+                      onClick={() => setLightboxIndex(i + coverOffset)}
+                      className="group aspect-square overflow-hidden rounded-xl"
+                      aria-label="Увеличить фото"
+                    >
+                      <img
+                        src={src}
+                        alt={post.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </button>
+                  );
+                })}
               </div>
             )}
           </article>
         )}
       </div>
+
+      <LightboxModal
+        images={allImages}
+        current={lightboxIndex}
+        setCurrent={setLightboxIndex}
+        altPrefix={post?.title}
+      />
 
       <SiteFooter />
     </div>
