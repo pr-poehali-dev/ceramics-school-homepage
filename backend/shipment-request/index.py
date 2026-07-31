@@ -35,22 +35,51 @@ def _normalize_phone(phone: str) -> str:
     return digits
 
 
+def _generate_tracking_number(cur, phone_digits: str, schema: str) -> str | None:
+    """Генерирует номер заявки в формате ДДММ-XXXX: дата создания + последние 4 цифры
+    телефона клиента (например, 3107-9771). При коллизии (тот же день + те же 4 цифры
+    телефона — повторное посещение в тот же день) добавляет суффикс -2, -3 и т.д."""
+    today_part = datetime.utcnow().strftime('%d%m')
+    phone_part = phone_digits[-4:] if len(phone_digits) >= 4 else phone_digits.rjust(4, '0')
+    base = f'{today_part}-{phone_part}'
+    candidate = base
+    for i in range(2, 20):
+        cur.execute(f"SELECT id FROM {schema}.shipments WHERE tracking_number = %s", (candidate,))
+        if not cur.fetchone():
+            return candidate
+        candidate = f'{base}-{i}'
+    return None
+
+
 def handler(event: dict, context) -> dict:
     '''
     Публичная подача заявки клиентом на добавление посылки с готовым (или ещё не обожжённым)
-    керамическим изделием: ФИО, телефон, email и фото. Заявка попадает в очередь на
-    подтверждение менеджеру ВДНХ (статус 'pending_review'), после подтверждения становится
-    обычной отслеживаемой посылкой.
+    керамическим изделием: ФИО, телефон, email и фото. Форма общая для Москвы и Суздаля,
+    город передаётся явно полем city ('moscow' или 'suzdal') — определяется на фронтенде
+    автоматически по разделу сайта, без ручного выбора клиентом.
+
+    Для Москвы (city='moscow'): заявка попадает в очередь на подтверждение менеджеру ВДНХ
+    (статус 'pending_review'), после подтверждения становится обычной отслеживаемой посылкой.
     Если isRepeatVisit=true (клиент уже расписывал ранее слепленное изделие и снова сдаёт
     его на обжиг) — требуются только телефон и фото; заявка автоматически привязывается
     (parent_id) к последней заявке этого клиента по номеру телефона, ФИО/email берутся из
     неё же, и сразу получает статус 'shipped' без проверки менеджером.
+
+    Для Суздаля (city='suzdal'): поле isRepeatVisit не используется (в Суздале нет повторной
+    росписи через эту форму) — ФИО и email всегда обязательны. Заявка сразу видна менеджеру
+    Суздаля со статусом 'in_progress' ("В работе") без отдельного этапа подтверждения — только
+    менеджер Суздаля решает, когда нажать «Отправить на ВДНХ» (см. shipments-admin, action
+    send_to_vdnh), после чего статус меняется на 'shipped' и заявка попадает в общую систему
+    отслеживания наравне с московскими.
+
+    tracking_number генерируется в формате ДДММ-XXXX (дата создания + последние 4 цифры
+    телефона клиента, например 3107-9771).
     visitDate — дата посещения мастер-класса/студии, указывается клиентом обязательно.
     POST { customerName, customerPhone, customerEmail, photoData (base64), contentType,
-           isRepeatVisit, visitDate }
+           isRepeatVisit, visitDate, city }
     Args: event с httpMethod, body
           context — объект с request_id
-    Returns: HTTP-ответ с временным номером заявки, либо ошибкой
+    Returns: HTTP-ответ с номером заявки, либо ошибкой
     '''
     method = event.get('httpMethod', 'GET')
 
@@ -61,7 +90,11 @@ def handler(event: dict, context) -> dict:
         return {'statusCode': 405, 'headers': _cors(), 'body': json.dumps({'error': 'Method not allowed'})}
 
     body = json.loads(event.get('body') or '{}')
-    is_repeat_visit = bool(body.get('isRepeatVisit'))
+    city = (body.get('city') or 'moscow').strip()
+    if city not in ('moscow', 'suzdal'):
+        city = 'moscow'
+    # В Суздале нет формы повторной росписи — isRepeatVisit применим только к Москве
+    is_repeat_visit = bool(body.get('isRepeatVisit')) if city == 'moscow' else False
     customer_name = (body.get('customerName') or '').strip()
     customer_phone = (body.get('customerPhone') or '').strip()
     customer_email = (body.get('customerEmail') or '').strip()
@@ -196,15 +229,7 @@ def handler(event: dict, context) -> dict:
             customer_email = parent_email or customer_email
             visit_number = (parent_visit_number or 1) + 1
 
-        tracking_number = None
-        for _ in range(5):
-            candidate = f'REQ-{secrets.token_hex(3).upper()}'
-            cur.execute(
-                f"SELECT id FROM {SCHEMA}.shipments WHERE tracking_number = %s", (candidate,),
-            )
-            if not cur.fetchone():
-                tracking_number = candidate
-                break
+        tracking_number = _generate_tracking_number(cur, phone_digits, SCHEMA)
         if not tracking_number:
             return {
                 'statusCode': 500,
@@ -212,15 +237,20 @@ def handler(event: dict, context) -> dict:
                 'body': json.dumps({'error': 'Не удалось создать заявку, попробуйте ещё раз'}, ensure_ascii=False),
             }
 
-        status = 'shipped' if is_repeat_visit else 'pending_review'
+        if city == 'suzdal':
+            # В Суздале нет этапа подтверждения менеджером ВДНХ — заявка сразу видна
+            # менеджеру Суздаля со статусом "В работе", он сам решает, когда отправить в Москву.
+            status = 'in_progress'
+        else:
+            status = 'shipped' if is_repeat_visit else 'pending_review'
 
         cur.execute(
             f"INSERT INTO {SCHEMA}.shipments "
             f"(tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-            f"delivered_at, return_at, status, source, parent_id, visit_number, visit_date) "
-            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s, %s)",
+            f"delivered_at, return_at, status, source, city, parent_id, visit_number, visit_date) "
+            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s, %s, %s)",
             (tracking_number, customer_name, customer_phone, customer_email, photo_url,
-             today, placeholder_return, status, parent_id, visit_number, visit_date),
+             today, placeholder_return, status, city, parent_id, visit_number, visit_date),
         )
         conn.commit()
 

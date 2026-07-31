@@ -1,7 +1,7 @@
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Shipment, fmtDate } from './shipmentTypes';
+import { Shipment, fmtDate, SUZDAL_STATUS_LABEL } from './shipmentTypes';
 import { SortConfig } from '@/hooks/useSortableData';
 
 type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'returnAt';
@@ -21,6 +21,8 @@ interface Props {
   page: number;
   totalPages: number;
   onIssueTarget: (s: Shipment) => void;
+  onSendToVdnhTarget?: (s: Shipment) => void;
+  onPhotoPreview?: (url: string) => void;
   PER_PAGE: number;
   sort: SortConfig<SortKey>;
   onSort: (key: SortKey) => void;
@@ -71,10 +73,14 @@ const ShipmentsTable = ({
   page,
   totalPages,
   onIssueTarget,
+  onSendToVdnhTarget,
+  onPhotoPreview,
   PER_PAGE,
   sort,
   onSort,
 }: Props) => {
+  const isSuzdalView = role === 'suzdal';
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -130,6 +136,61 @@ const ShipmentsTable = ({
         <div className="mt-8 flex justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
+      ) : isSuzdalView ? (
+        <div className="mt-4 overflow-hidden rounded-2xl border border-border">
+          <div className="hidden grid-cols-[64px_130px_1fr_1fr_120px_150px_150px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
+            <span>Фото</span>
+            <SortHeader label="№ заявки" sortKey="trackingNumber" sort={sort} onSort={onSort} />
+            <SortHeader label="Клиент" sortKey="customerName" sort={sort} onSort={onSort} />
+            <span>Контакты</span>
+            <span>Заявка создана</span>
+            <span>Статус</span>
+            <span>Действие</span>
+          </div>
+
+          {paginated.length === 0 && (
+            <p className="p-6 text-center text-sm text-muted-foreground">Заявок не найдено.</p>
+          )}
+
+          {paginated.map((s) => {
+            const statusInfo = SUZDAL_STATUS_LABEL[s.status] || { label: s.status, className: 'text-muted-foreground' };
+            return (
+              <div
+                key={s.id}
+                className="grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[64px_130px_1fr_1fr_120px_150px_150px] sm:items-center sm:gap-3"
+              >
+                {s.photoUrl ? (
+                  <button
+                    type="button"
+                    onClick={() => onPhotoPreview?.(s.photoUrl!)}
+                    className="block h-12 w-12 overflow-hidden rounded-lg border border-border"
+                  >
+                    <img src={s.photoUrl} alt="Фото изделия" className="h-full w-full object-cover" />
+                  </button>
+                ) : (
+                  <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+                    <Icon name="Image" size={16} />
+                  </span>
+                )}
+                <span className="font-medium">№ {s.trackingNumber}</span>
+                <span>{s.customerName}</span>
+                <div className="text-muted-foreground">
+                  <p>{s.customerPhone}</p>
+                  <p className="truncate">{s.customerEmail || '—'}</p>
+                </div>
+                <span className="text-muted-foreground">{fmtDate(s.createdAt || null)}</span>
+                <span className={statusInfo.className}>{statusInfo.label}</span>
+                <span>
+                  {s.status === 'in_progress' && onSendToVdnhTarget && (
+                    <Button size="sm" className="w-fit rounded-full" onClick={() => onSendToVdnhTarget(s)}>
+                      Отправить на ВДНХ
+                    </Button>
+                  )}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className="mt-4 overflow-hidden rounded-2xl border border-border">
           <div className="hidden grid-cols-[1fr_1fr_140px_160px_110px_110px_130px_110px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
@@ -139,8 +200,8 @@ const ShipmentsTable = ({
             <span>Email</span>
             <SortHeader label="Доставлено" sortKey="deliveredAt" sort={sort} onSort={onSort} />
             <SortHeader label="Возврат" sortKey="returnAt" sort={sort} onSort={onSort} />
-            {(view === 'closed' || role === 'suzdal') && <span>Статус</span>}
-            {view === 'active' && role === 'vdnh' && <span>Действие</span>}
+            {view === 'closed' && <span>Статус</span>}
+            {view === 'active' && <span>Действие</span>}
           </div>
 
           {paginated.length === 0 && (
@@ -158,18 +219,16 @@ const ShipmentsTable = ({
               <span className="text-muted-foreground">{s.customerEmail || '—'}</span>
               <span>{fmtDate(s.deliveredAt)}</span>
               <span>{fmtDate(s.returnAt)}</span>
-              {(view === 'closed' || role === 'suzdal') && (
+              {view === 'closed' && (
                 <span>
                   {s.status === 'returned' ? (
                     <span className="text-destructive">Возврат</span>
-                  ) : s.status === 'issued' ? (
-                    `Выдано ${fmtDate(s.issuedAt)}`
                   ) : (
-                    <span className="text-emerald-600">Активна</span>
+                    `Выдано ${fmtDate(s.issuedAt)}`
                   )}
                 </span>
               )}
-              {view === 'active' && role === 'vdnh' && (
+              {view === 'active' && (
                 <Button
                   size="sm"
                   className="w-fit rounded-full"
@@ -208,6 +267,9 @@ const ShipmentsTable = ({
           </Button>
         </div>
       )}
+
+      {/* PHOTO PREVIEW */}
+      {onPhotoPreview && null}
     </div>
   );
 };

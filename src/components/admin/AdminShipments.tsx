@@ -6,6 +6,17 @@ import ShipmentCreateForm from './ShipmentCreateForm';
 import ShipmentsTable from './ShipmentsTable';
 import ShipmentIssueDialog from './ShipmentIssueDialog';
 import { useSortableData } from '@/hooks/useSortableData';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 interface Props {
   token: string;
@@ -34,6 +45,10 @@ const AdminShipments = ({ token, role }: Props) => {
   const [issueTarget, setIssueTarget] = useState<Shipment | null>(null);
   const [issuing, setIssuing] = useState(false);
   const [exporting, setExporting] = useState(false);
+
+  const [sendToVdnhTarget, setSendToVdnhTarget] = useState<Shipment | null>(null);
+  const [sendingToVdnh, setSendingToVdnh] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const [formTracking, setFormTracking] = useState('');
   const [formName, setFormName] = useState('');
@@ -171,6 +186,42 @@ const AdminShipments = ({ token, role }: Props) => {
     }
   };
 
+  const confirmSendToVdnh = async () => {
+    if (!sendToVdnhTarget) return;
+    setSendingToVdnh(true);
+    try {
+      const resp = await fetch(func2url['shipments-admin'], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ action: 'send_to_vdnh', id: sendToVdnhTarget.id }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        toast({ title: data.error || 'Не удалось отправить изделие в Москву' });
+        return;
+      }
+      if (data.emailError) {
+        toast({
+          title: 'Отправлено, но письмо не ушло',
+          description: `№ ${sendToVdnhTarget.trackingNumber} — ошибка почты: ${data.emailError}`,
+        });
+      } else {
+        toast({
+          title: 'Изделие отправлено в Москву',
+          description: `№ ${sendToVdnhTarget.trackingNumber} — клиенту отправлено уведомление`,
+        });
+      }
+      setShipments((prev) =>
+        prev.map((s) => (s.id === sendToVdnhTarget.id ? { ...s, status: 'shipped' } : s)),
+      );
+      setSendToVdnhTarget(null);
+    } catch {
+      toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
+    } finally {
+      setSendingToVdnh(false);
+    }
+  };
+
   const handleExport = async () => {
     setExporting(true);
     try {
@@ -260,6 +311,8 @@ const AdminShipments = ({ token, role }: Props) => {
         page={page}
         totalPages={totalPages}
         onIssueTarget={setIssueTarget}
+        onSendToVdnhTarget={setSendToVdnhTarget}
+        onPhotoPreview={setPhotoPreview}
         PER_PAGE={PER_PAGE}
         sort={sort}
         onSort={toggleSort}
@@ -271,6 +324,34 @@ const AdminShipments = ({ token, role }: Props) => {
         issuing={issuing}
         onConfirm={confirmIssue}
       />
+
+      {/* ОТПРАВКА НА ВДНХ */}
+      <AlertDialog open={!!sendToVdnhTarget} onOpenChange={(v) => !v && setSendToVdnhTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Отправить изделие в Москву?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Заявка № {sendToVdnhTarget?.trackingNumber} клиента {sendToVdnhTarget?.customerName}{' '}
+              перейдёт в статус «Отправлено в Москву», клиенту придёт письмо с адресом и контактами.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSendToVdnh} disabled={sendingToVdnh}>
+              {sendingToVdnh ? 'Отправляем…' : 'Отправить'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ПРОСМОТР ФОТО */}
+      <Dialog open={!!photoPreview} onOpenChange={(v) => !v && setPhotoPreview(null)}>
+        <DialogContent className="max-w-2xl">
+          {photoPreview && (
+            <img src={photoPreview} alt="Фото изделия" className="max-h-[80vh] w-full rounded-lg object-contain" />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

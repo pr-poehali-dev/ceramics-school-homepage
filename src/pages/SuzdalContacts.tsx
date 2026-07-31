@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -112,6 +114,32 @@ const SuzdalContacts = () => {
             title="Карта — Дымов Керамика, Суздаль, ул. Васильевская, 41а"
             className="block w-full"
           />
+        </div>
+
+        {/* TRACKING */}
+        <div className="mx-auto mt-8 max-w-4xl rounded-2xl border border-border bg-card p-7">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Icon name="PackageSearch" size={22} />
+            </span>
+            <h2 className="font-display text-2xl font-semibold">Отследить готовое изделие</h2>
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            Сделали изделие на мастер-классе в Суздале? Зарегистрируйте его, чтобы отслеживать
+            статус отправки в Москву и готовность к выдаче.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link to="/tracking?mode=add&city=suzdal">
+              <Button className="rounded-full">
+                <Icon name="Camera" size={16} className="mr-2" /> Добавить заявку
+              </Button>
+            </Link>
+            <Link to="/tracking">
+              <Button variant="outline" className="rounded-full">
+                <Icon name="PackageSearch" size={16} className="mr-2" /> Отследить статус
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* EXCURSIONS */}

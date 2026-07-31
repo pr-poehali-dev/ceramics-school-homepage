@@ -60,6 +60,11 @@ const Tracking = () => {
   const [courierConfirmOpen, setCourierConfirmOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const [mode, setMode] = useState<'find' | 'add'>(searchParams.get('mode') === 'add' ? 'add' : 'find');
+  // Город для формы «Добавить» передаётся явно через параметр URL (city=suzdal) —
+  // определяется автоматически ссылкой из шапки/подвала соответствующего раздела сайта,
+  // без ручного выбора клиентом. Поиск (режим «Найти») по-прежнему общий для обоих городов.
+  const addFormCity: 'moscow' | 'suzdal' = searchParams.get('city') === 'suzdal' ? 'suzdal' : 'moscow';
+  const isSuzdalAdd = mode === 'add' && addFormCity === 'suzdal';
 
   const isValid = phone.replace(/\D/g, '').length === 11;
 
@@ -103,7 +108,11 @@ const Tracking = () => {
               )}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              {mode === 'find' ? content.findSubtitle : content.addSubtitle}
+              {mode === 'find'
+                ? content.findSubtitle
+                : isSuzdalAdd
+                  ? 'Зарегистрируйте изделие, сделанное на мастер-классе в Суздале, чтобы отслеживать его статус.'
+                  : content.addSubtitle}
             </p>
           </div>
 
@@ -114,7 +123,7 @@ const Tracking = () => {
             </div>
           )}
 
-          {mode === 'add' && content.addNoticeEnabled !== 'false' && (
+          {mode === 'add' && !isSuzdalAdd && content.addNoticeEnabled !== 'false' && (
             <div className="mx-auto mt-6 flex max-w-md items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
               <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-amber-600" />
               <p className="text-sm text-amber-800">{content.addNotice}</p>
@@ -176,7 +185,7 @@ const Tracking = () => {
             </div>
           ) : (
             <div className="mt-6 rounded-2xl border border-border bg-card p-6 md:p-8">
-              <ShipmentRequestForm photoHint={content.photoHint} />
+              <ShipmentRequestForm photoHint={content.photoHint} city={addFormCity} />
             </div>
           )}
 

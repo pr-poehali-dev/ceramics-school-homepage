@@ -15,9 +15,14 @@ const ALLOWED = ['image/png', 'image/jpeg', 'image/webp'];
 
 interface Props {
   photoHint?: string;
+  city?: 'moscow' | 'suzdal';
 }
 
-const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже необожжённого полуфабриката.' }: Props) => {
+const ShipmentRequestForm = ({
+  photoHint = 'Подойдёт фото даже необожжённого полуфабриката.',
+  city = 'moscow',
+}: Props) => {
+  const isSuzdal = city === 'suzdal';
   const fileInputRef = useRef<HTMLInputElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
   const [isRepeatVisit, setIsRepeatVisit] = useState(false);
@@ -62,7 +67,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
     setPhotoPreview(URL.createObjectURL(file));
   };
 
-  const isValid = isRepeatVisit
+  const isValid = isRepeatVisit && !isSuzdal
     ? phone.replace(/\D/g, '').length === 11 && !!photo && !!visitDate
     : name.trim().length > 2 &&
       phone.replace(/\D/g, '').length === 11 &&
@@ -89,13 +94,14 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            isRepeatVisit,
+            isRepeatVisit: isRepeatVisit && !isSuzdal,
             customerName: name.trim(),
             customerPhone: phone,
             customerEmail: email.trim(),
             visitDate,
             photoData: dataUrl,
             contentType: 'image/jpeg',
+            city,
           }),
         });
       } catch (err) {
@@ -126,7 +132,13 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
         </span>
         <h3 className="mt-4 font-display text-xl font-semibold">Заявка отправлена!</h3>
         <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-          {doneRepeat ? (
+          {isSuzdal ? (
+            <>
+              Номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
+              Мастерская Суздаля получила заявку и передаст изделие в Москву — статус можно
+              отследить по номеру телефона.
+            </>
+          ) : doneRepeat ? (
             <>
               Номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
               Изделие связано с вашим предыдущим посещением и отправлено на обжиг — статус
@@ -149,22 +161,24 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <label className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 p-3.5">
-        <Checkbox
-          checked={isRepeatVisit}
-          onCheckedChange={(v) => setIsRepeatVisit(v === true)}
-          className="mt-0.5"
-        />
-        <span className="text-sm leading-snug">
-          <span className="font-medium text-foreground">Это моё повторное посещение</span>
-          <br />
-          <span className="text-muted-foreground">
-            Я уже сдавал(а) изделие и расписал(а) его — теперь сдаю на обжиг снова
+      {!isSuzdal && (
+        <label className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 p-3.5">
+          <Checkbox
+            checked={isRepeatVisit}
+            onCheckedChange={(v) => setIsRepeatVisit(v === true)}
+            className="mt-0.5"
+          />
+          <span className="text-sm leading-snug">
+            <span className="font-medium text-foreground">Это моё повторное посещение</span>
+            <br />
+            <span className="text-muted-foreground">
+              Я уже сдавал(а) изделие и расписал(а) его — теперь сдаю на обжиг снова
+            </span>
           </span>
-        </span>
-      </label>
+        </label>
+      )}
 
-      {!isRepeatVisit && (
+      {(!isRepeatVisit || isSuzdal) && (
         <div>
           <Label htmlFor="req-name">ФИО *</Label>
           <Input
@@ -196,7 +210,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
           </p>
         )}
       </div>
-      {!isRepeatVisit && (
+      {(!isRepeatVisit || isSuzdal) && (
         <div>
           <Label htmlFor="req-email">Email *</Label>
           <Input
