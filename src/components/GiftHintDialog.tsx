@@ -27,6 +27,7 @@ import func2url from '../../backend/func2url.json';
 interface GiftOption {
   value: string;
   label: string;
+  type?: 'workshop' | 'certificate';
 }
 
 interface Props {
@@ -78,7 +79,7 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
           anonymous,
           recipientName: recipientName.trim(),
           recipientEmail: recipientEmail.trim(),
-          giftType: 'workshop',
+          giftType: selectedGift.type || 'workshop',
           giftSlug: selectedGift.value,
           giftLabel: selectedGift.label,
           message: message.trim(),

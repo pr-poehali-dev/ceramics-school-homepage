@@ -161,8 +161,9 @@ const WorkshopDetail = () => {
   const meta = slug ? WORKSHOP_META[slug] : undefined;
   const c = usePageContent(`moscow-workshops-${slug || 'lepka'}`);
   const giftWorkshopOptions = [
-    ...Object.values(WORKSHOP_DETAILS).map((w) => ({ value: w.slug, label: w.title })),
-    ...customWorkshops.map((w) => ({ value: w.slug, label: w.label })),
+    { value: 'certificate', label: 'Подарочный сертификат (на любую сумму)', type: 'certificate' as const },
+    ...Object.values(WORKSHOP_DETAILS).map((w) => ({ value: w.slug, label: w.title, type: 'workshop' as const })),
+    ...customWorkshops.map((w) => ({ value: w.slug, label: w.label, type: 'workshop' as const })),
   ];
 
   usePageMeta({
