@@ -48,7 +48,10 @@ const AdminShipments = ({ token, role }: Props) => {
 
   const [sendToVdnhTarget, setSendToVdnhTarget] = useState<Shipment | null>(null);
   const [sendingToVdnh, setSendingToVdnh] = useState(false);
+  const [resendToVdnhTarget, setResendToVdnhTarget] = useState<Shipment | null>(null);
+  const [resendingToVdnh, setResendingToVdnh] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const [formTracking, setFormTracking] = useState('');
   const [formName, setFormName] = useState('');
@@ -222,6 +225,42 @@ const AdminShipments = ({ token, role }: Props) => {
     }
   };
 
+  const confirmResendToVdnh = async () => {
+    if (!resendToVdnhTarget) return;
+    setResendingToVdnh(true);
+    try {
+      const resp = await fetch(func2url['shipments-admin'], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ action: 'resend_to_vdnh', id: resendToVdnhTarget.id }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        toast({ title: data.error || 'Не удалось отправить изделие повторно' });
+        return;
+      }
+      if (data.emailError) {
+        toast({
+          title: 'Отправлено, но письмо не ушло',
+          description: `№ ${resendToVdnhTarget.trackingNumber} — ошибка почты: ${data.emailError}`,
+        });
+      } else {
+        toast({
+          title: 'Изделие отправлено в Москву повторно',
+          description: `№ ${resendToVdnhTarget.trackingNumber} — клиенту отправлено уведомление`,
+        });
+      }
+      setShipments((prev) =>
+        prev.map((s) => (s.id === resendToVdnhTarget.id ? { ...s, status: 'shipped' } : s)),
+      );
+      setResendToVdnhTarget(null);
+    } catch {
+      toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
+    } finally {
+      setResendingToVdnh(false);
+    }
+  };
+
   const handleExport = async () => {
     setExporting(true);
     try {
@@ -250,15 +289,19 @@ const AdminShipments = ({ token, role }: Props) => {
   };
 
   const query = search.trim().toLowerCase();
+  const filteredByStatus =
+    role === 'suzdal' && statusFilter !== 'all'
+      ? shipments.filter((s) => s.status === statusFilter)
+      : shipments;
   const filtered = query
-    ? shipments.filter(
+    ? filteredByStatus.filter(
         (s) =>
           s.trackingNumber.toLowerCase().includes(query) ||
           s.customerName.toLowerCase().includes(query) ||
           (s.customerEmail || '').toLowerCase().includes(query) ||
           s.customerPhone.replace(/\D/g, '').includes(query.replace(/\D/g, '')),
       )
-    : shipments;
+    : filteredByStatus;
 
   type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'returnAt';
   const { sorted, sort, toggleSort } = useSortableData<Shipment, SortKey>(filtered, (item, key) => {
@@ -312,7 +355,10 @@ const AdminShipments = ({ token, role }: Props) => {
         totalPages={totalPages}
         onIssueTarget={setIssueTarget}
         onSendToVdnhTarget={setSendToVdnhTarget}
+        onResendToVdnhTarget={setResendToVdnhTarget}
         onPhotoPreview={setPhotoPreview}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
         PER_PAGE={PER_PAGE}
         sort={sort}
         onSort={toggleSort}
@@ -339,6 +385,26 @@ const AdminShipments = ({ token, role }: Props) => {
             <AlertDialogCancel>Отмена</AlertDialogCancel>
             <AlertDialogAction onClick={confirmSendToVdnh} disabled={sendingToVdnh}>
               {sendingToVdnh ? 'Отправляем…' : 'Отправить'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ПОВТОРНАЯ ОТПРАВКА НА ВДНХ */}
+      <AlertDialog open={!!resendToVdnhTarget} onOpenChange={(v) => !v && setResendToVdnhTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Отправить изделие повторно?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Заявка № {resendToVdnhTarget?.trackingNumber} клиента {resendToVdnhTarget?.customerName}{' '}
+              снова перейдёт в статус «Отправлено в Москву», дата возврата пересчитается заново,
+              клиенту повторно придёт письмо с адресом и контактами.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmResendToVdnh} disabled={resendingToVdnh}>
+              {resendingToVdnh ? 'Отправляем…' : 'Отправить повторно'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

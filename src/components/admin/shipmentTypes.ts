@@ -19,6 +19,14 @@ export const SUZDAL_STATUS_LABEL: Record<string, { label: string; className: str
   returned: { label: 'Возврат', className: 'text-destructive' },
 };
 
+export const SUZDAL_STATUS_FILTERS: { value: string; label: string }[] = [
+  { value: 'all', label: 'Все статусы' },
+  { value: 'in_progress', label: 'В работе' },
+  { value: 'shipped', label: 'Отправлено в Москву' },
+  { value: 'issued', label: 'Выдано' },
+  { value: 'returned', label: 'Возврат' },
+];
+
 export const fmtDate = (s: string | null) => {
   if (!s) return '—';
   try {

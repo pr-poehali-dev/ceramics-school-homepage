@@ -1,7 +1,14 @@
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Shipment, fmtDate, SUZDAL_STATUS_LABEL } from './shipmentTypes';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
+import { Shipment, fmtDate, SUZDAL_STATUS_LABEL, SUZDAL_STATUS_FILTERS } from './shipmentTypes';
 import { SortConfig } from '@/hooks/useSortableData';
 
 type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'returnAt';
@@ -22,7 +29,10 @@ interface Props {
   totalPages: number;
   onIssueTarget: (s: Shipment) => void;
   onSendToVdnhTarget?: (s: Shipment) => void;
+  onResendToVdnhTarget?: (s: Shipment) => void;
   onPhotoPreview?: (url: string) => void;
+  statusFilter?: string;
+  setStatusFilter?: (v: string) => void;
   PER_PAGE: number;
   sort: SortConfig<SortKey>;
   onSort: (key: SortKey) => void;
@@ -74,7 +84,10 @@ const ShipmentsTable = ({
   totalPages,
   onIssueTarget,
   onSendToVdnhTarget,
+  onResendToVdnhTarget,
   onPhotoPreview,
+  statusFilter,
+  setStatusFilter,
   PER_PAGE,
   sort,
   onSort,
@@ -107,7 +120,27 @@ const ShipmentsTable = ({
           <div />
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {isSuzdalView && statusFilter !== undefined && setStatusFilter && (
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => {
+                setStatusFilter(v);
+                setPage(1);
+              }}
+            >
+              <SelectTrigger className="h-9 w-44 rounded-full">
+                <SelectValue placeholder="Статус" />
+              </SelectTrigger>
+              <SelectContent>
+                {SUZDAL_STATUS_FILTERS.map((f) => (
+                  <SelectItem key={f.value} value={f.value}>
+                    {f.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Input
             value={search}
             onChange={(e) => {
@@ -138,12 +171,13 @@ const ShipmentsTable = ({
         </div>
       ) : isSuzdalView ? (
         <div className="mt-4 overflow-hidden rounded-2xl border border-border">
-          <div className="hidden grid-cols-[64px_130px_1fr_1fr_120px_150px_150px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
+          <div className="hidden grid-cols-[64px_130px_1fr_1fr_120px_120px_150px_170px] gap-3 border-b border-border bg-secondary/40 px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
             <span>Фото</span>
             <SortHeader label="№ заявки" sortKey="trackingNumber" sort={sort} onSort={onSort} />
             <SortHeader label="Клиент" sortKey="customerName" sort={sort} onSort={onSort} />
             <span>Контакты</span>
             <span>Заявка создана</span>
+            <SortHeader label="Дата возврата" sortKey="returnAt" sort={sort} onSort={onSort} />
             <span>Статус</span>
             <span>Действие</span>
           </div>
@@ -157,7 +191,7 @@ const ShipmentsTable = ({
             return (
               <div
                 key={s.id}
-                className="grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[64px_130px_1fr_1fr_120px_150px_150px] sm:items-center sm:gap-3"
+                className="grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[64px_130px_1fr_1fr_120px_120px_150px_170px] sm:items-center sm:gap-3"
               >
                 {s.photoUrl ? (
                   <button
@@ -179,11 +213,17 @@ const ShipmentsTable = ({
                   <p className="truncate">{s.customerEmail || '—'}</p>
                 </div>
                 <span className="text-muted-foreground">{fmtDate(s.createdAt || null)}</span>
+                <span className="text-muted-foreground">{fmtDate(s.returnAt)}</span>
                 <span className={statusInfo.className}>{statusInfo.label}</span>
                 <span>
                   {s.status === 'in_progress' && onSendToVdnhTarget && (
                     <Button size="sm" className="w-fit rounded-full" onClick={() => onSendToVdnhTarget(s)}>
                       Отправить на ВДНХ
+                    </Button>
+                  )}
+                  {s.status === 'returned' && onResendToVdnhTarget && (
+                    <Button size="sm" className="w-fit rounded-full" onClick={() => onResendToVdnhTarget(s)}>
+                      Отправить повторно
                     </Button>
                   )}
                 </span>

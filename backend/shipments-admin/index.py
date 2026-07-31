@@ -47,9 +47,12 @@ def _shipment_dict(r):
 
 def _suzdal_shipment_dict(r):
     """Строка новой единой таблицы Суздаля: Фото / № заявки / Клиент / Контакты /
-    Заявка создана / Статус / Действие. Объединяет старые записи (заведённые вручную,
-    status уже 'shipped'/'issued'/'returned', photo_url обычно NULL) и новые от клиентов
-    (status 'in_progress' до отправки на ВДНХ, затем 'shipped')."""
+    Заявка создана / Дата возврата / Статус / Действие. Объединяет старые записи
+    (заведённые вручную, status уже 'shipped'/'issued'/'returned', photo_url обычно NULL)
+    и новые от клиентов (status 'in_progress' до отправки на ВДНХ, затем 'shipped').
+    'Заявка создана' — это visit_date (дата посещения мастер-класса из формы клиента),
+    если она есть, иначе created_at (дата, когда менеджер вручную завёл запись)."""
+    created_at, visit_date = r[6], r[11]
     return {
         'id': r[0],
         'trackingNumber': r[1],
@@ -57,7 +60,7 @@ def _suzdal_shipment_dict(r):
         'customerPhone': r[3],
         'customerEmail': r[4],
         'photoUrl': r[5],
-        'createdAt': r[6].isoformat() if r[6] else None,
+        'createdAt': (visit_date or created_at).isoformat() if (visit_date or created_at) else None,
         'status': r[7],
         'deliveredAt': r[8].isoformat() if r[8] else None,
         'returnAt': r[9].isoformat() if r[9] else None,
@@ -383,6 +386,10 @@ def handler(event: dict, context) -> dict:
       (статус 'in_progress', city='suzdal') отправлено в Москву: статус меняется на 'shipped',
       проставляются delivered_at (сегодня) и return_at (+30 дней), клиенту отправляется письмо
       с адресом и часами работы студии, доступно только роли 'suzdal'.
+    POST { action: 'resend_to_vdnh', id } — повторная отправка изделия, которое уже вернулось
+      в Суздаль (статус 'returned', city='suzdal'): статус снова меняется на 'shipped',
+      delivered_at/return_at пересчитываются от сегодняшней даты, клиенту повторно уходит
+      письмо с адресом и часами работы студии, доступно только роли 'suzdal'.
     Args: event с httpMethod, headers (X-Session-Token), queryStringParameters, body
           context — объект с request_id
     Returns: HTTP-ответ со списком посылок либо результатом операции
@@ -529,6 +536,59 @@ def handler(event: dict, context) -> dict:
                     except Exception as e:
                         email_error = str(e)
                         print(f"[send_to_vdnh] email send failed for {customer_email}: {e!r}")
+
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'ok': True, 'emailError': email_error}, ensure_ascii=False),
+                }
+
+            if action == 'resend_to_vdnh':
+                if role != 'suzdal':
+                    return {
+                        'statusCode': 403,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Отправлять изделия в Москву может только менеджер Суздаля'}, ensure_ascii=False),
+                    }
+
+                shipment_id = body.get('id')
+                if not shipment_id:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
+                    }
+
+                today = datetime.utcnow().date()
+                return_date = today + timedelta(days=30)
+
+                cur.execute(
+                    f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s "
+                    f"WHERE id = %s AND city = 'suzdal' AND status = 'returned' "
+                    f"RETURNING tracking_number, customer_email",
+                    (today, return_date, shipment_id),
+                )
+                row = cur.fetchone()
+                if not row:
+                    return {
+                        'statusCode': 404,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Заявка не найдена или не в статусе «Возврат»'}, ensure_ascii=False),
+                    }
+                conn.commit()
+
+                tracking_number, customer_email = row
+                email_error = None
+                if not customer_email:
+                    email_error = 'У заявки не указан email клиента'
+                else:
+                    try:
+                        address, work_hours = _fetch_pickup_info(cur)
+                        _send_sent_to_vdnh_email(customer_email, tracking_number, address, work_hours)
+                        print(f"[resend_to_vdnh] email sent to {customer_email} for {tracking_number}")
+                    except Exception as e:
+                        email_error = str(e)
+                        print(f"[resend_to_vdnh] email send failed for {customer_email}: {e!r}")
 
                 return {
                     'statusCode': 200,
@@ -941,7 +1001,7 @@ def handler(event: dict, context) -> dict:
             # 'in_progress' (заявка клиента, ещё не отправленная на ВДНХ).
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-                f"created_at, status, delivered_at, return_at, issued_at "
+                f"created_at, status, delivered_at, return_at, issued_at, visit_date "
                 f"FROM {SCHEMA}.shipments WHERE city = 'suzdal' AND status != 'rejected' "
                 f"ORDER BY created_at DESC LIMIT 2000",
             )
