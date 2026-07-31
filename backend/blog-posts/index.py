@@ -50,6 +50,7 @@ def _row_dict(r, full=True):
     }
     if full:
         d['content'] = r[4]
+        d['gallery'] = r[10] or []
     return d
 
 
@@ -76,9 +77,10 @@ def handler(event: dict, context) -> dict:
       отсортированных по дате публикации. GET ?slug=... — отдаёт одну опубликованную статью
       с полным содержимым (для страницы статьи). GET ?all=1 с валидным X-Session-Token —
       отдаёт все статьи (включая черновики) для админки.
-    POST { action: 'create', title, excerpt, content, coverImage } — создаёт статью
-      (изначально черновик, published=false), slug генерируется автоматически из title.
-    POST { action: 'update', id, title, excerpt, content, coverImage } — редактирует статью.
+    POST { action: 'create', title, excerpt, content, coverImage, gallery (список URL) } —
+      создаёт статью (изначально черновик, published=false), slug генерируется автоматически
+      из title.
+    POST { action: 'update', id, title, excerpt, content, coverImage, gallery } — редактирует статью.
     POST { action: 'toggle_published', id, published } — публикует/снимает с публикации,
       при первой публикации проставляет published_at.
     POST { action: 'delete', id } — удаляет статью.
@@ -107,7 +109,7 @@ def handler(event: dict, context) -> dict:
             if slug:
                 cur.execute(
                     f"SELECT id, slug, title, excerpt, content, cover_image, published, "
-                    f"created_at, updated_at, published_at "
+                    f"created_at, updated_at, published_at, gallery "
                     f"FROM {SCHEMA}.blog_posts WHERE slug = %s AND published = true",
                     (slug,),
                 )
@@ -122,13 +124,13 @@ def handler(event: dict, context) -> dict:
                     return {'statusCode': 401, 'headers': _cors(), 'body': json.dumps({'error': 'Требуется авторизация'}, ensure_ascii=False)}
                 cur.execute(
                     f"SELECT id, slug, title, excerpt, content, cover_image, published, "
-                    f"created_at, updated_at, published_at "
+                    f"created_at, updated_at, published_at, gallery "
                     f"FROM {SCHEMA}.blog_posts ORDER BY created_at DESC",
                 )
             else:
                 cur.execute(
                     f"SELECT id, slug, title, excerpt, content, cover_image, published, "
-                    f"created_at, updated_at, published_at "
+                    f"created_at, updated_at, published_at, gallery "
                     f"FROM {SCHEMA}.blog_posts WHERE published = true "
                     f"ORDER BY published_at DESC LIMIT 200",
                 )
@@ -153,6 +155,7 @@ def handler(event: dict, context) -> dict:
             excerpt = (body.get('excerpt') or '').strip()
             content = (body.get('content') or '').strip()
             cover_image = (body.get('coverImage') or '').strip() or None
+            gallery = body.get('gallery') or []
 
             if not title:
                 return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Укажите заголовок статьи'}, ensure_ascii=False)}
@@ -166,9 +169,9 @@ def handler(event: dict, context) -> dict:
                 slug = f'{base_slug}-{i}'
 
             cur.execute(
-                f"INSERT INTO {SCHEMA}.blog_posts (slug, title, excerpt, content, cover_image, created_by) "
-                f"VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
-                (slug, title, excerpt or None, content, cover_image, manager_id),
+                f"INSERT INTO {SCHEMA}.blog_posts (slug, title, excerpt, content, cover_image, gallery, created_by) "
+                f"VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id",
+                (slug, title, excerpt or None, content, cover_image, json.dumps(gallery, ensure_ascii=False), manager_id),
             )
             new_id = cur.fetchone()[0]
             conn.commit()
@@ -181,6 +184,7 @@ def handler(event: dict, context) -> dict:
             excerpt = (body.get('excerpt') or '').strip()
             content = (body.get('content') or '').strip()
             cover_image = (body.get('coverImage') or '').strip() or None
+            gallery = body.get('gallery') or []
 
             if not post_id:
                 return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Не указана статья'}, ensure_ascii=False)}
@@ -189,8 +193,8 @@ def handler(event: dict, context) -> dict:
 
             cur.execute(
                 f"UPDATE {SCHEMA}.blog_posts SET title = %s, excerpt = %s, content = %s, "
-                f"cover_image = %s, updated_at = NOW() WHERE id = %s",
-                (title, excerpt or None, content, cover_image, post_id),
+                f"cover_image = %s, gallery = %s, updated_at = NOW() WHERE id = %s",
+                (title, excerpt or None, content, cover_image, json.dumps(gallery, ensure_ascii=False), post_id),
             )
             if cur.rowcount == 0:
                 return {'statusCode': 404, 'headers': _cors(), 'body': json.dumps({'error': 'Статья не найдена'}, ensure_ascii=False)}

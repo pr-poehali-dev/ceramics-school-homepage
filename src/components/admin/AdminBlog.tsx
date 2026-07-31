@@ -33,6 +33,7 @@ interface BlogPost {
   excerpt: string | null;
   content?: string;
   coverImage: string | null;
+  gallery?: string[];
   published: boolean;
   createdAt: string | null;
   updatedAt: string | null;
@@ -62,9 +63,12 @@ const AdminBlog = ({ token }: Props) => {
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [coverImage, setCoverImage] = useState('');
+  const [gallery, setGallery] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const [deleteTarget, setDeleteTarget] = useState<BlogPost | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -99,6 +103,7 @@ const AdminBlog = ({ token }: Props) => {
     setExcerpt('');
     setContent('');
     setCoverImage('');
+    setGallery([]);
     setEditOpen(true);
   };
 
@@ -108,6 +113,7 @@ const AdminBlog = ({ token }: Props) => {
     setExcerpt(p.excerpt || '');
     setCoverImage(p.coverImage || '');
     setContent(p.content || '');
+    setGallery(p.gallery || []);
     setEditOpen(true);
   };
 
@@ -146,6 +152,45 @@ const AdminBlog = ({ token }: Props) => {
     }
   };
 
+  const handleUploadGalleryImage = async (file: File | undefined) => {
+    if (!file) return;
+    setUploadingGallery(true);
+    try {
+      let fileData: string;
+      let contentType: string;
+      if (file.type !== 'image/svg+xml') {
+        const { dataUrl } = await compressImage(file, 1600, 0.85);
+        fileData = dataUrl;
+        contentType = 'image/jpeg';
+      } else {
+        fileData = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
+          reader.readAsDataURL(file);
+        });
+        contentType = file.type;
+      }
+      const resp = await fetchWithFriendlyErrors(func2url['upload-image'], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ fileData, contentType }),
+      });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) throw new Error(data.error || `Ошибка сервера (${resp.status})`);
+      setGallery((prev) => [...prev, data.url]);
+      toast({ title: 'Фото добавлено в галерею' });
+    } catch (err) {
+      toast({ title: 'Не удалось загрузить фото', description: describeError(err) });
+    } finally {
+      setUploadingGallery(false);
+    }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setGallery((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const submitSave = async () => {
     if (!title.trim()) {
       toast({ title: 'Укажите заголовок статьи' });
@@ -163,6 +208,7 @@ const AdminBlog = ({ token }: Props) => {
           excerpt: excerpt.trim(),
           content: content.trim(),
           coverImage,
+          gallery,
         }),
       });
       const data = await resp.json().catch(() => ({}));
@@ -355,6 +401,40 @@ const AdminBlog = ({ token }: Props) => {
                 rows={12}
                 className="mt-1.5"
               />
+            </div>
+            <div>
+              <Label>Дополнительные фото (галерея внизу статьи)</Label>
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => handleUploadGalleryImage(e.target.files?.[0])}
+              />
+              <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {gallery.map((src, i) => (
+                  <div key={src} className="relative aspect-square overflow-hidden rounded-xl">
+                    <img src={src} alt="" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryImage(i)}
+                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
+                      aria-label="Удалить фото"
+                    >
+                      <Icon name="X" size={13} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => galleryInputRef.current?.click()}
+                  disabled={uploadingGallery}
+                  className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+                >
+                  <Icon name={uploadingGallery ? 'Loader2' : 'Plus'} size={18} className={uploadingGallery ? 'animate-spin' : ''} />
+                  <span className="text-xs font-medium">{uploadingGallery ? 'Загрузка…' : 'Добавить'}</span>
+                </button>
+              </div>
             </div>
           </div>
           <DialogFooter>

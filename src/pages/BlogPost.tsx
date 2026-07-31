@@ -13,6 +13,7 @@ interface BlogPostFull {
   excerpt: string | null;
   content: string;
   coverImage: string | null;
+  gallery?: string[];
   publishedAt: string | null;
 }
 
@@ -103,6 +104,16 @@ const BlogPost = () => {
                   <p key={i}>{p}</p>
                 ))}
             </div>
+
+            {post.gallery && post.gallery.length > 0 && (
+              <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {post.gallery.map((src) => (
+                  <div key={src} className="aspect-square overflow-hidden rounded-xl">
+                    <img src={src} alt={post.title} className="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
           </article>
         )}
       </div>
