@@ -45,8 +45,9 @@ def handler(event: dict, context) -> dict:
     его на обжиг) — требуются только телефон и фото; заявка автоматически привязывается
     (parent_id) к последней заявке этого клиента по номеру телефона, ФИО/email берутся из
     неё же, и сразу получает статус 'shipped' без проверки менеджером.
+    visitDate — дата посещения мастер-класса/студии, указывается клиентом обязательно.
     POST { customerName, customerPhone, customerEmail, photoData (base64), contentType,
-           isRepeatVisit }
+           isRepeatVisit, visitDate }
     Args: event с httpMethod, body
           context — объект с request_id
     Returns: HTTP-ответ с временным номером заявки, либо ошибкой
@@ -66,12 +67,28 @@ def handler(event: dict, context) -> dict:
     customer_email = (body.get('customerEmail') or '').strip()
     photo_data = body.get('photoData') or ''
     content_type = body.get('contentType') or 'image/jpeg'
+    visit_date_raw = (body.get('visitDate') or '').strip()
 
     if not is_repeat_visit and (not customer_name or not customer_email):
         return {
             'statusCode': 400,
             'headers': _cors(),
             'body': json.dumps({'error': 'Укажите ФИО и email'}, ensure_ascii=False),
+        }
+
+    if not visit_date_raw:
+        return {
+            'statusCode': 400,
+            'headers': _cors(),
+            'body': json.dumps({'error': 'Укажите дату посещения'}, ensure_ascii=False),
+        }
+    try:
+        visit_date = datetime.strptime(visit_date_raw[:10], '%Y-%m-%d').date()
+    except ValueError:
+        return {
+            'statusCode': 400,
+            'headers': _cors(),
+            'body': json.dumps({'error': 'Неверный формат даты посещения'}, ensure_ascii=False),
         }
 
     phone_digits = _normalize_phone(customer_phone)
@@ -200,10 +217,10 @@ def handler(event: dict, context) -> dict:
         cur.execute(
             f"INSERT INTO {SCHEMA}.shipments "
             f"(tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-            f"delivered_at, return_at, status, source, parent_id, visit_number) "
-            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s)",
+            f"delivered_at, return_at, status, source, parent_id, visit_number, visit_date) "
+            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s, %s)",
             (tracking_number, customer_name, customer_phone, customer_email, photo_url,
-             today, placeholder_return, status, parent_id, visit_number),
+             today, placeholder_return, status, parent_id, visit_number, visit_date),
         )
         conn.commit()
 

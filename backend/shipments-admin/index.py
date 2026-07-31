@@ -56,6 +56,7 @@ def _request_dict(r):
         'visitNumber': r[7],
         'parentId': r[8],
         'parentTrackingNumber': r[9],
+        'visitDate': r[10].isoformat() if r[10] else None,
     }
 
 
@@ -79,6 +80,7 @@ def _confirmed_dict(r):
         'parentTrackingNumber': r[13],
         'requiresPainting': r[14],
         'paintingReminderSentAt': r[15].isoformat() if r[15] else None,
+        'visitDate': r[16].isoformat() if r[16] else None,
     }
 
 
@@ -750,7 +752,7 @@ def handler(event: dict, context) -> dict:
         if status_filter == 'requests':
             cur.execute(
                 f"SELECT s.id, s.tracking_number, s.customer_name, s.customer_phone, s.customer_email, "
-                f"s.photo_url, s.created_at, s.visit_number, s.parent_id, p.tracking_number "
+                f"s.photo_url, s.created_at, s.visit_number, s.parent_id, p.tracking_number, s.visit_date "
                 f"FROM {SCHEMA}.shipments s LEFT JOIN {SCHEMA}.shipments p ON p.id = s.parent_id "
                 f"WHERE s.status = 'pending_review' ORDER BY s.created_at DESC LIMIT 500",
             )
@@ -769,7 +771,7 @@ def handler(event: dict, context) -> dict:
                 f"SELECT s.id, s.tracking_number, s.customer_name, s.customer_phone, s.customer_email, s.photo_url, "
                 f"s.delivered_at, s.return_at, s.status, s.ready_at, s.created_at, "
                 f"s.visit_number, s.parent_id, p.tracking_number, "
-                f"s.requires_painting, s.painting_reminder_sent_at "
+                f"s.requires_painting, s.painting_reminder_sent_at, s.visit_date "
                 f"FROM {SCHEMA}.shipments s LEFT JOIN {SCHEMA}.shipments p ON p.id = s.parent_id "
                 f"WHERE s.source = 'client' AND s.status IN ('shipped', 'issued') "
                 f"AND s.archived_at IS NULL "

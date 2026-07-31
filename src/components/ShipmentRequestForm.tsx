@@ -24,6 +24,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [visitDate, setVisitDate] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -40,6 +41,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
     setName('');
     setPhone('');
     setEmail('');
+    setVisitDate('');
     setPhoto(null);
     setPhotoPreview(null);
     setDone(null);
@@ -61,11 +63,12 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
   };
 
   const isValid = isRepeatVisit
-    ? phone.replace(/\D/g, '').length === 11 && !!photo
+    ? phone.replace(/\D/g, '').length === 11 && !!photo && !!visitDate
     : name.trim().length > 2 &&
       phone.replace(/\D/g, '').length === 11 &&
       /\S+@\S+\.\S+/.test(email) &&
-      !!photo;
+      !!photo &&
+      !!visitDate;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +93,7 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
             customerName: name.trim(),
             customerPhone: phone,
             customerEmail: email.trim(),
+            visitDate,
             photoData: dataUrl,
             contentType: 'image/jpeg',
           }),
@@ -206,6 +210,18 @@ const ShipmentRequestForm = ({ photoHint = 'Подойдёт фото даже �
           />
         </div>
       )}
+
+      <div>
+        <Label htmlFor="req-visit-date">Дата посещения *</Label>
+        <Input
+          id="req-visit-date"
+          type="date"
+          value={visitDate}
+          onChange={(e) => setVisitDate(e.target.value)}
+          className="mt-1.5"
+          required
+        />
+      </div>
 
       <div>
         <Label>Фото изделия *</Label>

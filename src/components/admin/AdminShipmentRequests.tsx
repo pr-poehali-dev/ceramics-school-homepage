@@ -39,6 +39,7 @@ interface ShipmentRequest {
   parentTrackingNumber?: string | null;
   requiresPainting?: boolean;
   paintingReminderSentAt?: string | null;
+  visitDate?: string | null;
 }
 
 interface Props {
@@ -384,6 +385,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
                       <p className="mt-0.5 text-xs text-muted-foreground">
                         Заявка создана: {item.createdAt ? fmtDateTime(item.createdAt) : '—'}
                       </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        Дата посещения: {fmtDate(item.visitDate)}
+                      </p>
                       <Button
                         size="lg"
                         className="mt-3 w-full rounded-xl"
@@ -416,10 +420,14 @@ const AdminShipmentRequests = ({ token }: Props) => {
                 <SortableTableHead label="Клиент" sortKey="customerName" sort={sort} onSort={toggleSort} />
                 <TableHead>Контакты</TableHead>
                 {view === 'requests' ? (
-                  <SortableTableHead label="Заявка от" sortKey="createdAt" sort={sort} onSort={toggleSort} />
+                  <>
+                    <SortableTableHead label="Заявка от" sortKey="createdAt" sort={sort} onSort={toggleSort} />
+                    <TableHead>Дата посещения</TableHead>
+                  </>
                 ) : view === 'confirmed' ? (
                   <>
                     <SortableTableHead label="Заявка создана" sortKey="createdAt" sort={sort} onSort={toggleSort} />
+                    <TableHead>Дата посещения</TableHead>
                     <SortableTableHead label="Хранение до" sortKey="storageUntil" sort={sort} onSort={toggleSort} />
                     <TableHead>Статус</TableHead>
                   </>
@@ -470,14 +478,18 @@ const AdminShipmentRequests = ({ token }: Props) => {
                         <p>{row.customerEmail}</p>
                       </TableCell>
                       {view === 'requests' ? (
-                        <TableCell className="text-sm text-muted-foreground">
-                          {row.createdAt ? fmtDateTime(row.createdAt) : '—'}
-                        </TableCell>
+                        <>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {row.createdAt ? fmtDateTime(row.createdAt) : '—'}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{fmtDate(row.visitDate)}</TableCell>
+                        </>
                       ) : view === 'confirmed' ? (
                         <>
                           <TableCell className="text-sm text-muted-foreground">
                             {row.createdAt ? fmtDateTime(row.createdAt) : '—'}
                           </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{fmtDate(row.visitDate)}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">{fmtDate(row.storageUntil)}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             {row.status === 'issued'
