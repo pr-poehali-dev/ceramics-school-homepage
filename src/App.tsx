@@ -43,6 +43,7 @@ const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Tracking = lazy(() => import("./pages/Tracking"));
 const QrRedirect = lazy(() => import("./pages/QrRedirect"));
+const QrRedirectSuzdal = lazy(() => import("./pages/QrRedirect").then((m) => ({ default: m.QrRedirectSuzdal })));
 const ManagerLogin = lazy(() => import("./pages/ManagerLogin"));
 const ManagerDashboard = lazy(() => import("./pages/ManagerDashboard"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
@@ -91,6 +92,7 @@ const App = () => (
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/tracking" element={<Tracking />} />
               <Route path="/tracking/qr" element={<QrRedirect />} />
+              <Route path="/tracking/qr-suzdal" element={<QrRedirectSuzdal />} />
               <Route path="/manager" element={<Navigate to="/manager/login" replace />} />
               <Route path="/manager/login" element={<ManagerLogin />} />
               <Route path="/manager/dashboard" element={<ManagerDashboard />} />

@@ -165,7 +165,9 @@ def _fetch_pickup_info(cur):
 
 
 def _send_sent_to_vdnh_email(customer_email: str, tracking_number: str, address: str, work_hours: str) -> None:
-    """Письмо клиенту Суздаля о том, что его изделие отправлено в Москву на обжиг/выдачу."""
+    """Письмо клиенту Суздаля о том, что его изделие прибыло в Москву и готово к выдаче
+    (отправляется менеджером Суздаля с задержкой ~1 день после фактической отправки,
+    поэтому к моменту письма изделие уже фактически на месте)."""
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -182,17 +184,17 @@ def _send_sent_to_vdnh_email(customer_email: str, tracking_number: str, address:
 
     text = (
         'Уважаемый клиент!\n\n'
-        'Школа керамики Дымов Керамики сообщает, что Ваше изделие из Суздаля отправлено в Москву.\n\n'
+        'Школа керамики Дымов Керамики сообщает, что Ваше изделие из Суздаля прибыло в Москву и готово к выдаче\n\n'
         f'Номер заявки: {tracking_number}\n\n'
-        'Как только изделие будет готово к выдаче, мы отправим Вам отдельное письмо с адресом и часами работы.\n\n'
         f'Забрать изделие можно будет по адресу: {address}\n'
         f'Время работы: {work_hours}\n\n'
         f'Отследить статус изделия можно на сайте: {SITE_URL}/tracking\n'
-        f'Контакты: {SITE_URL}/moscow/contacts'
+        f'Контакты: {SITE_URL}/moscow/contacts\n\n'
+        'Телефон администратора Школы в Москве: +7 (985) 419-89-03'
     )
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Ваше изделие отправлено в Москву', 'utf-8')
+    msg['Subject'] = Header('Ваше изделие готово к выдаче в Москве', 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = customer_email
 
@@ -382,6 +384,11 @@ def handler(event: dict, context) -> dict:
       к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом,
       часами работы студии и сроком хранения (60 календарных дней с даты оформления заявки),
       доступно только роли 'vdnh'.
+    POST { action: 'mark_issued', id } — менеджер ВДНХ нажимает «Выдано» на заявке клиента
+      (source='client', status='shipped', ready_at IS NOT NULL — то есть уже отмечена «Готово
+      к выдаче»): статус меняется на 'issued', проставляются issued_at/issued_by, и заявка сразу
+      переносится в архив (archived_at=NOW()), минуя обычное автоматическое архивирование через
+      3 месяца, доступно только роли 'vdnh'.
     POST { action: 'send_to_vdnh', id } — менеджер Суздаля отмечает, что изделие клиента
       (статус 'in_progress', city='suzdal') отправлено в Москву: статус меняется на 'shipped',
       проставляются delivered_at (сегодня) и return_at (+30 дней), клиенту отправляется письмо
@@ -887,6 +894,42 @@ def handler(event: dict, context) -> dict:
                         'statusCode': 404,
                         'headers': cors_headers,
                         'body': json.dumps({'error': 'Посылка не найдена или уже выдана'}, ensure_ascii=False),
+                    }
+                conn.commit()
+
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'ok': True}, ensure_ascii=False),
+                }
+
+            if action == 'mark_issued':
+                if role != 'vdnh':
+                    return {
+                        'statusCode': 403,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Выдавать изделия может только менеджер ВДНХ'}, ensure_ascii=False),
+                    }
+
+                shipment_id = body.get('id')
+                if not shipment_id:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
+                    }
+
+                cur.execute(
+                    f"UPDATE {SCHEMA}.shipments SET status = 'issued', issued_at = NOW(), issued_by = %s, "
+                    f"archived_at = NOW() "
+                    f"WHERE id = %s AND source = 'client' AND status = 'shipped' AND ready_at IS NOT NULL",
+                    (manager_id, shipment_id),
+                )
+                if cur.rowcount == 0:
+                    return {
+                        'statusCode': 404,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Заявка не найдена или ещё не готова к выдаче'}, ensure_ascii=False),
                     }
                 conn.commit()
 

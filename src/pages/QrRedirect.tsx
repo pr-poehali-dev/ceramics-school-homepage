@@ -16,3 +16,16 @@ const QrRedirect = () => {
 };
 
 export default QrRedirect;
+
+/**
+ * Короткая ссылка /tracking/qr-suzdal для QR-кода на столах в школе керамики
+ * в Суздале. Отправляет цель в Яндекс.Метрику и перенаправляет на форму
+ * «Добавить заявку» отслеживания изделий, сразу с городом Суздаль.
+ */
+export const QrRedirectSuzdal = () => {
+  useEffect(() => {
+    reachGoal(GOALS.QR_TABLE_SCAN, 'suzdal');
+  }, []);
+
+  return <Navigate to="/tracking?mode=add&city=suzdal&src=qr" replace />;
+};
