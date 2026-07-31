@@ -39,6 +39,8 @@ const SuzdalOffer = lazy(() => import("./pages/SuzdalOffer"));
 const SuzdalPrivacy = lazy(() => import("./pages/SuzdalPrivacy"));
 const SuzdalCookies = lazy(() => import("./pages/SuzdalCookies"));
 const SuzdalReviews = lazy(() => import("./pages/SuzdalReviews"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Tracking = lazy(() => import("./pages/Tracking"));
 const QrRedirect = lazy(() => import("./pages/QrRedirect"));
 const ManagerLogin = lazy(() => import("./pages/ManagerLogin"));
@@ -85,6 +87,8 @@ const App = () => (
               <Route path="/moscow/privacy" element={<Privacy />} />
               <Route path="/moscow/cookies" element={<Cookies />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/tracking" element={<Tracking />} />
               <Route path="/tracking/qr" element={<QrRedirect />} />
               <Route path="/manager" element={<Navigate to="/manager/login" replace />} />

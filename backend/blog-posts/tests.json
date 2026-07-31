@@ -1,0 +1,32 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "GET список опубликованных статей",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "GET ?all=1 без авторизации — отказ",
+      "method": "GET",
+      "path": "/?all=1",
+      "expectedStatus": 401,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "POST без авторизации — отказ",
+      "method": "POST",
+      "path": "/",
+      "body": {"action": "create", "title": "Тест"},
+      "expectedStatus": 401,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

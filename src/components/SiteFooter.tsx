@@ -68,9 +68,12 @@ const SiteFooter = () => {
       to: `${workshopsHome}/${w.slug}`,
     })),
   ];
-  const sectionLinks = isSuzdal
-    ? [{ label: 'Все мастер-классы', to: '/suzdal/workshops' }, ...SUZDAL_NAV_LINKS]
-    : [{ label: 'Все мастер-классы', to: '/moscow/workshops' }, ...MOSCOW_NAV_LINKS];
+  const sectionLinks = [
+    ...(isSuzdal
+      ? [{ label: 'Все мастер-классы', to: '/suzdal/workshops' }, ...SUZDAL_NAV_LINKS]
+      : [{ label: 'Все мастер-классы', to: '/moscow/workshops' }, ...MOSCOW_NAV_LINKS]),
+    { label: 'Блог', to: '/blog' },
+  ];
 
   return (
   <footer className="mt-16 border-t border-border bg-secondary/40">

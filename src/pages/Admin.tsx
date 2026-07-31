@@ -11,6 +11,7 @@ import AdminShipments from '@/components/admin/AdminShipments';
 import AdminShipmentRequests from '@/components/admin/AdminShipmentRequests';
 import AdminGiftHints from '@/components/admin/AdminGiftHints';
 import AdminEmailNotifications from '@/components/admin/AdminEmailNotifications';
+import AdminBlog from '@/components/admin/AdminBlog';
 import { Order, Lead } from '@/components/admin/adminHelpers';
 import { useSortableData } from '@/hooks/useSortableData';
 import func2url from '../../backend/func2url.json';
@@ -35,7 +36,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [tab, setTab] = useState<'orders' | 'leads' | 'content' | 'shipments' | 'shipment-requests' | 'gift-hints' | 'emails'>('orders');
+  const [tab, setTab] = useState<'orders' | 'leads' | 'content' | 'shipments' | 'shipment-requests' | 'gift-hints' | 'emails' | 'blog'>('orders');
   const [ordersPage, setOrdersPage] = useState(1);
   const ORDERS_PER_PAGE = 10;
   const [cityFilter, setCityFilter] = useState<'moscow' | 'suzdal' | 'all'>('moscow');
@@ -364,6 +365,16 @@ const Admin = () => {
               Email-рассылки
             </button>
           )}
+          {managerRole === 'vdnh' && (
+            <button
+              onClick={() => setTab('blog')}
+              className={`shrink-0 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                tab === 'blog' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+              }`}
+            >
+              Блог
+            </button>
+          )}
         </div>
 
         {tab === 'content' && token && (
@@ -391,6 +402,8 @@ const Admin = () => {
         )}
 
         {tab === 'emails' && managerRole === 'vdnh' && <AdminEmailNotifications />}
+
+        {tab === 'blog' && token && managerRole === 'vdnh' && <AdminBlog token={token} />}
 
         {tab === 'orders' && (
           <AdminOrders
