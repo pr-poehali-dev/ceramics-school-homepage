@@ -12,6 +12,7 @@ import { usePageContent } from '@/hooks/usePageContent';
 import { useCustomWorkshopsWithLoading } from '@/hooks/useCustomWorkshops';
 import { useJsonLd } from '@/hooks/useJsonLd';
 import { workshopSchema, breadcrumbSchema } from '@/lib/schemaOrg';
+import GiftHintDialog from '@/components/GiftHintDialog';
 
 const WORKSHOP_META: Record<string, { title: string; description: string }> = {
   krug: {
@@ -159,6 +160,10 @@ const WorkshopDetail = () => {
     : undefined;
   const meta = slug ? WORKSHOP_META[slug] : undefined;
   const c = usePageContent(`moscow-workshops-${slug || 'lepka'}`);
+  const giftWorkshopOptions = [
+    ...Object.values(WORKSHOP_DETAILS).map((w) => ({ value: w.slug, label: w.title })),
+    ...customWorkshops.map((w) => ({ value: w.slug, label: w.label })),
+  ];
 
   usePageMeta({
     title: c.metaTitle || meta?.title || 'Мастер-классы «Дымов Керамика» в Москве',
@@ -341,6 +346,26 @@ const WorkshopDetail = () => {
                 <p className="mt-1 text-sm text-muted-foreground">
                   {c.discountText}
                 </p>
+              </div>
+            </div>
+
+            {/* Намекнуть на подарок */}
+            <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/10 p-5">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
+                <Icon name="Gift" size={18} />
+              </span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">
+                  Хотите, чтобы вам подарили этот мастер-класс?
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Отправим близким красивое письмо-намёк — они поймут, что подарить.
+                </p>
+                <GiftHintDialog giftOptions={giftWorkshopOptions} defaultGiftValue={data.slug}>
+                  <Button variant="outline" size="sm" className="mt-3 w-full rounded-full">
+                    <Icon name="Sparkles" size={14} className="mr-1.5" /> Намекнуть близким
+                  </Button>
+                </GiftHintDialog>
               </div>
             </div>
 

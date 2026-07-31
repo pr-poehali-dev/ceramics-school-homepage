@@ -9,6 +9,7 @@ import AdminOrders from '@/components/admin/AdminOrders';
 import AdminLeads from '@/components/admin/AdminLeads';
 import AdminShipments from '@/components/admin/AdminShipments';
 import AdminShipmentRequests from '@/components/admin/AdminShipmentRequests';
+import AdminGiftHints from '@/components/admin/AdminGiftHints';
 import { Order, Lead } from '@/components/admin/adminHelpers';
 import { useSortableData } from '@/hooks/useSortableData';
 import func2url from '../../backend/func2url.json';
@@ -33,7 +34,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [tab, setTab] = useState<'orders' | 'leads' | 'content' | 'shipments' | 'shipment-requests'>('orders');
+  const [tab, setTab] = useState<'orders' | 'leads' | 'content' | 'shipments' | 'shipment-requests' | 'gift-hints'>('orders');
   const [ordersPage, setOrdersPage] = useState(1);
   const ORDERS_PER_PAGE = 10;
   const [cityFilter, setCityFilter] = useState<'moscow' | 'suzdal' | 'all'>('moscow');
@@ -342,6 +343,16 @@ const Admin = () => {
               Изделия (Москва)
             </button>
           )}
+          {managerRole === 'vdnh' && (
+            <button
+              onClick={() => setTab('gift-hints')}
+              className={`shrink-0 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                tab === 'gift-hints' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+              }`}
+            >
+              Намёки на подарок
+            </button>
+          )}
         </div>
 
         {tab === 'content' && token && (
@@ -362,6 +373,10 @@ const Admin = () => {
 
         {tab === 'shipment-requests' && token && managerRole === 'vdnh' && (
           <AdminShipmentRequests token={token} />
+        )}
+
+        {tab === 'gift-hints' && token && managerRole === 'vdnh' && (
+          <AdminGiftHints token={token} />
         )}
 
         {tab === 'orders' && (
