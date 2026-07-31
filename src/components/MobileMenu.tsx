@@ -193,7 +193,7 @@ const MobileMenu = ({ active }: MobileMenuProps) => {
             ))}
 
             <Link
-              to="/tracking"
+              to={`/tracking?city=${city}`}
               onClick={handleLink('/tracking')}
               className="flex items-center justify-between rounded-xl px-4 py-3.5 text-lg font-medium text-foreground transition-colors hover:bg-muted"
             >
