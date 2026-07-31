@@ -30,6 +30,20 @@ interface Shipment {
   deliveredAt: string | null;
 }
 
+/** Выделяет жирным первое вхождение фразы в тексте (используется, чтобы клиент не перепутал
+ * форму города при добавлении заявки — "на мастер-классе в Москве/Суздале" всегда заметно). */
+const boldPhrase = (text: string, phrase: string) => {
+  const idx = text.indexOf(phrase);
+  if (idx === -1) return text;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <strong className="font-semibold text-foreground">{phrase}</strong>
+      {text.slice(idx + phrase.length)}
+    </>
+  );
+};
+
 const fmtDate = (s: string | null) => {
   if (!s) return '—';
   try {
@@ -110,8 +124,11 @@ const Tracking = () => {
               {mode === 'find'
                 ? content.findSubtitle
                 : isSuzdalAdd
-                  ? 'Зарегистрируйте изделие, сделанное на мастер-классе в Суздале, чтобы отслеживать его статус.'
-                  : content.addSubtitle}
+                  ? boldPhrase(
+                      'Зарегистрируйте изделие, сделанное на мастер-классе в Суздале, чтобы отслеживать его статус.',
+                      'на мастер-классе в Суздале',
+                    )
+                  : boldPhrase(content.addSubtitle, 'на мастер-классе в Москве')}
             </p>
           </div>
 
