@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import { fetchWithFriendlyErrors, describeError } from '@/lib/networkError';
+import { reachGoal, GOALS } from '@/lib/metrika';
 import func2url from '../../backend/func2url.json';
 
 interface GiftOption {
@@ -92,6 +93,7 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
         toast({ title: data.error || 'Не удалось отправить намёк' });
         return;
       }
+      reachGoal(GOALS.GIFT_HINT_SUBMIT, 'moscow', { giftType: selectedGift.type || 'workshop' });
       toast({
         title: 'Намёк отправлен!',
         description: data.emailSent

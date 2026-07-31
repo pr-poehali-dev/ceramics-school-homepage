@@ -39,6 +39,7 @@ export const GOALS = {
   PHONE_CLICK: 'phone_click',
   WHATSAPP_CLICK: 'whatsapp_click',
   QR_TABLE_SCAN: 'qr_table_scan',
+  GIFT_HINT_SUBMIT: 'gift_hint_submit',
 } as const;
 
 /**
