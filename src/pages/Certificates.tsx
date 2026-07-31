@@ -17,6 +17,9 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { usePageContent } from '@/hooks/usePageContent';
 import { reachGoal, GOALS } from '@/lib/metrika';
 import { THEMATIC_WORKSHOPS, ThematicWorkshop } from './formats/thematicData';
+import GiftHintDialog from '@/components/GiftHintDialog';
+import { WORKSHOP_DETAILS } from './WorkshopDetail';
+import { useCustomWorkshops } from '@/hooks/useCustomWorkshops';
 
 const CERTIFICATE_IMG =
   'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
@@ -44,6 +47,12 @@ const Certificates = () => {
   const [selected, setSelected] = useState<number | null>(null);
   const [thematicOpen, setThematicOpen] = useState(false);
   const [thematicWorkshop, setThematicWorkshop] = useState<ThematicWorkshop | null>(null);
+  const customWorkshops = useCustomWorkshops('moscow');
+  const giftOptions = [
+    { value: 'certificate', label: 'Подарочный сертификат (на любую сумму)', type: 'certificate' as const },
+    ...Object.values(WORKSHOP_DETAILS).map((w) => ({ value: w.slug, label: w.title, type: 'workshop' as const })),
+    ...customWorkshops.map((w) => ({ value: w.slug, label: w.label, type: 'workshop' as const })),
+  ];
 
   const activeAmount = thematicWorkshop ? thematicWorkshop.price : selected ?? 0;
   const activeHint = thematicWorkshop
@@ -253,6 +262,26 @@ const Certificates = () => {
                 Укажите сумму от 1 000 до 1 000 000 ₽
               </p>
             )}
+          </div>
+
+          {/* Намекнуть на подарок */}
+          <div className="mt-6 flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/10 p-5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
+              <Icon name="Gift" size={18} />
+            </span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-foreground">
+                Не хотите выбирать сами — намекните близким?
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Отправим им красивое письмо-намёк на сертификат — они поймут, что подарить.
+              </p>
+              <GiftHintDialog giftOptions={giftOptions} defaultGiftValue="certificate">
+                <Button variant="outline" size="sm" className="mt-3 w-full rounded-full sm:w-auto">
+                  <Icon name="Sparkles" size={14} className="mr-1.5" /> Намекнуть близким
+                </Button>
+              </GiftHintDialog>
+            </div>
           </div>
         </div>
 
