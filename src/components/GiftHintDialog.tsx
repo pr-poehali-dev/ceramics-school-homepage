@@ -38,6 +38,7 @@ interface Props {
 const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
   const [open, setOpen] = useState(false);
   const [senderName, setSenderName] = useState('');
+  const [anonymous, setAnonymous] = useState(false);
   const [recipientName, setRecipientName] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [giftValue, setGiftValue] = useState(defaultGiftValue || '');
@@ -47,6 +48,7 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
 
   const reset = () => {
     setSenderName('');
+    setAnonymous(false);
     setRecipientName('');
     setRecipientEmail('');
     setGiftValue(defaultGiftValue || '');
@@ -57,7 +59,7 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
   const selectedGift = giftOptions.find((g) => g.value === giftValue);
 
   const isValid =
-    senderName.trim().length > 1 &&
+    (anonymous || senderName.trim().length > 1) &&
     recipientName.trim().length > 1 &&
     !!giftValue &&
     /\S+@\S+\.\S+/.test(recipientEmail.trim()) &&
@@ -72,7 +74,8 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          senderName: senderName.trim(),
+          senderName: anonymous ? '' : senderName.trim(),
+          anonymous,
           recipientName: recipientName.trim(),
           recipientEmail: recipientEmail.trim(),
           giftType: 'workshop',
@@ -130,13 +133,31 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
               <Label htmlFor="gift-sender-name">От кого</Label>
               <Input
                 id="gift-sender-name"
-                placeholder="Ваше имя"
+                placeholder={anonymous ? 'Аноним' : 'Ваше имя'}
                 value={senderName}
                 onChange={(e) => setSenderName(e.target.value)}
-                required
+                disabled={anonymous}
+                required={!anonymous}
               />
             </div>
           </div>
+
+          <label className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 p-3.5">
+            <Checkbox
+              checked={anonymous}
+              onCheckedChange={(v) => {
+                const isAnon = v === true;
+                setAnonymous(isAnon);
+                if (isAnon) setSenderName('');
+              }}
+              className="mt-0.5"
+            />
+            <span className="text-sm leading-snug text-muted-foreground">
+              <span className="font-medium text-foreground">Отправить анонимно</span>
+              <br />
+              Ваше имя не будет сохранено — получатель и так не увидит, кто прислал письмо
+            </span>
+          </label>
 
           <div className="space-y-1.5">
             <Label htmlFor="gift-recipient-email">Email получателя *</Label>

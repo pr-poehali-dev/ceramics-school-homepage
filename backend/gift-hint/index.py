@@ -35,6 +35,7 @@ def _row_dict(r):
         'emailError': r[10],
         'city': r[11],
         'createdAt': r[12].isoformat() if r[12] else None,
+        'anonymous': r[13],
     }
 
 
@@ -91,7 +92,9 @@ def handler(event: dict, context) -> dict:
     получателя обязателен — письмо отправляется сразу. Согласие на обработку
     персональных данных обязательно — в будущем по этой базе будут отправляться
     другие триггерные письма.
-    POST { senderName, recipientName, recipientEmail, giftType
+    Если anonymous=true — имя отправителя не сохраняется в базе (senderName
+    игнорируется), в письме оно и так никогда не фигурирует.
+    POST { senderName, anonymous, recipientName, recipientEmail, giftType
       ('workshop'|'certificate'), giftSlug, giftLabel, message, consent, city } —
       сохраняет заявку и отправляет письмо получателю.
     GET ?all=1 с заголовком X-Session-Token (роль 'vdnh') — список всех заявок для админки.
@@ -127,7 +130,7 @@ def handler(event: dict, context) -> dict:
 
             cur.execute(
                 f"SELECT id, sender_name, recipient_name, recipient_email, recipient_contact, "
-                f"gift_type, gift_slug, gift_label, message, email_sent, email_error, city, created_at "
+                f"gift_type, gift_slug, gift_label, message, email_sent, email_error, city, created_at, anonymous "
                 f"FROM {SCHEMA}.gift_hints ORDER BY created_at DESC LIMIT 500",
             )
             rows = cur.fetchall()
@@ -139,7 +142,8 @@ def handler(event: dict, context) -> dict:
 
         # POST — публичная отправка намёка
         body = json.loads(event.get('body') or '{}')
-        sender_name = (body.get('senderName') or '').strip()
+        anonymous = bool(body.get('anonymous'))
+        sender_name = '' if anonymous else (body.get('senderName') or '').strip()
         recipient_name = (body.get('recipientName') or '').strip()
         recipient_email = (body.get('recipientEmail') or '').strip()
         gift_type = (body.get('giftType') or '').strip()
@@ -149,8 +153,10 @@ def handler(event: dict, context) -> dict:
         consent = bool(body.get('consent'))
         city = (body.get('city') or 'moscow').strip()
 
-        if not sender_name or not recipient_name:
-            return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Укажите имя отправителя и получателя'}, ensure_ascii=False)}
+        if not recipient_name:
+            return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Укажите имя получателя'}, ensure_ascii=False)}
+        if not anonymous and not sender_name:
+            return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Укажите имя отправителя или отметьте «Отправить анонимно»'}, ensure_ascii=False)}
         if gift_type not in ('workshop', 'certificate'):
             return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Не указан тип подарка'}, ensure_ascii=False)}
         if not gift_label:
@@ -171,10 +177,10 @@ def handler(event: dict, context) -> dict:
         cur.execute(
             f"INSERT INTO {SCHEMA}.gift_hints "
             f"(sender_name, recipient_name, recipient_email, gift_type, "
-            f"gift_slug, gift_label, message, consent, email_sent, email_error, city) "
-            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            f"gift_slug, gift_label, message, consent, email_sent, email_error, city, anonymous) "
+            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             (sender_name, recipient_name, recipient_email,
-             gift_type, gift_slug, gift_label, message or None, consent, email_sent, email_error, city),
+             gift_type, gift_slug, gift_label, message or None, consent, email_sent, email_error, city, anonymous),
         )
         conn.commit()
 

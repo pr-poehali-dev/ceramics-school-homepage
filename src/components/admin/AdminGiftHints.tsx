@@ -17,6 +17,7 @@ interface GiftHint {
   emailError: string | null;
   city: string;
   createdAt: string | null;
+  anonymous: boolean;
 }
 
 interface Props {
@@ -73,7 +74,14 @@ const AdminGiftHints = ({ token }: Props) => {
           </div>
           <div className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
             <p><span className="text-muted-foreground">Кому:</span> {h.recipientName}</p>
-            <p><span className="text-muted-foreground">От кого:</span> {h.senderName}</p>
+            <p>
+              <span className="text-muted-foreground">От кого:</span>{' '}
+              {h.anonymous ? (
+                <span className="italic text-muted-foreground">Аноним</span>
+              ) : (
+                h.senderName
+              )}
+            </p>
             {h.recipientEmail && (
               <p><span className="text-muted-foreground">Email получателя:</span> {h.recipientEmail}</p>
             )}
