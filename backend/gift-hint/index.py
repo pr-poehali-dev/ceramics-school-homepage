@@ -40,7 +40,55 @@ def _row_dict(r):
     }
 
 
-def _send_gift_hint_email(recipient_email: str, sender_name: str, message: str) -> None:
+class _SafeDict(dict):
+    def __missing__(self, key):
+        return '{' + key + '}'
+
+
+def _render_template(cur, template_key: str, default_subject: str, default_body: str, variables: dict):
+    """Возвращает (subject, body): кастомный текст из БД (email_templates), если он
+    сохранён через админку, иначе текст по умолчанию из кода."""
+    subject_tpl, body_tpl = default_subject, default_body
+    try:
+        cur.execute(
+            f"SELECT subject, body FROM {SCHEMA}.email_templates WHERE template_key = %s",
+            (template_key,),
+        )
+        row = cur.fetchone()
+        if row:
+            subject_tpl, body_tpl = row[0], row[1]
+    except Exception:
+        pass
+
+    safe_vars = _SafeDict(variables)
+    try:
+        subject = subject_tpl.format_map(safe_vars)
+    except Exception:
+        subject = subject_tpl
+    try:
+        body = body_tpl.format_map(safe_vars)
+    except Exception:
+        body = body_tpl
+    return subject, body
+
+
+DEFAULT_GIFT_HINT_SUBJECT = 'Вам письмо — маленький секрет...'
+DEFAULT_GIFT_HINT_BODY = (
+    'Здравствуйте!\n\n'
+    'Это письмо — тайный намёк от человека, которому Вы небезразличны.\n\n'
+    'В ближайшее время Вас ждёт приятный сюрприз. Что это будет — пока секрет. '
+    'Но обещаем: Вам точно понравится.\n\n'
+    'Осталось совсем немного — и Вы узнаете всё сами.\n\n'
+    'А пока просто знайте: кто-то очень хочет Вас порадовать.\n\n'
+    'С уважением и самыми тёплыми пожеланиями,\n'
+    'Ваш тайный отправитель'
+)
+
+
+def _send_gift_hint_email(cur, recipient_email: str, sender_name: str, message: str) -> None:
+    """Текст можно переопределить через админку (email_templates, ключ 'gift-hint').
+    Блок с сообщением от отправителя (если оно заполнено) добавляется отдельно после
+    основного текста и не входит в редактируемый шаблон."""
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -55,22 +103,13 @@ def _send_gift_hint_email(recipient_email: str, sender_name: str, message: str) 
     if missing:
         raise RuntimeError(f"Не заданы параметры: {', '.join(missing)}")
 
-    text = (
-        'Здравствуйте!\n\n'
-        'Это письмо — тайный намёк от человека, которому Вы небезразличны.\n\n'
-        'В ближайшее время Вас ждёт приятный сюрприз. Что это будет — пока секрет. '
-        'Но обещаем: Вам точно понравится.\n\n'
-        'Осталось совсем немного — и Вы узнаете всё сами.\n\n'
-        'А пока просто знайте: кто-то очень хочет Вас порадовать.\n\n'
-        'С уважением и самыми тёплыми пожеланиями,\n'
-        'Ваш тайный отправитель'
-    )
+    subject, text = _render_template(cur, 'gift-hint', DEFAULT_GIFT_HINT_SUBJECT, DEFAULT_GIFT_HINT_BODY, {})
 
     if message.strip():
         text += f'\n\n---\n\nОтправитель просил передать: «{message.strip()}»'
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Вам письмо — маленький секрет...', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = recipient_email
 
@@ -171,7 +210,7 @@ def handler(event: dict, context) -> dict:
         email_sent = False
         email_error = None
         try:
-            _send_gift_hint_email(recipient_email, sender_name, message)
+            _send_gift_hint_email(cur, recipient_email, sender_name, message)
             email_sent = True
         except Exception as e:
             email_error = str(e)

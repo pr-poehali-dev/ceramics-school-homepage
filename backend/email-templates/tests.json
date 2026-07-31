@@ -1,0 +1,26 @@
+{
+  "tests": [
+    {
+      "name": "GET без key и без токена — отказ",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 401,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "GET с несуществующим key — пустой объект",
+      "method": "GET",
+      "path": "/?key=nonexistent-template",
+      "expectedStatus": 200,
+      "expectedBody": {},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "OPTIONS — CORS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

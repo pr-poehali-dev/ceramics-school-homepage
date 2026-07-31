@@ -136,6 +136,40 @@ def _auto_archive(cur):
     )
 
 
+class _SafeDict(dict):
+    def __missing__(self, key):
+        return '{' + key + '}'
+
+
+def _render_template(cur, template_key: str, default_subject: str, default_body: str, variables: dict):
+    """Возвращает (subject, body) для письма: кастомный текст из БД (сохранённый через
+    админку в таблице email_templates), если он есть, иначе текст по умолчанию из кода.
+    Плейсхолдеры вида {tracking_number} в теме/тексте подставляются из variables;
+    неизвестные плейсхолдеры не ломают письмо — остаются как есть."""
+    subject_tpl, body_tpl = default_subject, default_body
+    try:
+        cur.execute(
+            f"SELECT subject, body FROM {SCHEMA}.email_templates WHERE template_key = %s",
+            (template_key,),
+        )
+        row = cur.fetchone()
+        if row:
+            subject_tpl, body_tpl = row[0], row[1]
+    except Exception:
+        pass
+
+    safe_vars = _SafeDict(variables)
+    try:
+        subject = subject_tpl.format_map(safe_vars)
+    except Exception:
+        subject = subject_tpl
+    try:
+        body = body_tpl.format_map(safe_vars)
+    except Exception:
+        body = body_tpl
+    return subject, body
+
+
 def _fetch_pickup_info(cur):
     """Достаёт адрес и часы работы выдачи из CMS-контента страницы moscow-info (с фолбэком)."""
     address = 'ВДНХ, проспект Мира, 119, строение 186'
@@ -154,10 +188,24 @@ def _fetch_pickup_info(cur):
     return address, work_hours
 
 
-def _send_sent_to_vdnh_email(customer_email: str, tracking_number: str, address: str, work_hours: str) -> None:
+DEFAULT_SENT_TO_VDNH_SUBJECT = 'Ваше изделие готово к выдаче в Москве'
+DEFAULT_SENT_TO_VDNH_BODY = (
+    'Уважаемый клиент!\n\n'
+    'Школа керамики Дымов Керамики сообщает, что Ваше изделие из Суздаля прибыло в Москву и готово к выдаче\n\n'
+    'Номер заявки: {tracking_number}\n\n'
+    'Забрать изделие можно будет по адресу: {address}\n'
+    'Время работы: {work_hours}\n\n'
+    'Отследить статус изделия можно на сайте: {site_url}/tracking\n'
+    'Контакты: {site_url}/moscow/contacts\n\n'
+    'Телефон администратора Школы в Москве: +7 (985) 419-89-03'
+)
+
+
+def _send_sent_to_vdnh_email(cur, customer_email: str, tracking_number: str, address: str, work_hours: str) -> None:
     """Письмо клиенту Суздаля о том, что его изделие прибыло в Москву и готово к выдаче
     (отправляется менеджером Суздаля с задержкой ~1 день после фактической отправки,
-    поэтому к моменту письма изделие уже фактически на месте)."""
+    поэтому к моменту письма изделие уже фактически на месте). Текст можно
+    переопределить через админку (таблица email_templates, ключ 'sent-to-vdnh')."""
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -172,19 +220,13 @@ def _send_sent_to_vdnh_email(customer_email: str, tracking_number: str, address:
     if missing:
         raise RuntimeError(f"Не заданы параметры: {', '.join(missing)}")
 
-    text = (
-        'Уважаемый клиент!\n\n'
-        'Школа керамики Дымов Керамики сообщает, что Ваше изделие из Суздаля прибыло в Москву и готово к выдаче\n\n'
-        f'Номер заявки: {tracking_number}\n\n'
-        f'Забрать изделие можно будет по адресу: {address}\n'
-        f'Время работы: {work_hours}\n\n'
-        f'Отследить статус изделия можно на сайте: {SITE_URL}/tracking\n'
-        f'Контакты: {SITE_URL}/moscow/contacts\n\n'
-        'Телефон администратора Школы в Москве: +7 (985) 419-89-03'
+    subject, text = _render_template(
+        cur, 'sent-to-vdnh', DEFAULT_SENT_TO_VDNH_SUBJECT, DEFAULT_SENT_TO_VDNH_BODY,
+        {'tracking_number': tracking_number, 'address': address, 'work_hours': work_hours, 'site_url': SITE_URL},
     )
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Ваше изделие готово к выдаче в Москве', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = customer_email
 
@@ -201,7 +243,20 @@ def _send_sent_to_vdnh_email(customer_email: str, tracking_number: str, address:
             server.sendmail(smtp_user, recipients, msg.as_string())
 
 
-def _send_painting_reminder_email(customer_email: str, tracking_number: str, phone: str) -> None:
+DEFAULT_PAINTING_REMINDER_SUBJECT = 'Ваше изделие прошло обжиг'
+DEFAULT_PAINTING_REMINDER_BODY = (
+    'Уважаемый клиент!\n\n'
+    'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг.\n\n'
+    'Номер заявки: {tracking_number}\n\n'
+    'Если Вы хотите расписать изделие — запишитесь на мастер-класс «Роспись ангобами» '
+    'на сайте {site_url}/moscow/workshops/angoby или по телефону {phone}.\n\n'
+    'Если роспись не требуется — Вы можете просто приехать и забрать готовое изделие.\n\n'
+    'Контакты: {site_url}/moscow/contacts'
+)
+
+
+def _send_painting_reminder_email(cur, customer_email: str, tracking_number: str, phone: str) -> None:
+    """Текст можно переопределить через админку (email_templates, ключ 'painting-reminder')."""
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -216,18 +271,13 @@ def _send_painting_reminder_email(customer_email: str, tracking_number: str, pho
     if missing:
         raise RuntimeError(f"Не заданы параметры: {', '.join(missing)}")
 
-    text = (
-        'Уважаемый клиент!\n\n'
-        'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг.\n\n'
-        f'Номер заявки: {tracking_number}\n\n'
-        'Если Вы хотите расписать изделие — запишитесь на мастер-класс «Роспись ангобами» '
-        f'на сайте {SITE_URL}/moscow/workshops/angoby или по телефону {phone}.\n\n'
-        'Если роспись не требуется — Вы можете просто приехать и забрать готовое изделие.\n\n'
-        f'Контакты: {SITE_URL}/moscow/contacts'
+    subject, text = _render_template(
+        cur, 'painting-reminder', DEFAULT_PAINTING_REMINDER_SUBJECT, DEFAULT_PAINTING_REMINDER_BODY,
+        {'tracking_number': tracking_number, 'phone': phone, 'site_url': SITE_URL},
     )
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Ваше изделие прошло обжиг', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = customer_email
 
@@ -269,7 +319,7 @@ def _auto_send_painting_reminders(cur):
     for shipment_id, tracking_number, customer_email in rows:
         if customer_email:
             try:
-                _send_painting_reminder_email(customer_email, tracking_number, phone)
+                _send_painting_reminder_email(cur, customer_email, tracking_number, phone)
                 print(f"[painting_reminder] email sent to {customer_email} for {tracking_number}")
             except Exception as e:
                 print(f"[painting_reminder] email send failed for {customer_email}: {e!r}")
@@ -280,7 +330,24 @@ def _auto_send_painting_reminders(cur):
         )
 
 
-def _send_ready_email(customer_email: str, tracking_number: str, address: str, work_hours: str, storage_until: str) -> None:
+DEFAULT_READY_SUBJECT = 'Ваше изделие готово к выдаче'
+DEFAULT_READY_BODY = (
+    'Уважаемый клиент!\n\n'
+    'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг '
+    'и готово к выдаче.\n\n'
+    'Номер заявки: {tracking_number}\n'
+    'Адрес: {address}\n'
+    'Время работы: {work_hours}\n\n'
+    'Срок хранения изделия — 60 календарных дней с даты оформления заявки. '
+    'Пожалуйста, заберите изделие до {storage_until} включительно. '
+    'По истечении этого срока мы оставляем за собой право утилизировать изделие '
+    'либо передать его на благотворительную ярмарку.\n\n'
+    'Контакты: {site_url}/moscow/contacts'
+)
+
+
+def _send_ready_email(cur, customer_email: str, tracking_number: str, address: str, work_hours: str, storage_until: str) -> None:
+    """Текст можно переопределить через админку (email_templates, ключ 'ready-for-pickup')."""
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -295,22 +362,16 @@ def _send_ready_email(customer_email: str, tracking_number: str, address: str, w
     if missing:
         raise RuntimeError(f"Не заданы параметры: {', '.join(missing)}")
 
-    text = (
-        'Уважаемый клиент!\n\n'
-        'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг '
-        'и готово к выдаче.\n\n'
-        f'Номер заявки: {tracking_number}\n'
-        f'Адрес: {address}\n'
-        f'Время работы: {work_hours}\n\n'
-        f'Срок хранения изделия — 60 календарных дней с даты оформления заявки. '
-        f'Пожалуйста, заберите изделие до {storage_until} включительно. '
-        'По истечении этого срока мы оставляем за собой право утилизировать изделие '
-        'либо передать его на благотворительную ярмарку.\n\n'
-        f'Контакты: {SITE_URL}/moscow/contacts'
+    subject, text = _render_template(
+        cur, 'ready-for-pickup', DEFAULT_READY_SUBJECT, DEFAULT_READY_BODY,
+        {
+            'tracking_number': tracking_number, 'address': address, 'work_hours': work_hours,
+            'storage_until': storage_until, 'site_url': SITE_URL,
+        },
     )
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Ваше изделие готово к выдаче', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = customer_email
 
@@ -526,7 +587,7 @@ def handler(event: dict, context) -> dict:
                 else:
                     try:
                         address, work_hours = _fetch_pickup_info(cur)
-                        _send_sent_to_vdnh_email(customer_email, tracking_number, address, work_hours)
+                        _send_sent_to_vdnh_email(cur, customer_email, tracking_number, address, work_hours)
                         print(f"[send_to_vdnh] email sent to {customer_email} for {tracking_number}")
                     except Exception as e:
                         email_error = str(e)
@@ -791,7 +852,7 @@ def handler(event: dict, context) -> dict:
                 else:
                     try:
                         address, work_hours = _fetch_pickup_info(cur)
-                        _send_ready_email(customer_email, tracking_number, address, work_hours, storage_until)
+                        _send_ready_email(cur, customer_email, tracking_number, address, work_hours, storage_until)
                         print(f"[ready_for_pickup] email sent to {customer_email} for {tracking_number}")
                     except Exception as e:
                         email_error = str(e)

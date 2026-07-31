@@ -10,6 +10,48 @@ from email.header import Header
 EXTRA_RECIPIENTS = ['uxdesign30@gmail.com', 'kolesnikov.denis@dymovceramic.ru']
 
 
+class _SafeDict(dict):
+    def __missing__(self, key):
+        return '{' + key + '}'
+
+
+def _render_template(cur, template_key: str, default_subject: str, default_body: str, variables: dict):
+    """Возвращает (subject, body): кастомный текст из БД (email_templates), если он
+    сохранён через админку, иначе текст по умолчанию из кода."""
+    subject_tpl, body_tpl = default_subject, default_body
+    try:
+        cur.execute(
+            "SELECT subject, body FROM email_templates WHERE template_key = %s",
+            (template_key,),
+        )
+        row = cur.fetchone()
+        if row:
+            subject_tpl, body_tpl = row[0], row[1]
+    except Exception:
+        pass
+
+    safe_vars = _SafeDict(variables)
+    try:
+        subject = subject_tpl.format_map(safe_vars)
+    except Exception:
+        subject = subject_tpl
+    try:
+        body = body_tpl.format_map(safe_vars)
+    except Exception:
+        body = body_tpl
+    return subject, body
+
+
+DEFAULT_QUESTION_SUBJECT = 'Новый вопрос с сайта'
+DEFAULT_QUESTION_BODY = (
+    'Новый вопрос с сайта.\n\n'
+    'Город: {city_label}\n'
+    'Email клиента: {email}\n'
+    'Телефон клиента: {phone}\n'
+    'Комментарий: {comment}\n'
+)
+
+
 def handler(event: dict, context) -> dict:
     '''
     Сохраняет вопрос с сайта (форма "Задать вопрос") и отправляет письмо сотруднику на почту.
@@ -58,17 +100,6 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Email и телефон обязательны'}),
         }
 
-    conn = psycopg2.connect(os.environ['DATABASE_URL'])
-    try:
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO questions (email, phone, comment) VALUES (%s, %s, %s)",
-            (email, phone, comment),
-        )
-        conn.commit()
-    finally:
-        conn.close()
-
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -78,26 +109,34 @@ def handler(event: dict, context) -> dict:
     else:
         recipient = os.environ.get('NOTIFY_EMAIL')
 
-    if not all([smtp_host, smtp_user, smtp_password, recipient]):
-        return {
-            'statusCode': 200,
-            'headers': cors_headers,
-            'body': json.dumps({'success': True, 'emailSent': False}),
-        }
+    conn = psycopg2.connect(os.environ['DATABASE_URL'])
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO questions (email, phone, comment) VALUES (%s, %s, %s)",
+            (email, phone, comment),
+        )
+        conn.commit()
 
-    city_label = 'Суздаль' if city == 'suzdal' else 'Москва'
-    text = (
-        'Новый вопрос с сайта.\n\n'
-        f'Город: {city_label}\n'
-        f'Email клиента: {email}\n'
-        f'Телефон клиента: {phone}\n'
-        f'Комментарий: {comment or "—"}\n'
-    )
+        if not all([smtp_host, smtp_user, smtp_password, recipient]):
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'success': True, 'emailSent': False}),
+            }
+
+        city_label = 'Суздаль' if city == 'suzdal' else 'Москва'
+        subject, text = _render_template(
+            cur, 'question-notify', DEFAULT_QUESTION_SUBJECT, DEFAULT_QUESTION_BODY,
+            {'city_label': city_label, 'email': email, 'phone': phone, 'comment': comment or '—'},
+        )
+    finally:
+        conn.close()
 
     recipients = [recipient, *EXTRA_RECIPIENTS]
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Новый вопрос с сайта', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = recipient
     msg['Reply-To'] = email

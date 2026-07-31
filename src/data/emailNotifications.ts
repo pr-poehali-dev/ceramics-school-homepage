@@ -4,9 +4,20 @@
  * ВАЖНО: при добавлении/изменении/удалении любой отправки письма в папке backend
  * (любой вызов server.sendmail в index.py) — обязательно обновляй этот файл в
  * том же наборе правок, чтобы справочник в админке не расходился с кодом.
+ *
+ * id каждой записи совпадает с template_key в БД (таблица email_templates) — именно
+ * по этому ключу backend ищет кастомный текст, сохранённый через админку, и подставляет
+ * его вместо defaultSubject/defaultBody. variables — список плейсхолдеров вида
+ * {tracking_number}, которые можно использовать в тексте и которые backend подставит
+ * реальными значениями при отправке.
  */
 
 export type EmailTrigger = 'auto' | 'manual' | 'form';
+
+export interface EmailVariable {
+  key: string;
+  label: string;
+}
 
 export interface EmailNotification {
   id: string;
@@ -18,6 +29,9 @@ export interface EmailNotification {
   conditions?: string;
   sourceFile: string;
   active: boolean;
+  defaultSubject: string;
+  defaultBody: string;
+  variables: EmailVariable[];
 }
 
 export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
@@ -33,6 +47,20 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
       'Заявка подтверждена с пометкой «Требуется роспись» (requires_painting=true), прошло 16+ дней с момента подтверждения, письмо ещё не отправлялось. Проверяется автоматически при каждом открытии вкладки «Изделия (Москва)» → «Подтверждённые» в админке. Копия уходит на kolesnikov.denis@dymovceramic.ru.',
     sourceFile: 'backend/shipments-admin/index.py — _send_painting_reminder_email / _auto_send_painting_reminders',
     active: true,
+    defaultSubject: 'Ваше изделие прошло обжиг',
+    defaultBody:
+      'Уважаемый клиент!\n\n' +
+      'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг.\n\n' +
+      'Номер заявки: {tracking_number}\n\n' +
+      'Если Вы хотите расписать изделие — запишитесь на мастер-класс «Роспись ангобами» ' +
+      'на сайте {site_url}/moscow/workshops/angoby или по телефону {phone}.\n\n' +
+      'Если роспись не требуется — Вы можете просто приехать и забрать готовое изделие.\n\n' +
+      'Контакты: {site_url}/moscow/contacts',
+    variables: [
+      { key: 'tracking_number', label: 'Номер заявки' },
+      { key: 'phone', label: 'Телефон администратора' },
+      { key: 'site_url', label: 'Адрес сайта' },
+    ],
   },
   {
     id: 'ready-for-pickup',
@@ -45,6 +73,26 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
     conditions: 'Отправляется только если у клиента указан email в заявке. Копия уходит на kolesnikov.denis@dymovceramic.ru.',
     sourceFile: 'backend/shipments-admin/index.py — _send_ready_email',
     active: true,
+    defaultSubject: 'Ваше изделие готово к выдаче',
+    defaultBody:
+      'Уважаемый клиент!\n\n' +
+      'Школа керамики Дымов Керамики рада сообщить, что Ваше изделие прошло обжиг ' +
+      'и готово к выдаче.\n\n' +
+      'Номер заявки: {tracking_number}\n' +
+      'Адрес: {address}\n' +
+      'Время работы: {work_hours}\n\n' +
+      'Срок хранения изделия — 60 календарных дней с даты оформления заявки. ' +
+      'Пожалуйста, заберите изделие до {storage_until} включительно. ' +
+      'По истечении этого срока мы оставляем за собой право утилизировать изделие ' +
+      'либо передать его на благотворительную ярмарку.\n\n' +
+      'Контакты: {site_url}/moscow/contacts',
+    variables: [
+      { key: 'tracking_number', label: 'Номер заявки' },
+      { key: 'address', label: 'Адрес выдачи' },
+      { key: 'work_hours', label: 'Время работы' },
+      { key: 'storage_until', label: 'Дата, до которой хранится изделие' },
+      { key: 'site_url', label: 'Адрес сайта' },
+    ],
   },
   {
     id: 'sent-to-vdnh',
@@ -58,6 +106,22 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
       'Отправляется только если у клиента указан email в заявке. Письмо намеренно отправляется с формулировкой «прибыло и готово», а не «отправлено», так как реальная доставка занимает около 1 дня и к моменту письма изделие уже физически в Москве. Копия уходит на kolesnikov.denis@dymovceramic.ru.',
     sourceFile: 'backend/shipments-admin/index.py — _send_sent_to_vdnh_email',
     active: true,
+    defaultSubject: 'Ваше изделие готово к выдаче в Москве',
+    defaultBody:
+      'Уважаемый клиент!\n\n' +
+      'Школа керамики Дымов Керамики сообщает, что Ваше изделие из Суздаля прибыло в Москву и готово к выдаче\n\n' +
+      'Номер заявки: {tracking_number}\n\n' +
+      'Забрать изделие можно будет по адресу: {address}\n' +
+      'Время работы: {work_hours}\n\n' +
+      'Отследить статус изделия можно на сайте: {site_url}/tracking\n' +
+      'Контакты: {site_url}/moscow/contacts\n\n' +
+      'Телефон администратора Школы в Москве: +7 (985) 419-89-03',
+    variables: [
+      { key: 'tracking_number', label: 'Номер заявки' },
+      { key: 'address', label: 'Адрес выдачи' },
+      { key: 'work_hours', label: 'Время работы' },
+      { key: 'site_url', label: 'Адрес сайта' },
+    ],
   },
   {
     id: 'gift-hint',
@@ -67,9 +131,20 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
     triggerLabel: 'Клиент отправляет форму «Намекнуть на подарок» на странице мастер-класса или сертификатов',
     content:
       'Анонимное письмо-намёк: «кто-то хочет вас порадовать», без раскрытия, что именно и кто отправитель. Если в форме было заполнено поле «Сообщение» — оно добавляется отдельным блоком в конце письма.',
-    conditions: 'Копия уходит на kolesnikov.denis@dymovceramic.ru.',
+    conditions: 'Копия уходит на kolesnikov.denis@dymovceramic.ru. Блок с сообщением от отправителя добавляется автоматически после основного текста и не входит в редактируемый шаблон.',
     sourceFile: 'backend/gift-hint/index.py — _send_gift_hint_email',
     active: true,
+    defaultSubject: 'Вам письмо — маленький секрет...',
+    defaultBody:
+      'Здравствуйте!\n\n' +
+      'Это письмо — тайный намёк от человека, которому Вы небезразличны.\n\n' +
+      'В ближайшее время Вас ждёт приятный сюрприз. Что это будет — пока секрет. ' +
+      'Но обещаем: Вам точно понравится.\n\n' +
+      'Осталось совсем немного — и Вы узнаете всё сами.\n\n' +
+      'А пока просто знайте: кто-то очень хочет Вас порадовать.\n\n' +
+      'С уважением и самыми тёплыми пожеланиями,\n' +
+      'Ваш тайный отправитель',
+    variables: [],
   },
   {
     id: 'order-notify',
@@ -80,6 +155,27 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
     content: 'Город, имя/email/телефон клиента, способ оплаты, комментарий, сумма и полный состав заказа.',
     sourceFile: 'backend/orders/index.py — _send_notification',
     active: true,
+    defaultSubject: 'Новый заказ с сайта',
+    defaultBody:
+      'Новый заказ с сайта.\n\n' +
+      'Город: {city_label}\n' +
+      'Имя: {name}\n' +
+      'Email: {email}\n' +
+      'Телефон: {phone}\n' +
+      'Способ оплаты: {payment}\n' +
+      'Комментарий: {comment}\n' +
+      'Сумма: {total} ₽\n\n' +
+      'Состав заказа:\n{items_text}',
+    variables: [
+      { key: 'city_label', label: 'Город' },
+      { key: 'name', label: 'Имя клиента' },
+      { key: 'email', label: 'Email клиента' },
+      { key: 'phone', label: 'Телефон клиента' },
+      { key: 'payment', label: 'Способ оплаты' },
+      { key: 'comment', label: 'Комментарий клиента' },
+      { key: 'total', label: 'Сумма заказа' },
+      { key: 'items_text', label: 'Состав заказа (список позиций)' },
+    ],
   },
   {
     id: 'question-notify',
@@ -90,6 +186,19 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
     content: 'Город, email и телефон клиента, текст вопроса/комментария.',
     sourceFile: 'backend/question/index.py',
     active: true,
+    defaultSubject: 'Новый вопрос с сайта',
+    defaultBody:
+      'Новый вопрос с сайта.\n\n' +
+      'Город: {city_label}\n' +
+      'Email клиента: {email}\n' +
+      'Телефон клиента: {phone}\n' +
+      'Комментарий: {comment}\n',
+    variables: [
+      { key: 'city_label', label: 'Город' },
+      { key: 'email', label: 'Email клиента' },
+      { key: 'phone', label: 'Телефон клиента' },
+      { key: 'comment', label: 'Комментарий клиента' },
+    ],
   },
   {
     id: 'booking-request-notify',
@@ -100,5 +209,21 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
     content: 'Город, название услуги, количество участников, email и телефон клиента.',
     sourceFile: 'backend/booking-request/index.py',
     active: true,
+    defaultSubject: 'Заявка на групповую запись',
+    defaultBody:
+      'Новая заявка на групповую запись с сайта.\n\n' +
+      'Город: {city_label}\n' +
+      'Услуга: {service}\n' +
+      'Количество участников: {people}\n' +
+      'Email клиента: {email}\n' +
+      'Телефон клиента: {phone}\n\n' +
+      'Свяжитесь с клиентом, чтобы уточнить дату посещения.',
+    variables: [
+      { key: 'city_label', label: 'Город' },
+      { key: 'service', label: 'Название услуги' },
+      { key: 'people', label: 'Количество участников' },
+      { key: 'email', label: 'Email клиента' },
+      { key: 'phone', label: 'Телефон клиента' },
+    ],
   },
 ];

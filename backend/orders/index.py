@@ -11,6 +11,38 @@ from email.header import Header
 EXTRA_RECIPIENTS = ['uxdesign30@gmail.com', 'kolesnikov.denis@dymovceramic.ru']
 
 
+class _SafeDict(dict):
+    def __missing__(self, key):
+        return '{' + key + '}'
+
+
+def _render_template(cur, template_key: str, default_subject: str, default_body: str, variables: dict):
+    """Возвращает (subject, body): кастомный текст из БД (email_templates), если он
+    сохранён через админку, иначе текст по умолчанию из кода."""
+    subject_tpl, body_tpl = default_subject, default_body
+    try:
+        cur.execute(
+            "SELECT subject, body FROM email_templates WHERE template_key = %s",
+            (template_key,),
+        )
+        row = cur.fetchone()
+        if row:
+            subject_tpl, body_tpl = row[0], row[1]
+    except Exception:
+        pass
+
+    safe_vars = _SafeDict(variables)
+    try:
+        subject = subject_tpl.format_map(safe_vars)
+    except Exception:
+        subject = subject_tpl
+    try:
+        body = body_tpl.format_map(safe_vars)
+    except Exception:
+        body = body_tpl
+    return subject, body
+
+
 def _generate_order_number(cur) -> str:
     """Атомарно генерирует следующий номер заказа в формате ГГММ/N (сквозной за месяц)."""
     year_month = datetime.utcnow().strftime('%y%m')
@@ -30,7 +62,22 @@ def _recipient_for_city(city: str) -> str:
     return os.environ.get('NOTIFY_EMAIL') or ''
 
 
-def _send_notification(name: str, email: str, phone: str, comment: str, payment: str, total: int, items: list, city: str) -> None:
+DEFAULT_ORDER_NOTIFY_SUBJECT = 'Новый заказ с сайта'
+DEFAULT_ORDER_NOTIFY_BODY = (
+    'Новый заказ с сайта.\n\n'
+    'Город: {city_label}\n'
+    'Имя: {name}\n'
+    'Email: {email}\n'
+    'Телефон: {phone}\n'
+    'Способ оплаты: {payment}\n'
+    'Комментарий: {comment}\n'
+    'Сумма: {total} ₽\n\n'
+    'Состав заказа:\n{items_text}'
+)
+
+
+def _send_notification(cur, name: str, email: str, phone: str, comment: str, payment: str, total: int, items: list, city: str) -> None:
+    """Текст можно переопределить через админку (email_templates, ключ 'order-notify')."""
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -46,20 +93,16 @@ def _send_notification(name: str, email: str, phone: str, comment: str, payment:
         f"- {i.get('title', '')} x{i.get('qty', 1)} — {i.get('price', 0)} ₽" for i in items
     )
     city_label = 'Суздаль' if city == 'suzdal' else 'Москва'
-    text = (
-        'Новый заказ с сайта.\n\n'
-        f'Город: {city_label}\n'
-        f'Имя: {name}\n'
-        f'Email: {email}\n'
-        f'Телефон: {phone}\n'
-        f'Способ оплаты: {payment}\n'
-        f'Комментарий: {comment or "—"}\n'
-        f'Сумма: {total} ₽\n\n'
-        f'Состав заказа:\n{lines_text}'
+    subject, text = _render_template(
+        cur, 'order-notify', DEFAULT_ORDER_NOTIFY_SUBJECT, DEFAULT_ORDER_NOTIFY_BODY,
+        {
+            'city_label': city_label, 'name': name, 'email': email, 'phone': phone,
+            'payment': payment, 'comment': comment or '—', 'total': total, 'items_text': lines_text,
+        },
     )
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Новый заказ с сайта', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = recipient
     msg['Reply-To'] = email
@@ -189,13 +232,13 @@ def handler(event: dict, context) -> dict:
         )
         order_id = cur.fetchone()[0]
         conn.commit()
+
+        try:
+            _send_notification(cur, name, email, phone, comment, payment, total, items, city)
+        except Exception:
+            pass
     finally:
         conn.close()
-
-    try:
-        _send_notification(name, email, phone, comment, payment, total, items, city)
-    except Exception:
-        pass
 
     return {
         'statusCode': 200,

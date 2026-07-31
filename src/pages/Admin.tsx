@@ -401,7 +401,7 @@ const Admin = () => {
           <AdminGiftHints token={token} />
         )}
 
-        {tab === 'emails' && managerRole === 'vdnh' && <AdminEmailNotifications />}
+        {tab === 'emails' && token && managerRole === 'vdnh' && <AdminEmailNotifications token={token} />}
 
         {tab === 'blog' && token && managerRole === 'vdnh' && <AdminBlog token={token} />}
 

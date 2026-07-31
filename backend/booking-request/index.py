@@ -10,6 +10,50 @@ from email.header import Header
 EXTRA_RECIPIENTS = ['uxdesign30@gmail.com', 'kolesnikov.denis@dymovceramic.ru']
 
 
+class _SafeDict(dict):
+    def __missing__(self, key):
+        return '{' + key + '}'
+
+
+def _render_template(cur, template_key: str, default_subject: str, default_body: str, variables: dict):
+    """Возвращает (subject, body): кастомный текст из БД (email_templates), если он
+    сохранён через админку, иначе текст по умолчанию из кода."""
+    subject_tpl, body_tpl = default_subject, default_body
+    try:
+        cur.execute(
+            "SELECT subject, body FROM email_templates WHERE template_key = %s",
+            (template_key,),
+        )
+        row = cur.fetchone()
+        if row:
+            subject_tpl, body_tpl = row[0], row[1]
+    except Exception:
+        pass
+
+    safe_vars = _SafeDict(variables)
+    try:
+        subject = subject_tpl.format_map(safe_vars)
+    except Exception:
+        subject = subject_tpl
+    try:
+        body = body_tpl.format_map(safe_vars)
+    except Exception:
+        body = body_tpl
+    return subject, body
+
+
+DEFAULT_BOOKING_SUBJECT = 'Заявка на групповую запись'
+DEFAULT_BOOKING_BODY = (
+    'Новая заявка на групповую запись с сайта.\n\n'
+    'Город: {city_label}\n'
+    'Услуга: {service}\n'
+    'Количество участников: {people}\n'
+    'Email клиента: {email}\n'
+    'Телефон клиента: {phone}\n\n'
+    'Свяжитесь с клиентом, чтобы уточнить дату посещения.'
+)
+
+
 def handler(event: dict, context) -> dict:
     '''
     Отправляет заявку на групповую запись (детская группа, разовый билет, >1 участника)
@@ -66,17 +110,6 @@ def handler(event: dict, context) -> dict:
         except (TypeError, ValueError):
             people_val = None
 
-    conn = psycopg2.connect(os.environ['DATABASE_URL'])
-    try:
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO leads (service, people, email, phone) VALUES (%s, %s, %s, %s)",
-            (service, people_val, email, phone),
-        )
-        conn.commit()
-    finally:
-        conn.close()
-
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT') or 465)
     smtp_user = os.environ.get('SMTP_USER')
@@ -87,28 +120,34 @@ def handler(event: dict, context) -> dict:
     else:
         recipient = os.environ.get('NOTIFY_EMAIL')
 
-    if not all([smtp_host, smtp_user, smtp_password, recipient]):
-        return {
-            'statusCode': 200,
-            'headers': cors_headers,
-            'body': json.dumps({'success': True, 'emailSent': False}),
-        }
+    conn = psycopg2.connect(os.environ['DATABASE_URL'])
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO leads (service, people, email, phone) VALUES (%s, %s, %s, %s)",
+            (service, people_val, email, phone),
+        )
+        conn.commit()
 
-    city_label = 'Суздаль' if city == 'suzdal' else 'Москва'
-    text = (
-        'Новая заявка на групповую запись с сайта.\n\n'
-        f'Город: {city_label}\n'
-        f'Услуга: {service}\n'
-        f'Количество участников: {people}\n'
-        f'Email клиента: {email}\n'
-        f'Телефон клиента: {phone}\n\n'
-        'Свяжитесь с клиентом, чтобы уточнить дату посещения.'
-    )
+        if not all([smtp_host, smtp_user, smtp_password, recipient]):
+            return {
+                'statusCode': 200,
+                'headers': cors_headers,
+                'body': json.dumps({'success': True, 'emailSent': False}),
+            }
+
+        city_label = 'Суздаль' if city == 'suzdal' else 'Москва'
+        subject, text = _render_template(
+            cur, 'booking-request-notify', DEFAULT_BOOKING_SUBJECT, DEFAULT_BOOKING_BODY,
+            {'city_label': city_label, 'service': service, 'people': people, 'email': email, 'phone': phone},
+        )
+    finally:
+        conn.close()
 
     recipients = [recipient, *EXTRA_RECIPIENTS]
 
     msg = MIMEText(text, 'plain', 'utf-8')
-    msg['Subject'] = Header('Заявка на групповую запись', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = smtp_user
     msg['To'] = recipient
     msg['Reply-To'] = email
