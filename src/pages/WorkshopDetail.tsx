@@ -304,70 +304,64 @@ const WorkshopDetail = () => {
                 </>
               );
             })()}
-          </div>
 
-          {/* NOTES — правая колонка */}
-          <div className="space-y-4 lg:sticky lg:top-24">
-            <Link
-              to="/moscow/info"
-              className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-5 transition-colors hover:border-primary/50 hover:bg-primary/10"
-            >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
-                <Icon name="Truck" size={18} />
-              </span>
-              <div>
+            {/* INFO CARDS — горизонтальный ряд под описанием */}
+            <div className="mt-8 grid gap-4 border-t border-border/60 pt-8 sm:grid-cols-3">
+              <Link
+                to="/moscow/info"
+                className="flex flex-col items-start gap-2 rounded-2xl border border-primary/30 bg-primary/5 p-4 transition-colors hover:border-primary/50 hover:bg-primary/10"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <Icon name="Truck" size={18} />
+                </span>
                 <p className="text-sm font-semibold text-foreground">
                   Доставка и выдача готовых изделий
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Как забрать изделие после обжига или заказать доставку — читайте на странице «Информация»
+                <p className="text-xs text-muted-foreground">
+                  Как забрать изделие после обжига — на странице «Информация»
                 </p>
-              </div>
-              <Icon name="ChevronRight" size={18} className="ml-auto mt-1 shrink-0 text-primary" />
-            </Link>
+              </Link>
 
-            {c.benefit && (
-              <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/15 p-5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
-                  <Icon name="Baby" size={18} />
-                </span>
-                <div>
+              {c.benefit && (
+                <div className="flex flex-col items-start gap-2 rounded-2xl border border-accent/40 bg-accent/15 p-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
+                    <Icon name="Baby" size={18} />
+                  </span>
                   <p className="text-sm font-semibold text-foreground">Дети на мастер-классе</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{c.benefit}</p>
+                  <p className="text-xs text-muted-foreground">{c.benefit}</p>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-secondary/40 p-5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Icon name="Percent" size={18} />
-              </span>
-              <div>
+              <div className="flex flex-col items-start gap-2 rounded-2xl border border-border/60 bg-secondary/40 p-4">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Icon name="Percent" size={18} />
+                </span>
                 <p className="text-sm font-semibold text-foreground">Льготникам — скидка</p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {c.discountText}
                 </p>
               </div>
             </div>
+          </div>
 
+          {/* NOTES — правая колонка */}
+          <div className="space-y-4 lg:sticky lg:top-24">
             {/* Намекнуть на подарок */}
-            <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/10 p-5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
-                <Icon name="Gift" size={18} />
+            <div className="rounded-2xl border-2 border-accent/50 bg-accent/15 p-5 text-center shadow-sm">
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-accent/40 text-primary">
+                <Icon name="Gift" size={20} />
               </span>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-foreground">
-                  Хотите, чтобы вам подарили этот мастер-класс?
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Отправим близким красивое письмо-намёк — они поймут, что подарить.
-                </p>
-                <GiftHintDialog giftOptions={giftWorkshopOptions} defaultGiftValue={data.slug}>
-                  <Button variant="outline" size="sm" className="mt-3 w-full rounded-full">
-                    <Icon name="Sparkles" size={14} className="mr-1.5" /> Намекнуть близким
-                  </Button>
-                </GiftHintDialog>
-              </div>
+              <p className="mt-3 text-sm font-semibold text-foreground">
+                Хотите, чтобы вам подарили этот мастер-класс?
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Отправим близким красивое письмо-намёк — они поймут, что подарить.
+              </p>
+              <GiftHintDialog giftOptions={giftWorkshopOptions} defaultGiftValue={data.slug}>
+                <Button variant="secondary" className="mt-4 w-full rounded-full">
+                  <Icon name="Sparkles" size={16} className="mr-2" /> Намекнуть близким
+                </Button>
+              </GiftHintDialog>
             </div>
 
             {/* Мини-CTA записаться */}

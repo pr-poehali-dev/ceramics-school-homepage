@@ -480,6 +480,33 @@ const SuzdalWorkshopDetail = () => {
                 {displayPickupStorageText}
               </p>
             </div>
+
+            {/* INFO CARDS — горизонтальный ряд под описанием */}
+            <div className="mt-8 grid gap-4 border-t border-border/60 pt-8 sm:grid-cols-2">
+              <div className="flex flex-col items-start gap-2 rounded-2xl border border-accent/40 bg-accent/15 p-4">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
+                  <Icon name="Phone" size={18} />
+                </span>
+                <p className="text-sm font-semibold text-foreground">Запись по телефону</p>
+                <p className="text-xs text-muted-foreground">
+                  Запись на мастер-классы только по телефону{' '}
+                  <a href={`tel:${displayBookingPhone.replace(/[^\d+]/g, '')}`} className="font-medium text-foreground hover:text-primary">
+                    {displayBookingPhone}
+                  </a>
+                  . Оплата на месте картой или наличными.
+                </p>
+              </div>
+
+              <div className="flex flex-col items-start gap-2 rounded-2xl border border-border/60 bg-secondary/40 p-4">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Icon name="Baby" size={18} />
+                </span>
+                <p className="text-sm font-semibold text-foreground">Возраст участников</p>
+                <p className="text-xs text-muted-foreground">
+                  {displayAgeNoteText}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* ORDER CARD */}
@@ -520,34 +547,6 @@ const SuzdalWorkshopDetail = () => {
               <Button onClick={handleAddToCart} className="mt-5 w-full rounded-full">
                 <Icon name="ShoppingCart" size={16} className="mr-2" /> Добавить в корзину
               </Button>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/15 p-5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
-                <Icon name="Phone" size={18} />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-foreground">Запись по телефону</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Запись на мастер-классы только по телефону{' '}
-                  <a href={`tel:${displayBookingPhone.replace(/[^\d+]/g, '')}`} className="font-medium text-foreground hover:text-primary">
-                    {displayBookingPhone}
-                  </a>
-                  . Оплата на месте картой или наличными.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-secondary/40 p-5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Icon name="Baby" size={18} />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-foreground">Возраст участников</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {displayAgeNoteText}
-                </p>
-              </div>
             </div>
           </div>
         </div>
