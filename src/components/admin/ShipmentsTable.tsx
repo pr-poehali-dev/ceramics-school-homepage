@@ -87,16 +87,14 @@ const ShipmentsTable = ({
           >
             Активные
           </button>
-          {role === 'vdnh' && (
-            <button
-              onClick={() => setView('closed')}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                view === 'closed' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
-              }`}
-            >
-              Закрытые
-            </button>
-          )}
+          <button
+            onClick={() => setView('closed')}
+            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              view === 'closed' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
+            }`}
+          >
+            Закрытые
+          </button>
         </div>
 
         <div className="flex items-center gap-2">

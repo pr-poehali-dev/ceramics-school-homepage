@@ -718,12 +718,6 @@ def handler(event: dict, context) -> dict:
         status_filter = params.get('status') or 'active'
         export = params.get('export') or ''
 
-        if status_filter == 'closed' and role != 'vdnh':
-            return {
-                'statusCode': 403,
-                'headers': cors_headers,
-                'body': json.dumps({'error': 'Раздел «Закрытые» доступен только менеджеру ВДНХ'}, ensure_ascii=False),
-            }
         if status_filter == 'requests' and role != 'vdnh':
             return {
                 'statusCode': 403,
