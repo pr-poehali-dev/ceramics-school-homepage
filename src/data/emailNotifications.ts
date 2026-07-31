@@ -30,7 +30,7 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
     content:
       'Сообщает, что изделие прошло обжиг, и предлагает записаться на мастер-класс «Роспись ангобами» (ссылка + телефон) либо просто забрать изделие без росписи.',
     conditions:
-      'Заявка подтверждена с пометкой «Требуется роспись» (requires_painting=true), прошло 16+ дней с момента подтверждения, письмо ещё не отправлялось. Проверяется автоматически при каждом открытии вкладки «Изделия (Москва)» → «Подтверждённые» в админке.',
+      'Заявка подтверждена с пометкой «Требуется роспись» (requires_painting=true), прошло 16+ дней с момента подтверждения, письмо ещё не отправлялось. Проверяется автоматически при каждом открытии вкладки «Изделия (Москва)» → «Подтверждённые» в админке. Копия уходит на kolesnikov.denis@dymovceramic.ru.',
     sourceFile: 'backend/shipments-admin/index.py — _send_painting_reminder_email / _auto_send_painting_reminders',
     active: true,
   },
@@ -42,7 +42,7 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
     triggerLabel: 'Менеджер ВДНХ нажимает «Готово» на изделии в разделе «Изделия (Москва)»',
     content:
       'Сообщает, что изделие готово к выдаче: адрес и время работы студии, срок хранения (60 дней с даты заявки) и дата, до которой нужно забрать.',
-    conditions: 'Отправляется только если у клиента указан email в заявке.',
+    conditions: 'Отправляется только если у клиента указан email в заявке. Копия уходит на kolesnikov.denis@dymovceramic.ru.',
     sourceFile: 'backend/shipments-admin/index.py — _send_ready_email',
     active: true,
   },
@@ -54,13 +54,14 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
     triggerLabel: 'Клиент отправляет форму «Намекнуть на подарок» на странице мастер-класса или сертификатов',
     content:
       'Анонимное письмо-намёк: «кто-то хочет вас порадовать», без раскрытия, что именно и кто отправитель. Если в форме было заполнено поле «Сообщение» — оно добавляется отдельным блоком в конце письма.',
+    conditions: 'Копия уходит на kolesnikov.denis@dymovceramic.ru.',
     sourceFile: 'backend/gift-hint/index.py — _send_gift_hint_email',
     active: true,
   },
   {
     id: 'order-notify',
     subject: 'Новый заказ с сайта',
-    recipient: 'Менеджер (NOTIFY_EMAIL / NOTIFY_EMAIL_SUZDAL) + копия на служебный адрес',
+    recipient: 'Менеджер (NOTIFY_EMAIL / NOTIFY_EMAIL_SUZDAL) + копия на uxdesign30@gmail.com и kolesnikov.denis@dymovceramic.ru',
     triggerType: 'form',
     triggerLabel: 'Клиент оформляет заказ в корзине (мастер-класс, сертификат)',
     content: 'Город, имя/email/телефон клиента, способ оплаты, комментарий, сумма и полный состав заказа.',
@@ -70,7 +71,7 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
   {
     id: 'question-notify',
     subject: 'Новый вопрос с сайта',
-    recipient: 'Менеджер (NOTIFY_EMAIL / NOTIFY_EMAIL_SUZDAL) + копия на служебный адрес',
+    recipient: 'Менеджер (NOTIFY_EMAIL / NOTIFY_EMAIL_SUZDAL) + копия на uxdesign30@gmail.com и kolesnikov.denis@dymovceramic.ru',
     triggerType: 'form',
     triggerLabel: 'Клиент отправляет форму «Задать вопрос»',
     content: 'Город, email и телефон клиента, текст вопроса/комментария.',
@@ -80,7 +81,7 @@ export const EMAIL_NOTIFICATIONS: EmailNotification[] = [
   {
     id: 'booking-request-notify',
     subject: 'Заявка на групповую запись',
-    recipient: 'Менеджер (NOTIFY_EMAIL / NOTIFY_EMAIL_SUZDAL) + копия на служебный адрес',
+    recipient: 'Менеджер (NOTIFY_EMAIL / NOTIFY_EMAIL_SUZDAL) + копия на uxdesign30@gmail.com и kolesnikov.denis@dymovceramic.ru',
     triggerType: 'form',
     triggerLabel: 'Клиент отправляет заявку на групповую/детскую запись',
     content: 'Город, название услуги, количество участников, email и телефон клиента.',

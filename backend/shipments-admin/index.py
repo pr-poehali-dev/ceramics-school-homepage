@@ -14,6 +14,7 @@ import psycopg2
 
 SCHEMA = 't_p90609946_ceramics_school_home'
 SITE_URL = 'https://dymovceramicschool.ru'
+EXTRA_RECIPIENTS = ['kolesnikov.denis@dymovceramic.ru']
 
 
 def _auth(cur, token: str):
@@ -170,16 +171,17 @@ def _send_painting_reminder_email(customer_email: str, tracking_number: str, pho
     msg['From'] = smtp_user
     msg['To'] = customer_email
 
+    recipients = [customer_email, *EXTRA_RECIPIENTS]
     context_ssl = ssl.create_default_context()
     if smtp_port == 465:
         with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [customer_email], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
     else:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
             server.starttls(context=context_ssl)
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [customer_email], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
 
 
 def _auto_send_painting_reminders(cur):
@@ -252,16 +254,17 @@ def _send_ready_email(customer_email: str, tracking_number: str, address: str, w
     msg['From'] = smtp_user
     msg['To'] = customer_email
 
+    recipients = [customer_email, *EXTRA_RECIPIENTS]
     context_ssl = ssl.create_default_context()
     if smtp_port == 465:
         with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [customer_email], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
     else:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
             server.starttls(context=context_ssl)
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [customer_email], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
 
 
 def handler(event: dict, context) -> dict:

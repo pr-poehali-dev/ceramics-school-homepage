@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 
-EXTRA_RECIPIENT = 'uxdesign30@gmail.com'
+EXTRA_RECIPIENTS = ['uxdesign30@gmail.com', 'kolesnikov.denis@dymovceramic.ru']
 
 
 def handler(event: dict, context) -> dict:
@@ -94,7 +94,7 @@ def handler(event: dict, context) -> dict:
         f'Комментарий: {comment or "—"}\n'
     )
 
-    recipients = [recipient, EXTRA_RECIPIENT]
+    recipients = [recipient, *EXTRA_RECIPIENTS]
 
     msg = MIMEText(text, 'plain', 'utf-8')
     msg['Subject'] = Header('Новый вопрос с сайта', 'utf-8')

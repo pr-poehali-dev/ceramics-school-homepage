@@ -8,7 +8,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 
-EXTRA_RECIPIENT = 'uxdesign30@gmail.com'
+EXTRA_RECIPIENTS = ['uxdesign30@gmail.com', 'kolesnikov.denis@dymovceramic.ru']
 
 
 def _generate_order_number(cur) -> str:
@@ -40,7 +40,7 @@ def _send_notification(name: str, email: str, phone: str, comment: str, payment:
     if not all([smtp_host, smtp_user, smtp_password, recipient]):
         return
 
-    recipients = [recipient, EXTRA_RECIPIENT]
+    recipients = [recipient, *EXTRA_RECIPIENTS]
 
     lines_text = '\n'.join(
         f"- {i.get('title', '')} x{i.get('qty', 1)} — {i.get('price', 0)} ₽" for i in items

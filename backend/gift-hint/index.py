@@ -9,6 +9,7 @@ from email.mime.text import MIMEText
 import psycopg2
 
 SCHEMA = 't_p90609946_ceramics_school_home'
+EXTRA_RECIPIENTS = ['kolesnikov.denis@dymovceramic.ru']
 
 
 def _cors() -> dict:
@@ -73,16 +74,17 @@ def _send_gift_hint_email(recipient_email: str, sender_name: str, message: str) 
     msg['From'] = smtp_user
     msg['To'] = recipient_email
 
+    recipients = [recipient_email, *EXTRA_RECIPIENTS]
     context_ssl = ssl.create_default_context()
     if smtp_port == 465:
         with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [recipient_email], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
     else:
         with smtplib.SMTP(smtp_host, smtp_port) as server:
             server.starttls(context=context_ssl)
             server.login(smtp_user, smtp_password)
-            server.sendmail(smtp_user, [recipient_email], msg.as_string())
+            server.sendmail(smtp_user, recipients, msg.as_string())
 
 
 def handler(event: dict, context) -> dict:
