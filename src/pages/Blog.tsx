@@ -12,6 +12,7 @@ interface BlogPostPreview {
   title: string;
   excerpt: string | null;
   coverImage: string | null;
+  coverVideo: string | null;
   publishedAt: string | null;
 }
 
@@ -78,14 +79,30 @@ const Blog = () => {
                 to={`/blog/${p.slug}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl"
               >
-                {p.coverImage && (
-                  <div className="aspect-[16/10] w-full overflow-hidden">
-                    <img
-                      src={p.coverImage}
-                      alt={p.title}
+                {p.coverVideo ? (
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
+                    <video
+                      src={`${p.coverVideo}#t=0.1`}
+                      muted
+                      preload="metadata"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/10">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg">
+                        <Icon name="Play" size={20} className="ml-0.5" />
+                      </span>
+                    </span>
                   </div>
+                ) : (
+                  p.coverImage && (
+                    <div className="aspect-[16/10] w-full overflow-hidden">
+                      <img
+                        src={p.coverImage}
+                        alt={p.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  )
                 )}
                 <div className="flex flex-1 flex-col p-5">
                   {p.publishedAt && (

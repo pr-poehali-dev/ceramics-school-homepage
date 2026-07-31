@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SiteHeader from '@/components/SiteHeader';
@@ -14,6 +14,7 @@ interface BlogPostFull {
   excerpt: string | null;
   content: string;
   coverImage: string | null;
+  coverVideo: string | null;
   gallery?: string[];
   publishedAt: string | null;
 }
@@ -32,14 +33,24 @@ const BlogPost = () => {
   const [post, setPost] = useState<BlogPostFull | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { current: lightboxIndex, setCurrent: setLightboxIndex } = useLightbox();
 
-  // Обложка и фото галереи открываются в одном общем лайтбоксе — стрелками можно
-  // пролистать все картинки статьи подряд, независимо от того, откуда начали просмотр.
+  // Обложка (только если это фото, не видео) и фото галереи открываются в одном общем
+  // лайтбоксе — стрелками можно пролистать все картинки статьи подряд, независимо от
+  // того, откуда начали просмотр.
   const allImages = [
-    ...(post?.coverImage ? [post.coverImage] : []),
+    ...(post?.coverImage && !post?.coverVideo ? [post.coverImage] : []),
     ...(post?.gallery || []),
   ];
+
+  const toggleVideoPlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) v.play();
+    else v.pause();
+  };
 
   usePageMeta({
     title: post ? `${post.title} — Блог «Дымов Керамика»` : 'Блог «Дымов Керамика»',
@@ -99,19 +110,46 @@ const BlogPost = () => {
               {post.title}
             </h1>
 
-            {post.coverImage && (
-              <button
-                type="button"
-                onClick={() => setLightboxIndex(0)}
-                className="group mt-7 block w-full overflow-hidden rounded-2xl"
-                aria-label="Увеличить фото"
-              >
-                <img
-                  src={post.coverImage}
-                  alt={post.title}
-                  className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </button>
+            {post.coverVideo ? (
+              <div className="relative mt-7 aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm">
+                <video
+                  ref={videoRef}
+                  controls
+                  preload="metadata"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  onPlay={() => setVideoPlaying(true)}
+                  onPause={() => setVideoPlaying(false)}
+                >
+                  <source src={`${post.coverVideo}#t=0.1`} type="video/mp4" />
+                </video>
+                {!videoPlaying && (
+                  <button
+                    type="button"
+                    onClick={toggleVideoPlay}
+                    aria-label="Воспроизвести видео"
+                    className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors hover:bg-black/20"
+                  >
+                    <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg transition-transform hover:scale-105">
+                      <Icon name="Play" size={28} className="ml-1" />
+                    </span>
+                  </button>
+                )}
+              </div>
+            ) : (
+              post.coverImage && (
+                <button
+                  type="button"
+                  onClick={() => setLightboxIndex(0)}
+                  className="group mt-7 block w-full overflow-hidden rounded-2xl"
+                  aria-label="Увеличить фото"
+                >
+                  <img
+                    src={post.coverImage}
+                    alt={post.title}
+                    className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </button>
+              )
             )}
 
             <div className="mt-8 space-y-4 leading-relaxed text-foreground/90">
@@ -126,7 +164,7 @@ const BlogPost = () => {
             {post.gallery && post.gallery.length > 0 && (
               <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {post.gallery.map((src, i) => {
-                  const coverOffset = post.coverImage ? 1 : 0;
+                  const coverOffset = post.coverImage && !post.coverVideo ? 1 : 0;
                   return (
                     <button
                       key={src}
