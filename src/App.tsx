@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import CookieConsent from "./components/CookieConsent";
+import ErrorBoundary from "./components/ErrorBoundary";
 import OnlineBooking from "./components/OnlineBooking";
 import BookingDrawer from "./components/BookingDrawer";
 import ChooseCity from "./pages/ChooseCity";
@@ -65,8 +66,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
               <Route path="/" element={<ChooseCity />} />
               <Route path="/moscow" element={<Index />} />
               <Route path="/moscow/workshops" element={<Workshops />} />
@@ -123,6 +125,7 @@ const App = () => (
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
+          </ErrorBoundary>
           <OnlineBooking />
           <BookingDrawer />
           <CookieConsent />
