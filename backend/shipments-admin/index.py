@@ -388,6 +388,103 @@ def _send_ready_email(cur, customer_email: str, tracking_number: str, address: s
             server.sendmail(smtp_user, recipients, msg.as_string())
 
 
+DEFAULT_PICKUP_REMINDER_SUBJECT = 'Напоминаем: заберите изделие из Суздаля'
+DEFAULT_PICKUP_REMINDER_BODY = (
+    'Уважаемый клиент!\n\n'
+    'Напоминаем, что Ваше изделие из Суздаля ждёт Вас в Москве, в школе керамики на ВДНХ.\n\n'
+    'Номер заявки: {tracking_number}\n\n'
+    'Забрать изделие можно по адресу: {address}\n'
+    'Время работы: {work_hours}\n\n'
+    'Обращаем внимание: изделие хранится 60 дней с момента прибытия в Москву. '
+    'После {utilize_date} мы будем вынуждены утилизировать изделие либо передать его на '
+    'благотворительную ярмарку — пожалуйста, заберите его до этой даты.\n\n'
+    'Отследить статус изделия можно на сайте: {site_url}/tracking\n'
+    'Контакты: {site_url}/moscow/contacts\n\n'
+    'Телефон администратора Школы в Москве: +7 (985) 419-89-03'
+)
+
+
+def _send_pickup_reminder_email(cur, customer_email: str, tracking_number: str, address: str, work_hours: str, utilize_date: str) -> None:
+    """Повторное напоминание клиенту Суздаля забрать изделие из Москвы — отправляется
+    каждые 10 дней после письма 'sent-to-vdnh', пока изделие не выдано и не истёк срок
+    хранения. Текст можно переопределить через админку (email_templates, ключ 'pickup-reminder')."""
+    smtp_host = os.environ.get('SMTP_HOST')
+    smtp_port = int(os.environ.get('SMTP_PORT') or 465)
+    smtp_user = os.environ.get('SMTP_USER')
+    smtp_password = os.environ.get('SMTP_PASSWORD')
+
+    missing = [
+        name for name, val in [
+            ('SMTP_HOST', smtp_host), ('SMTP_USER', smtp_user),
+            ('SMTP_PASSWORD', smtp_password), ('customerEmail', customer_email),
+        ] if not val
+    ]
+    if missing:
+        raise RuntimeError(f"Не заданы параметры: {', '.join(missing)}")
+
+    subject, text = _render_template(
+        cur, 'pickup-reminder', DEFAULT_PICKUP_REMINDER_SUBJECT, DEFAULT_PICKUP_REMINDER_BODY,
+        {
+            'tracking_number': tracking_number, 'address': address, 'work_hours': work_hours,
+            'utilize_date': utilize_date, 'site_url': SITE_URL,
+        },
+    )
+
+    msg = MIMEText(text, 'plain', 'utf-8')
+    msg['Subject'] = Header(subject, 'utf-8')
+    msg['From'] = smtp_user
+    msg['To'] = customer_email
+
+    recipients = [customer_email, *EXTRA_RECIPIENTS]
+    context_ssl = ssl.create_default_context()
+    if smtp_port == 465:
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context_ssl) as server:
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, recipients, msg.as_string())
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls(context=context_ssl)
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, recipients, msg.as_string())
+
+
+def _auto_send_pickup_reminders(cur):
+    """Отправляет повторные напоминания забрать изделие из Суздаля, пока оно ждёт
+    выдачи в Москве (city='suzdal', status='shipped', delivered_at — дата прибытия
+    в Москву). Первое напоминание — через 10 дней после delivered_at, затем каждые
+    10 дней после предыдущего напоминания. Останавливается, когда истекает срок
+    хранения (60 дней с delivered_at) — после этой даты изделие подлежит утилизации,
+    и дальнейшие напоминания не имеют смысла."""
+    cur.execute(
+        f"SELECT id, tracking_number, customer_email, delivered_at FROM {SCHEMA}.shipments "
+        f"WHERE city = 'suzdal' AND status = 'shipped' AND customer_email IS NOT NULL "
+        f"AND delivered_at IS NOT NULL "
+        f"AND delivered_at + INTERVAL '60 days' > NOW() "
+        f"AND ("
+        f"  (pickup_reminder_sent_at IS NULL AND delivered_at <= CURRENT_DATE - INTERVAL '10 days')"
+        f"  OR (pickup_reminder_sent_at IS NOT NULL AND pickup_reminder_sent_at <= NOW() - INTERVAL '10 days')"
+        f")",
+    )
+    rows = cur.fetchall()
+    if not rows:
+        return
+
+    address, work_hours = _fetch_pickup_info(cur)
+
+    for shipment_id, tracking_number, customer_email, delivered_at in rows:
+        utilize_date = (delivered_at + timedelta(days=60)).strftime('%d.%m.%Y')
+        try:
+            _send_pickup_reminder_email(cur, customer_email, tracking_number, address, work_hours, utilize_date)
+            print(f"[pickup_reminder] email sent to {customer_email} for {tracking_number}")
+        except Exception as e:
+            print(f"[pickup_reminder] email send failed for {customer_email}: {e!r}")
+            continue
+        cur.execute(
+            f"UPDATE {SCHEMA}.shipments SET pickup_reminder_sent_at = NOW() WHERE id = %s",
+            (shipment_id,),
+        )
+
+
 def handler(event: dict, context) -> dict:
     '''
     Управление посылками с готовыми керамическими изделиями для менеджеров Суздаля и ВДНХ.
@@ -401,6 +498,10 @@ def handler(event: dict, context) -> dict:
       включает photoUrl и createdAt. Доступно обеим ролям, но по city='suzdal' относится к
       разделу Суздаля независимо от роли. Изделия из Суздаля хранятся на ВДНХ 60 дней и
       выдаются там же — обратно в Суздаль не возвращаются, статуса «Возврат» больше нет.
+      При каждом вызове (active и all) автоматически отправляет повторные напоминания
+      забрать изделие из Москвы: первое — через 10 дней после отправки на ВДНХ, затем
+      каждые 10 дней, пока изделие не выдано или не истёк срок хранения (60 дней с даты
+      отправки), см. _auto_send_pickup_reminders.
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
     GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
@@ -1034,7 +1135,11 @@ def handler(event: dict, context) -> dict:
         elif status_filter == 'all':
             # Единая таблица менеджера Суздаля: старые вручную заведённые записи (source='manager')
             # и новые заявки клиентов (source='client', city='suzdal') — все статусы, включая
-            # 'in_progress' (заявка клиента, ещё не отправленная на ВДНХ).
+            # 'in_progress' (заявка клиента, ещё не отправленная на ВДНХ). При каждом открытии
+            # автоматически отправляет повторные напоминания забрать изделие из Москвы (каждые
+            # 10 дней, см. _auto_send_pickup_reminders).
+            _auto_send_pickup_reminders(cur)
+            conn.commit()
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, customer_email, photo_url, "
                 f"created_at, status, delivered_at, issued_at, visit_date "
@@ -1044,6 +1149,8 @@ def handler(event: dict, context) -> dict:
             rows = cur.fetchall()
             shipments = [_suzdal_shipment_dict(r) for r in rows]
         else:
+            _auto_send_pickup_reminders(cur)
+            conn.commit()
             cur.execute(
                 f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, status, issued_at, customer_email "
                 f"FROM {SCHEMA}.shipments WHERE status = 'shipped' AND city = 'suzdal' "

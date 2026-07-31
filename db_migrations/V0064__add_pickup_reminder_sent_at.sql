@@ -1,0 +1,2 @@
+ALTER TABLE t_p90609946_ceramics_school_home.shipments
+ADD COLUMN IF NOT EXISTS pickup_reminder_sent_at TIMESTAMP NULL;
