@@ -7,8 +7,8 @@ import { SortConfig } from '@/hooks/useSortableData';
 type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'returnAt';
 
 interface Props {
-  view: 'active' | 'closed';
-  setView: (v: 'active' | 'closed') => void;
+  view: 'active' | 'closed' | 'all';
+  setView: (v: 'active' | 'closed' | 'all') => void;
   role: 'vdnh' | 'suzdal';
   search: string;
   setSearch: (v: string) => void;
@@ -78,24 +78,28 @@ const ShipmentsTable = ({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
-          <button
-            onClick={() => setView('active')}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-              view === 'active' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
-            }`}
-          >
-            Активные
-          </button>
-          <button
-            onClick={() => setView('closed')}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-              view === 'closed' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
-            }`}
-          >
-            Закрытые
-          </button>
-        </div>
+        {role === 'vdnh' ? (
+          <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+            <button
+              onClick={() => setView('active')}
+              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                view === 'active' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
+              }`}
+            >
+              Активные
+            </button>
+            <button
+              onClick={() => setView('closed')}
+              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                view === 'closed' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
+              }`}
+            >
+              Закрытые
+            </button>
+          </div>
+        ) : (
+          <div />
+        )}
 
         <div className="flex items-center gap-2">
           <Input
@@ -135,7 +139,7 @@ const ShipmentsTable = ({
             <span>Email</span>
             <SortHeader label="Доставлено" sortKey="deliveredAt" sort={sort} onSort={onSort} />
             <SortHeader label="Возврат" sortKey="returnAt" sort={sort} onSort={onSort} />
-            {view === 'closed' && <span>Статус</span>}
+            {(view === 'closed' || role === 'suzdal') && <span>Статус</span>}
             {view === 'active' && role === 'vdnh' && <span>Действие</span>}
           </div>
 
@@ -146,9 +150,7 @@ const ShipmentsTable = ({
           {paginated.map((s) => (
             <div
               key={s.id}
-              className={`grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[1fr_1fr_140px_160px_110px_110px_130px_110px] sm:items-center sm:gap-3 ${
-                view === 'closed' && role !== 'vdnh' ? '' : ''
-              }`}
+              className="grid grid-cols-1 gap-2 border-b border-border px-4 py-3 text-sm last:border-0 sm:grid-cols-[1fr_1fr_140px_160px_110px_110px_130px_110px] sm:items-center sm:gap-3"
             >
               <span className="font-medium">№ {s.trackingNumber}</span>
               <span>{s.customerName}</span>
@@ -156,12 +158,14 @@ const ShipmentsTable = ({
               <span className="text-muted-foreground">{s.customerEmail || '—'}</span>
               <span>{fmtDate(s.deliveredAt)}</span>
               <span>{fmtDate(s.returnAt)}</span>
-              {view === 'closed' && (
+              {(view === 'closed' || role === 'suzdal') && (
                 <span>
                   {s.status === 'returned' ? (
                     <span className="text-destructive">Возврат</span>
-                  ) : (
+                  ) : s.status === 'issued' ? (
                     `Выдано ${fmtDate(s.issuedAt)}`
+                  ) : (
+                    <span className="text-emerald-600">Активна</span>
                   )}
                 </span>
               )}

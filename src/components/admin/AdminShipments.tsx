@@ -25,7 +25,7 @@ const fileToBase64 = (file: File) =>
   });
 
 const AdminShipments = ({ token, role }: Props) => {
-  const [view, setView] = useState<'active' | 'closed'>('active');
+  const [view, setView] = useState<'active' | 'closed' | 'all'>(role === 'suzdal' ? 'all' : 'active');
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -45,7 +45,7 @@ const AdminShipments = ({ token, role }: Props) => {
   const excelInputRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
 
-  const load = async (status: 'active' | 'closed') => {
+  const load = async (status: 'active' | 'closed' | 'all') => {
     setLoading(true);
     try {
       const resp = await fetch(`${func2url['shipments-admin']}?status=${status}`, {
@@ -102,7 +102,7 @@ const AdminShipments = ({ token, role }: Props) => {
       setFormPhone('');
       setFormEmail('');
       setFormDate(todayISO());
-      if (view === 'active') load('active');
+      if (view === 'active' || view === 'all') load(view);
     } catch {
       toast({ title: 'Ошибка сохранения', description: 'Попробуйте позже.' });
     } finally {
@@ -139,7 +139,7 @@ const AdminShipments = ({ token, role }: Props) => {
           ? `Пропущено (дубликаты или ошибки): ${skippedCount} — ${(data.skipped as string[]).slice(0, 5).join(', ')}${skippedCount > 5 ? '…' : ''}`
           : undefined,
       });
-      if (view === 'active') load('active');
+      if (view === 'active' || view === 'all') load(view);
     } catch {
       toast({ title: 'Ошибка загрузки файла', description: 'Попробуйте позже.' });
     } finally {

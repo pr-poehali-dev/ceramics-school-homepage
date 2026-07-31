@@ -268,12 +268,14 @@ def handler(event: dict, context) -> dict:
     '''
     Управление посылками с готовыми керамическими изделиями для менеджеров Суздаля и ВДНХ.
     Доступ защищён токеном сессии менеджера (общая таблица managers/manager_sessions).
-    GET ?status=active|closed — список посылок, добавленных менеджером Суздаля вручную
-      (source='manager'; активные или закрытые: выданные/возврат), доступно обеим ролям.
+    GET ?status=active|closed|all — список посылок, добавленных менеджером Суздаля вручную
+      (source='manager'), доступно обеим ролям. active — только отправленные и не выданные;
+      closed — выданные или возврат; all — единый список со всеми статусами (используется
+      панелью Суздаля, где статус отображается отдельной колонкой вместо переключателя вкладок).
       Заявки клиентов с сайта (source='client', раздел «Изделия (Москва)») сюда не попадают —
       это два независимых списка. При каждом вызове автоматически переводит в статус
       'returned' (Возврат) посылки, не выданные клиенту в течение 30 дней с даты доставки
-      в Москву (return_at < текущей даты) — такие посылки попадают в раздел «Закрытые».
+      в Москву (return_at < текущей даты).
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
     GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
@@ -803,6 +805,12 @@ def handler(event: dict, context) -> dict:
                 f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
                 f"FROM {SCHEMA}.shipments WHERE status IN ('issued', 'returned') AND source = 'manager' "
                 f"ORDER BY {order_clause} LIMIT 2000",
+            )
+        elif status_filter == 'all':
+            cur.execute(
+                f"SELECT id, tracking_number, customer_name, customer_phone, delivered_at, return_at, status, issued_at, customer_email "
+                f"FROM {SCHEMA}.shipments WHERE source = 'manager' "
+                f"ORDER BY delivered_at DESC, created_at DESC LIMIT 2000",
             )
         else:
             cur.execute(
