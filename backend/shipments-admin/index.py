@@ -49,11 +49,12 @@ def _suzdal_shipment_dict(r):
     Заявка создана / Отправлено в Москву / Статус / Действие. Объединяет старые записи
     (заведённые вручную, status 'shipped'/'issued', photo_url обычно NULL) и новые от
     клиентов (status 'in_progress' до отправки на ВДНХ, затем 'shipped').
-    'Заявка создана' — это visit_date (дата посещения мастер-класса из формы клиента),
-    если она есть, иначе created_at (дата, когда менеджер вручную завёл запись).
+    'Заявка создана' — это created_at: дата подачи заявки клиентом через форму на сайте,
+    либо дата, когда менеджер вручную завёл запись через форму в начале страницы (дата
+    посещения мастер-класса клиентом здесь не используется).
     'Отправлено в Москву' — это delivered_at (дата, когда менеджер Суздаля нажал
     «Отправить на ВДНХ»), заполняется только после отправки."""
-    created_at, visit_date = r[6], r[10]
+    created_at = r[6]
     return {
         'id': r[0],
         'trackingNumber': r[1],
@@ -61,7 +62,7 @@ def _suzdal_shipment_dict(r):
         'customerPhone': r[3],
         'customerEmail': r[4],
         'photoUrl': r[5],
-        'createdAt': (visit_date or created_at).isoformat() if (visit_date or created_at) else None,
+        'createdAt': created_at.isoformat() if created_at else None,
         'status': r[7],
         'deliveredAt': r[8].isoformat() if r[8] else None,
         'issuedAt': r[9].isoformat() if r[9] else None,
@@ -518,8 +519,10 @@ def handler(event: dict, context) -> dict:
     GET ?status=archived — архив заявок клиентов (source='client', archived_at IS NOT NULL) —
       заявки, отмеченные готовыми к выдаче более 3 месяцев назад, доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
-    POST { action: 'create', trackingNumber, customerName, customerPhone, customerEmail (необязательно),
-      deliveredAt } — добавление посылки, доступно только роли 'suzdal'.
+    POST { action: 'create', trackingNumber, customerName, customerPhone, customerEmail (необязательно) } —
+      добавление посылки менеджером Суздаля через форму на странице (статус сразу 'in_progress',
+      как и у клиентских заявок с сайта — дата отправки в Москву проставляется только по кнопке
+      «Отправить на ВДНХ»), доступно только роли 'suzdal'.
     POST { action: 'import_excel', fileData (base64 .xlsx) } — массовая загрузка посылок из
       Excel-файла с колонками «Номер посылки», «ФИО клиента», «Телефон клиента», «Email»
       (необязательно), «Дата доставки в Москву», доступно только роли 'suzdal'.
@@ -599,7 +602,6 @@ def handler(event: dict, context) -> dict:
                 customer_name = (body.get('customerName') or '').strip()
                 customer_phone = (body.get('customerPhone') or '').strip()
                 customer_email = (body.get('customerEmail') or '').strip() or None
-                delivered_at = body.get('deliveredAt') or datetime.utcnow().date().isoformat()
 
                 if not tracking_number or not customer_name or not customer_phone:
                     return {
@@ -608,15 +610,12 @@ def handler(event: dict, context) -> dict:
                         'body': json.dumps({'error': 'Заполните номер посылки, ФИО и телефон'}, ensure_ascii=False),
                     }
 
-                try:
-                    delivered_date = datetime.strptime(delivered_at[:10], '%Y-%m-%d').date()
-                except ValueError:
-                    return {
-                        'statusCode': 400,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Неверный формат даты'}, ensure_ascii=False),
-                    }
-                return_date = delivered_date + timedelta(days=30)
+                # Заявка заводится в статусе "В работе" — дата отправки в Москву (delivered_at)
+                # проставляется только по кнопке «Отправить на ВДНХ» (см. action send_to_vdnh).
+                # delivered_at/return_at пока не имеют значения, но столбцы NOT NULL по
+                # историческим причинам — заполняем технической датой-плейсхолдером.
+                today = datetime.utcnow().date()
+                placeholder_return = today + timedelta(days=60)
 
                 cur.execute(
                     f"SELECT id FROM {SCHEMA}.shipments WHERE tracking_number = %s",
@@ -632,8 +631,8 @@ def handler(event: dict, context) -> dict:
                 cur.execute(
                     f"INSERT INTO {SCHEMA}.shipments "
                     f"(tracking_number, customer_name, customer_phone, customer_email, delivered_at, return_at, status, city, created_by) "
-                    f"VALUES (%s, %s, %s, %s, %s, %s, 'shipped', 'suzdal', %s) RETURNING id",
-                    (tracking_number, customer_name, customer_phone, customer_email, delivered_date, return_date, manager_id),
+                    f"VALUES (%s, %s, %s, %s, %s, %s, 'in_progress', 'suzdal', %s) RETURNING id",
+                    (tracking_number, customer_name, customer_phone, customer_email, today, placeholder_return, manager_id),
                 )
                 new_id = cur.fetchone()[0]
                 conn.commit()

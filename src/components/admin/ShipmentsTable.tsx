@@ -11,7 +11,7 @@ import {
 import { Shipment, fmtDate, SUZDAL_STATUS_LABEL, SUZDAL_STATUS_FILTERS } from './shipmentTypes';
 import { SortConfig } from '@/hooks/useSortableData';
 
-type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt';
+type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'createdAt';
 
 interface Props {
   view: 'active' | 'closed' | 'all';
@@ -174,7 +174,7 @@ const ShipmentsTable = ({
             <SortHeader label="№ заявки" sortKey="trackingNumber" sort={sort} onSort={onSort} />
             <SortHeader label="Клиент" sortKey="customerName" sort={sort} onSort={onSort} />
             <span>Контакты</span>
-            <span>Заявка создана</span>
+            <SortHeader label="Заявка создана" sortKey="createdAt" sort={sort} onSort={onSort} />
             <SortHeader label="Отправлено в Москву" sortKey="deliveredAt" sort={sort} onSort={onSort} />
             <span>Статус</span>
             <span>Действие</span>

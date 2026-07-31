@@ -13,8 +13,6 @@ interface Props {
   setFormPhone: (v: string) => void;
   formEmail: string;
   setFormEmail: (v: string) => void;
-  formDate: string;
-  setFormDate: (v: string) => void;
   saving: boolean;
   onSubmit: (e: React.FormEvent) => void;
   excelInputRef: React.RefObject<HTMLInputElement>;
@@ -31,8 +29,6 @@ const ShipmentCreateForm = ({
   setFormPhone,
   formEmail,
   setFormEmail,
-  formDate,
-  setFormDate,
   saving,
   onSubmit,
   excelInputRef,
@@ -78,17 +74,6 @@ const ShipmentCreateForm = ({
           />
         </div>
         <div>
-          <Label htmlFor="ship-date">Дата доставки в Москву</Label>
-          <Input
-            id="ship-date"
-            type="date"
-            value={formDate}
-            onChange={(e) => setFormDate(e.target.value)}
-            className="mt-1.5"
-            required
-          />
-        </div>
-        <div>
           <Label htmlFor="ship-email">Email клиента</Label>
           <Input
             id="ship-email"
@@ -128,8 +113,9 @@ const ShipmentCreateForm = ({
           {importing ? 'Загружаем…' : 'Загрузить из Excel'}
         </Button>
         <p className="text-xs text-muted-foreground">
-          Файл .xlsx с колонками: Номер посылки, ФИО клиента, Телефон клиента, Дата доставки в
-          Москву, Email (необязательно) (те же поля, что и в форме выше)
+          Файл .xlsx с колонками: Номер посылки, ФИО клиента, Телефон клиента, Email
+          (необязательно), Дата доставки в Москву (необязательно — если не указана,
+          посылка попадёт в статус «Отправлено в Москву» с сегодняшней датой)
         </p>
       </div>
     </div>

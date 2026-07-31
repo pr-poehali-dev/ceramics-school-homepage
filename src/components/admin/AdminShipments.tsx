@@ -25,8 +25,6 @@ interface Props {
 
 const PER_PAGE = 20;
 
-const todayISO = () => new Date().toISOString().slice(0, 10);
-
 const fileToBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -55,7 +53,6 @@ const AdminShipments = ({ token, role }: Props) => {
   const [formName, setFormName] = useState('');
   const [formPhone, setFormPhone] = useState('');
   const [formEmail, setFormEmail] = useState('');
-  const [formDate, setFormDate] = useState(todayISO());
   const [saving, setSaving] = useState(false);
 
   const excelInputRef = useRef<HTMLInputElement>(null);
@@ -104,7 +101,6 @@ const AdminShipments = ({ token, role }: Props) => {
           customerName: formName.trim(),
           customerPhone: formPhone,
           customerEmail: formEmail.trim(),
-          deliveredAt: formDate,
         }),
       });
       const data = await resp.json();
@@ -117,7 +113,6 @@ const AdminShipments = ({ token, role }: Props) => {
       setFormName('');
       setFormPhone('');
       setFormEmail('');
-      setFormDate(todayISO());
       if (view === 'active' || view === 'all') load(view);
     } catch {
       toast({ title: 'Ошибка сохранения', description: 'Попробуйте позже.' });
@@ -265,11 +260,12 @@ const AdminShipments = ({ token, role }: Props) => {
       )
     : filteredByStatus;
 
-  type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt';
+  type SortKey = 'trackingNumber' | 'customerName' | 'deliveredAt' | 'createdAt';
   const { sorted, sort, toggleSort } = useSortableData<Shipment, SortKey>(filtered, (item, key) => {
     if (key === 'trackingNumber') return item.trackingNumber || '';
     if (key === 'customerName') return item.customerName || '';
     if (key === 'deliveredAt') return item.deliveredAt ? new Date(item.deliveredAt).getTime() : 0;
+    if (key === 'createdAt') return item.createdAt ? new Date(item.createdAt).getTime() : 0;
     return '';
   });
 
@@ -289,8 +285,6 @@ const AdminShipments = ({ token, role }: Props) => {
           setFormPhone={setFormPhone}
           formEmail={formEmail}
           setFormEmail={setFormEmail}
-          formDate={formDate}
-          setFormDate={setFormDate}
           saving={saving}
           onSubmit={handleCreate}
           excelInputRef={excelInputRef}
