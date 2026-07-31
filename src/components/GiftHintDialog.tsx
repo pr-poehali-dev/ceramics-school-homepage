@@ -40,7 +40,6 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
   const [senderName, setSenderName] = useState('');
   const [recipientName, setRecipientName] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
-  const [recipientContact, setRecipientContact] = useState('');
   const [giftValue, setGiftValue] = useState(defaultGiftValue || '');
   const [message, setMessage] = useState('');
   const [consent, setConsent] = useState(false);
@@ -50,7 +49,6 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
     setSenderName('');
     setRecipientName('');
     setRecipientEmail('');
-    setRecipientContact('');
     setGiftValue(defaultGiftValue || '');
     setMessage('');
     setConsent(false);
@@ -62,7 +60,7 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
     senderName.trim().length > 1 &&
     recipientName.trim().length > 1 &&
     !!giftValue &&
-    (recipientEmail.trim() || recipientContact.trim()) &&
+    /\S+@\S+\.\S+/.test(recipientEmail.trim()) &&
     consent;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,7 +75,6 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
           senderName: senderName.trim(),
           recipientName: recipientName.trim(),
           recipientEmail: recipientEmail.trim(),
-          recipientContact: recipientContact.trim(),
           giftType: 'workshop',
           giftSlug: selectedGift.value,
           giftLabel: selectedGift.label,
@@ -95,7 +92,7 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
         title: 'Намёк отправлен!',
         description: data.emailSent
           ? `Письмо с секретом уже летит к ${recipientName.trim()}.`
-          : 'Заявка сохранена — свяжитесь с получателем сами по указанному контакту.',
+          : 'Заявка сохранена, но письмо отправить не удалось — мы разберёмся.',
       });
       reset();
       setOpen(false);
@@ -142,27 +139,15 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="gift-recipient-email">Email получателя</Label>
+            <Label htmlFor="gift-recipient-email">Email получателя *</Label>
             <Input
               id="gift-recipient-email"
               type="email"
               placeholder="you@mail.ru"
               value={recipientEmail}
               onChange={(e) => setRecipientEmail(e.target.value)}
+              required
             />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="gift-recipient-contact">Или ссылка на мессенджер получателя</Label>
-            <Input
-              id="gift-recipient-contact"
-              placeholder="Например, https://t.me/username"
-              value={recipientContact}
-              onChange={(e) => setRecipientContact(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Укажите email или ссылку — хотя бы одно поле обязательно.
-            </p>
           </div>
 
           <div className="space-y-1.5">

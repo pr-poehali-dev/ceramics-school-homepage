@@ -87,19 +87,13 @@ const AdminGiftHints = ({ token }: Props) => {
             </p>
           )}
           <div className="mt-2">
-            {h.recipientEmail ? (
-              h.emailSent ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
-                  <Icon name="CheckCircle2" size={12} /> Письмо отправлено
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
-                  <Icon name="AlertCircle" size={12} /> Ошибка отправки{h.emailError ? `: ${h.emailError}` : ''}
-                </span>
-              )
+            {h.emailSent ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                <Icon name="CheckCircle2" size={12} /> Письмо отправлено
+              </span>
             ) : (
-              <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                <Icon name="MessageCircle" size={12} /> Только контакт для мессенджера — отправьте вручную
+              <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
+                <Icon name="AlertCircle" size={12} /> Ошибка отправки{h.emailError ? `: ${h.emailError}` : ''}
               </span>
             )}
           </div>

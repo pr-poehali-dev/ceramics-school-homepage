@@ -87,14 +87,13 @@ def _send_gift_hint_email(recipient_email: str, sender_name: str, message: str) 
 def handler(event: dict, context) -> dict:
     '''
     Форма "Намекнуть на подарок": клиент отправляет близкому анонимное письмо-намёк
-    про мастер-класс или сертификат, который хочет получить в подарок. Если указан
-    email получателя — письмо отправляется реально; если указана только ссылка на
-    мессенджер — она сохраняется для менеджера (сама отправка в мессенджер не
-    автоматизирована). Согласие на обработку персональных данных обязательно —
-    в будущем по этой базе будут отправляться другие триггерные письма.
-    POST { senderName, recipientName, recipientEmail, recipientContact, giftType
+    про мастер-класс или сертификат, который хочет получить в подарок. Email
+    получателя обязателен — письмо отправляется сразу. Согласие на обработку
+    персональных данных обязательно — в будущем по этой базе будут отправляться
+    другие триггерные письма.
+    POST { senderName, recipientName, recipientEmail, giftType
       ('workshop'|'certificate'), giftSlug, giftLabel, message, consent, city } —
-      сохраняет заявку и отправляет письмо (если указан recipientEmail).
+      сохраняет заявку и отправляет письмо получателю.
     GET ?all=1 с заголовком X-Session-Token (роль 'vdnh') — список всех заявок для админки.
     Args: event с httpMethod, headers, queryStringParameters, body
           context — объект с request_id
@@ -143,7 +142,6 @@ def handler(event: dict, context) -> dict:
         sender_name = (body.get('senderName') or '').strip()
         recipient_name = (body.get('recipientName') or '').strip()
         recipient_email = (body.get('recipientEmail') or '').strip()
-        recipient_contact = (body.get('recipientContact') or '').strip()
         gift_type = (body.get('giftType') or '').strip()
         gift_slug = (body.get('giftSlug') or '').strip() or None
         gift_label = (body.get('giftLabel') or '').strip()
@@ -157,28 +155,25 @@ def handler(event: dict, context) -> dict:
             return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Не указан тип подарка'}, ensure_ascii=False)}
         if not gift_label:
             return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Не указан подарок'}, ensure_ascii=False)}
-        if not recipient_email and not recipient_contact:
-            return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Укажите email получателя или ссылку на мессенджер'}, ensure_ascii=False)}
-        if recipient_email and not re.match(r'^\S+@\S+\.\S+$', recipient_email):
-            return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Некорректный email получателя'}, ensure_ascii=False)}
+        if not recipient_email or not re.match(r'^\S+@\S+\.\S+$', recipient_email):
+            return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Укажите корректный email получателя'}, ensure_ascii=False)}
         if not consent:
             return {'statusCode': 400, 'headers': _cors(), 'body': json.dumps({'error': 'Нужно согласие на обработку персональных данных'}, ensure_ascii=False)}
 
         email_sent = False
         email_error = None
-        if recipient_email:
-            try:
-                _send_gift_hint_email(recipient_email, sender_name, message)
-                email_sent = True
-            except Exception as e:
-                email_error = str(e)
+        try:
+            _send_gift_hint_email(recipient_email, sender_name, message)
+            email_sent = True
+        except Exception as e:
+            email_error = str(e)
 
         cur.execute(
             f"INSERT INTO {SCHEMA}.gift_hints "
-            f"(sender_name, recipient_name, recipient_email, recipient_contact, gift_type, "
+            f"(sender_name, recipient_name, recipient_email, gift_type, "
             f"gift_slug, gift_label, message, consent, email_sent, email_error, city) "
-            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (sender_name, recipient_name, recipient_email or None, recipient_contact or None,
+            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (sender_name, recipient_name, recipient_email,
              gift_type, gift_slug, gift_label, message or None, consent, email_sent, email_error, city),
         )
         conn.commit()
