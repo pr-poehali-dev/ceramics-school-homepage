@@ -804,6 +804,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       { key: 'phone', label: 'Телефон администратора в Москве', type: 'text' },
       { key: 'address', label: 'Адрес выдачи в Москве', type: 'text' },
       { key: 'workHours', label: 'Время работы в Москве', type: 'text' },
+      { key: 'deliveryPhone', label: 'Телефон администратора в Суздале', type: 'text' },
       { key: 'deliveryText1', label: 'Блок «Отправка в Москву» — абзац 1', type: 'textarea' },
       { key: 'deliveryText2', label: 'Блок «Отправка в Москву» — абзац 2 (до телефона)', type: 'textarea' },
       { key: 'deliveryText2After', label: 'Блок «Отправка в Москву» — текст после телефона', type: 'textarea' },
@@ -827,6 +828,7 @@ export const PAGE_SCHEMAS: PageSchema[] = [
       phone: '+7 (985) 419-89-03',
       address: 'ВДНХ, проспект Мира, 119, строение 186',
       workHours: 'Ежедневно с 11:00 до 20:00',
+      deliveryPhone: '8-915-157-64-85',
       deliveryText1:
         'После обжига готовые изделия из Суздаля по умолчанию отправляются на выдачу в нашу школу керамики на ВДНХ в Москве — это самый быстрый способ забрать работу, если вы уже уехали из Суздаля.',
       deliveryText2: 'Уточнить статус отправки можно у администратора по номеру',

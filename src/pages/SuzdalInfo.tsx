@@ -18,6 +18,7 @@ const SuzdalInfo = () => {
     description: c.metaDescription,
   });
   const phoneHref = `tel:${(c.phone || '+79854198903').replace(/[^\d+]/g, '')}`;
+  const deliveryPhoneHref = `tel:${(c.deliveryPhone || '89151576485').replace(/[^\d+]/g, '')}`;
   return (
     <div className="min-h-screen bg-background text-foreground clay-texture">
       {/* HEADER */}
@@ -65,8 +66,8 @@ const SuzdalInfo = () => {
               </p>
               <p>
                 {c.deliveryText2}{' '}
-                <a href={phoneHref} className="font-semibold text-primary hover:underline">
-                  {c.phone}
+                <a href={deliveryPhoneHref} className="font-semibold text-primary hover:underline">
+                  {c.deliveryPhone}
                 </a>{' '}
                 {c.deliveryText2After}
               </p>
