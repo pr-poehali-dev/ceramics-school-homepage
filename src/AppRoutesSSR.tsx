@@ -24,6 +24,7 @@ import SuzdalAbout from "./pages/SuzdalAbout";
 import SuzdalCertificates from "./pages/SuzdalCertificates";
 import SuzdalExcursions from "./pages/SuzdalExcursions";
 import SuzdalContacts from "./pages/SuzdalContacts";
+import SuzdalInfo from "./pages/SuzdalInfo";
 import SuzdalOffer from "./pages/SuzdalOffer";
 import SuzdalPrivacy from "./pages/SuzdalPrivacy";
 import SuzdalCookies from "./pages/SuzdalCookies";
@@ -52,6 +53,7 @@ const AppRoutesSSR = () => (
     <Route path="/suzdal/certificates" element={<SuzdalCertificates />} />
     <Route path="/suzdal/excursions" element={<SuzdalExcursions />} />
     <Route path="/suzdal/contacts" element={<SuzdalContacts />} />
+    <Route path="/suzdal/info" element={<SuzdalInfo />} />
     <Route path="/suzdal/about" element={<SuzdalAbout />} />
     <Route path="/suzdal/offer" element={<SuzdalOffer />} />
     <Route path="/suzdal/privacy" element={<SuzdalPrivacy />} />

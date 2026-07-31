@@ -482,7 +482,22 @@ const SuzdalWorkshopDetail = () => {
             </div>
 
             {/* INFO CARDS — горизонтальный ряд под описанием */}
-            <div className="mt-8 grid gap-4 border-t border-border/60 pt-8 sm:grid-cols-2">
+            <div className="mt-8 grid gap-4 border-t border-border/60 pt-8 sm:grid-cols-3">
+              <Link
+                to="/suzdal/info"
+                className="flex flex-col items-start gap-2 rounded-2xl border border-primary/30 bg-primary/5 p-4 transition-colors hover:border-primary/50 hover:bg-primary/10"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <Icon name="Truck" size={18} />
+                </span>
+                <p className="text-sm font-semibold text-foreground">
+                  Отправка и выдача готовых изделий
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Как забрать изделие после обжига — на странице «Информация»
+                </p>
+              </Link>
+
               <div className="flex flex-col items-start gap-2 rounded-2xl border border-accent/40 bg-accent/15 p-4">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/30 text-primary">
                   <Icon name="Phone" size={18} />

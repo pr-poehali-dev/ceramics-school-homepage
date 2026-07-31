@@ -35,6 +35,7 @@ const SuzdalAbout = lazy(() => import("./pages/SuzdalAbout"));
 const SuzdalCertificates = lazy(() => import("./pages/SuzdalCertificates"));
 const SuzdalExcursions = lazy(() => import("./pages/SuzdalExcursions"));
 const SuzdalContacts = lazy(() => import("./pages/SuzdalContacts"));
+const SuzdalInfo = lazy(() => import("./pages/SuzdalInfo"));
 const SuzdalOffer = lazy(() => import("./pages/SuzdalOffer"));
 const SuzdalPrivacy = lazy(() => import("./pages/SuzdalPrivacy"));
 const SuzdalCookies = lazy(() => import("./pages/SuzdalCookies"));
@@ -104,6 +105,7 @@ const App = () => (
               <Route path="/suzdal/certificates" element={<SuzdalCertificates />} />
               <Route path="/suzdal/excursions" element={<SuzdalExcursions />} />
               <Route path="/suzdal/contacts" element={<SuzdalContacts />} />
+              <Route path="/suzdal/info" element={<SuzdalInfo />} />
               <Route path="/suzdal/about" element={<SuzdalAbout />} />
               <Route path="/suzdal/cart" element={<Cart />} />
               <Route path="/suzdal/checkout" element={<Checkout />} />
