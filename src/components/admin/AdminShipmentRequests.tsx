@@ -74,7 +74,7 @@ const fmtDate = (s: string | null | undefined) => {
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const AdminShipmentRequests = ({ token }: Props) => {
-  const [view, setView] = useState<'requests' | 'confirmed' | 'archived'>('requests');
+  const [view, setView] = useState<'requests' | 'confirmed' | 'archived'>('confirmed');
   const [requests, setRequests] = useState<ShipmentRequest[]>([]);
   const [confirmed, setConfirmed] = useState<ShipmentRequest[]>([]);
   const [archived, setArchived] = useState<ShipmentRequest[]>([]);
@@ -293,20 +293,20 @@ const AdminShipmentRequests = ({ token }: Props) => {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           <button
-            onClick={() => setView('requests')}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-              view === 'requests' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
-            }`}
-          >
-            Требуется подтвердить {requests.length ? `(${requests.length})` : ''}
-          </button>
-          <button
             onClick={() => setView('confirmed')}
             className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               view === 'confirmed' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
             }`}
           >
             Подтверждённые
+          </button>
+          <button
+            onClick={() => setView('requests')}
+            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              view === 'requests' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
+            }`}
+          >
+            Требуется подтвердить {requests.length ? `(${requests.length})` : ''}
           </button>
           <button
             onClick={() => setView('archived')}
