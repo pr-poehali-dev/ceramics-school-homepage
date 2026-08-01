@@ -112,7 +112,7 @@ const GiftHintDialog = ({ children, giftOptions, defaultGiftValue }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">Намекнуть на подарок</DialogTitle>
           <DialogDescription>
