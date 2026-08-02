@@ -82,6 +82,7 @@ def _request_dict(r):
         'parentId': r[8],
         'parentTrackingNumber': r[9],
         'visitDate': r[10].isoformat() if r[10] else None,
+        'requiresPainting': r[11],
     }
 
 
@@ -511,11 +512,10 @@ def handler(event: dict, context) -> dict:
       архивирует (archived_at=NOW()) заявки, у которых ready_at был более 3 месяцев назад,
       и отправляет письмо-напоминание про роспись (requires_painting=true, 16 дней после
       confirmed_at, см. _auto_send_painting_reminders).
-      visitNumber/parentId/parentTrackingNumber показывают связь с предыдущим посещением
-      клиента (повторная заявка после росписи, source shipment-request с isRepeatVisit=true).
-      requiresPainting=true — заявка на необожжённое изделие под роспись: кнопки «Готово» нет,
-      клиенту автоматически летит письмо с приглашением записаться на роспись через 16 дней.
-      requiresPainting=false — обычная заявка на готовое изделие: доступна кнопка «Готово».
+      requiresPainting=true — заявка на необожжённое изделие под роспись (клиент выбрал
+      «Изделие с росписью» ещё в форме заявки): кнопки «Готово» нет, клиенту автоматически
+      летит письмо с приглашением записаться на роспись через 16 дней. requiresPainting=false —
+      обычная заявка на готовое изделие: доступна кнопка «Готово».
     GET ?status=archived — архив заявок клиентов (source='client', archived_at IS NOT NULL) —
       заявки, отмеченные готовыми к выдаче более 3 месяцев назад, доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
@@ -527,12 +527,9 @@ def handler(event: dict, context) -> dict:
       Excel-файла с колонками «Номер посылки», «ФИО клиента», «Телефон клиента», «Email»
       (необязательно), «Дата доставки в Москву», доступно только роли 'suzdal'.
     POST { action: 'issue', id } — пометить посылку выданной, доступно только роли 'vdnh'.
-    POST { action: 'approve_request', id, deliveredAt, requiresPainting } — подтвердить заявку
-      клиента и перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
-      requiresPainting=true — изделие сдано под роспись (пока просто обожжено): без кнопки
-      «Готово», через 16 дней после подтверждения клиенту автоматически уходит письмо с
-      приглашением записаться на роспись. requiresPainting=false — обычное готовое изделие,
-      доступна кнопка «Готово» (ready_for_pickup).
+    POST { action: 'approve_request', id, deliveredAt } — подтвердить заявку клиента и перевести
+      её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'. requires_painting
+      здесь не передаётся и не меняется — это выбор клиента, сделанный ещё в форме заявки.
     POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
     POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client') готовой
       к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом,
@@ -841,7 +838,6 @@ def handler(event: dict, context) -> dict:
 
                 request_id = body.get('id')
                 delivered_at = body.get('deliveredAt') or datetime.utcnow().date().isoformat()
-                requires_painting = bool(body.get('requiresPainting'))
                 if not request_id:
                     return {
                         'statusCode': 400,
@@ -858,11 +854,14 @@ def handler(event: dict, context) -> dict:
                     }
                 return_date = delivered_date + timedelta(days=30)
 
+                # requires_painting уже выбран клиентом в форме заявки — здесь не переопределяем,
+                # только фиксируем дату подтверждения (confirmed_at нужна для отсчёта 16 дней
+                # до автоматического письма-напоминания про роспись).
                 cur.execute(
                     f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s, "
-                    f"requires_painting = %s, confirmed_at = NOW() "
+                    f"confirmed_at = NOW() "
                     f"WHERE id = %s AND status = 'pending_review'",
-                    (delivered_date, return_date, requires_painting, request_id),
+                    (delivered_date, return_date, request_id),
                 )
                 if cur.rowcount == 0:
                     return {
@@ -1074,7 +1073,8 @@ def handler(event: dict, context) -> dict:
         if status_filter == 'requests':
             cur.execute(
                 f"SELECT s.id, s.tracking_number, s.customer_name, s.customer_phone, s.customer_email, "
-                f"s.photo_url, s.created_at, s.visit_number, s.parent_id, p.tracking_number, s.visit_date "
+                f"s.photo_url, s.created_at, s.visit_number, s.parent_id, p.tracking_number, s.visit_date, "
+                f"s.requires_painting "
                 f"FROM {SCHEMA}.shipments s LEFT JOIN {SCHEMA}.shipments p ON p.id = s.parent_id "
                 f"WHERE s.status = 'pending_review' ORDER BY s.created_at DESC LIMIT 500",
             )

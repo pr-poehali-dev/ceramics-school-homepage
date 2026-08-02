@@ -83,7 +83,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
   const [approveTarget, setApproveTarget] = useState<ShipmentRequest | null>(null);
   const [approveDate, setApproveDate] = useState(todayISO());
-  const [approveRequiresPainting, setApproveRequiresPainting] = useState(false);
   const [approving, setApproving] = useState(false);
 
   const [rejectTarget, setRejectTarget] = useState<ShipmentRequest | null>(null);
@@ -132,7 +131,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const openApprove = (r: ShipmentRequest) => {
     setApproveTarget(r);
     setApproveDate(todayISO());
-    setApproveRequiresPainting(false);
   };
 
   const confirmApprove = async () => {
@@ -146,7 +144,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
           action: 'approve_request',
           id: approveTarget.id,
           deliveredAt: approveDate,
-          requiresPainting: approveRequiresPainting,
         }),
       });
       const data = await resp.json();
@@ -156,7 +153,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
       }
       toast({
         title: 'Заявка подтверждена',
-        description: approveRequiresPainting
+        description: approveTarget.requiresPainting
           ? `№ ${approveTarget.trackingNumber} — через 16 дней клиенту автоматически придёт письмо про запись на роспись`
           : `№ ${approveTarget.trackingNumber} добавлена в подтверждённые`,
       });
@@ -489,12 +486,17 @@ const AdminShipmentRequests = ({ token }: Props) => {
                         </button>
                       </TableCell>
                       <TableCell className="font-medium">
-                        <div className={isChild ? 'ml-4 flex items-center gap-1.5' : ''}>
+                        <div className={isChild ? 'ml-4 flex items-center gap-1.5 flex-wrap' : 'flex items-center gap-1.5 flex-wrap'}>
                           {isChild && <Icon name="CornerDownRight" size={14} className="text-muted-foreground" />}
                           № {row.trackingNumber}
                           {(row.visitNumber || 1) > 1 && (
-                            <span className="ml-1.5 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                               Посещение {row.visitNumber}
+                            </span>
+                          )}
+                          {view === 'requests' && row.requiresPainting && (
+                            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                              С росписью
                             </span>
                           )}
                         </div>
@@ -616,41 +618,23 @@ const AdminShipmentRequests = ({ token }: Props) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Подтвердить заявку?</AlertDialogTitle>
             <AlertDialogDescription>
-              Что видно на фото № {approveTarget?.trackingNumber}?
+              Заявка № {approveTarget?.trackingNumber} клиента {approveTarget?.customerName}.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          <div className="space-y-2">
-            <button
-              type="button"
-              onClick={() => setApproveRequiresPainting(false)}
-              className={`w-full rounded-xl border p-3 text-left transition-colors ${
-                !approveRequiresPainting
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border hover:bg-secondary/40'
-              }`}
-            >
-              <p className="text-sm font-medium text-foreground">Готовое изделие</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Обжиг — и всё, изделие полностью готово. Появится кнопка «Готово», которую нажмёте
-                после обжига.
-              </p>
-            </button>
-            <button
-              type="button"
-              onClick={() => setApproveRequiresPainting(true)}
-              className={`w-full rounded-xl border p-3 text-left transition-colors ${
-                approveRequiresPainting
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border hover:bg-secondary/40'
-              }`}
-            >
-              <p className="text-sm font-medium text-foreground">Требуется роспись</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Изделие ещё не расписано. Кнопки «Готово» не будет — через 16 дней клиенту
-                автоматически придёт письмо с приглашением записаться на роспись.
-              </p>
-            </button>
+          <div
+            className={`rounded-xl border p-3 ${
+              approveTarget?.requiresPainting ? 'border-primary bg-primary/5' : 'border-border bg-secondary/30'
+            }`}
+          >
+            <p className="text-sm font-medium text-foreground">
+              {approveTarget?.requiresPainting ? 'Изделие с росписью' : 'Изделие без росписи'}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {approveTarget?.requiresPainting
+                ? 'Клиент выбрал это в заявке. Изделие ещё не расписано — кнопки «Готово» не будет, через 16 дней клиенту автоматически придёт письмо с приглашением записаться на роспись.'
+                : 'Клиент выбрал это в заявке. Изделие полностью готово — появится кнопка «Готово», которую нажмёте после обжига.'}
+            </p>
           </div>
 
           <AlertDialogFooter>

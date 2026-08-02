@@ -3,7 +3,6 @@ import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { formatPhoneInput } from '@/lib/phoneMask';
 import { compressImage } from '@/lib/imageCompress';
@@ -25,7 +24,7 @@ const ShipmentRequestForm = ({
   const isSuzdal = city === 'suzdal';
   const fileInputRef = useRef<HTMLInputElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
-  const [isRepeatVisit, setIsRepeatVisit] = useState(false);
+  const [requiresPainting, setRequiresPainting] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -34,7 +33,6 @@ const ShipmentRequestForm = ({
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<string | null>(null);
-  const [doneRepeat, setDoneRepeat] = useState(false);
 
   useEffect(() => {
     if (done) {
@@ -50,7 +48,7 @@ const ShipmentRequestForm = ({
     setPhoto(null);
     setPhotoPreview(null);
     setDone(null);
-    setDoneRepeat(false);
+    setRequiresPainting(false);
   };
 
   const handlePhotoPick = (file: File | undefined) => {
@@ -67,13 +65,12 @@ const ShipmentRequestForm = ({
     setPhotoPreview(URL.createObjectURL(file));
   };
 
-  const isValid = isRepeatVisit && !isSuzdal
-    ? phone.replace(/\D/g, '').length === 11 && !!photo && !!visitDate
-    : name.trim().length > 2 &&
-      phone.replace(/\D/g, '').length === 11 &&
-      /\S+@\S+\.\S+/.test(email) &&
-      !!photo &&
-      !!visitDate;
+  const isValid =
+    name.trim().length > 2 &&
+    phone.replace(/\D/g, '').length === 11 &&
+    /\S+@\S+\.\S+/.test(email) &&
+    !!photo &&
+    !!visitDate;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +91,6 @@ const ShipmentRequestForm = ({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            isRepeatVisit: isRepeatVisit && !isSuzdal,
             customerName: name.trim(),
             customerPhone: phone,
             customerEmail: email.trim(),
@@ -102,6 +98,7 @@ const ShipmentRequestForm = ({
             photoData: dataUrl,
             contentType: 'image/jpeg',
             city,
+            requiresPainting: !isSuzdal && requiresPainting,
           }),
         });
       } catch (err) {
@@ -118,7 +115,6 @@ const ShipmentRequestForm = ({
         return;
       }
       setDone(data.trackingNumber);
-      setDoneRepeat(isRepeatVisit);
     } finally {
       setSubmitting(false);
     }
@@ -138,12 +134,6 @@ const ShipmentRequestForm = ({
               Мастерская Суздаля получила заявку и передаст изделие в Москву — статус можно
               отследить по номеру телефона.
             </>
-          ) : doneRepeat ? (
-            <>
-              Номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
-              Изделие связано с вашим предыдущим посещением и отправлено на обжиг — статус
-              можно отследить по номеру телефона.
-            </>
           ) : (
             <>
               Ваш временный номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
@@ -162,35 +152,52 @@ const ShipmentRequestForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {!isSuzdal && (
-        <label className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 p-3.5">
-          <Checkbox
-            checked={isRepeatVisit}
-            onCheckedChange={(v) => setIsRepeatVisit(v === true)}
-            className="mt-0.5"
-          />
-          <span className="text-sm leading-snug">
-            <span className="font-medium text-foreground">Это моё повторное посещение</span>
-            <br />
-            <span className="text-muted-foreground">
-              Я уже сдавал(а) изделие и расписал(а) его — теперь сдаю на обжиг снова
-            </span>
-          </span>
-        </label>
-      )}
-
-      {(!isRepeatVisit || isSuzdal) && (
         <div>
-          <Label htmlFor="req-name">ФИО *</Label>
-          <Input
-            id="req-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Иванова Мария Сергеевна"
-            className="mt-1.5"
-            required
-          />
+          <Label>Изделие</Label>
+          <div className="mt-1.5 space-y-2">
+            <button
+              type="button"
+              onClick={() => setRequiresPainting(false)}
+              className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                !requiresPainting
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:bg-secondary/40'
+              }`}
+            >
+              <p className="text-sm font-medium text-foreground">Изделие без росписи</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Изделие уже расписано, нужен только обжиг
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setRequiresPainting(true)}
+              className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                requiresPainting
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:bg-secondary/40'
+              }`}
+            >
+              <p className="text-sm font-medium text-foreground">Изделие с росписью</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Изделие ещё не расписано — после обжига пригласим записаться на роспись
+              </p>
+            </button>
+          </div>
         </div>
       )}
+
+      <div>
+        <Label htmlFor="req-name">ФИО *</Label>
+        <Input
+          id="req-name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Иванова Мария Сергеевна"
+          className="mt-1.5"
+          required
+        />
+      </div>
       <div>
         <Label htmlFor="req-phone">Телефон *</Label>
         <Input
@@ -203,27 +210,19 @@ const ShipmentRequestForm = ({
           className="mt-1.5"
           required
         />
-        {isRepeatVisit && (
-          <p className="mt-1.5 text-xs text-muted-foreground">
-            Укажите номер телефона, который вы указывали в первый раз — по нему мы найдём вашу
-            заявку.
-          </p>
-        )}
       </div>
-      {(!isRepeatVisit || isSuzdal) && (
-        <div>
-          <Label htmlFor="req-email">Email *</Label>
-          <Input
-            id="req-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="mt-1.5"
-            required
-          />
-        </div>
-      )}
+      <div>
+        <Label htmlFor="req-email">Email *</Label>
+        <Input
+          id="req-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          className="mt-1.5"
+          required
+        />
+      </div>
 
       <div>
         <Label htmlFor="req-visit-date">Дата посещения *</Label>
