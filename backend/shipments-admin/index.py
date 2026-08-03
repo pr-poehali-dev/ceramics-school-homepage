@@ -85,25 +85,6 @@ def _photos_by_shipment(cur, ids):
     return result
 
 
-def _request_dict(r, photos_map=None):
-    photo_urls = (photos_map or {}).get(r[0]) or ([r[5]] if r[5] else [])
-    return {
-        'id': r[0],
-        'trackingNumber': r[1],
-        'customerName': r[2],
-        'customerPhone': r[3],
-        'customerEmail': r[4],
-        'photoUrl': r[5],
-        'photoUrls': photo_urls,
-        'createdAt': r[6].isoformat() if r[6] else None,
-        'visitNumber': r[7],
-        'parentId': r[8],
-        'parentTrackingNumber': r[9],
-        'visitDate': r[10].isoformat() if r[10] else None,
-        'requiresPainting': r[11],
-    }
-
-
 def _confirmed_dict(r, photos_map=None):
     created_at = r[10]
     photo_urls = (photos_map or {}).get(r[0]) or ([r[5]] if r[5] else [])
@@ -529,10 +510,9 @@ def handler(event: dict, context) -> dict:
       забрать изделие из Москвы: первое — через 10 дней после отправки на ВДНХ, затем
       каждые 10 дней, пока изделие не выдано или не истёк срок хранения (60 дней с даты
       отправки), см. _auto_send_pickup_reminders.
-    GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
-      доступно только роли 'vdnh'.
-    GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped',
-      source='client', archived_at IS NULL); ready_at показывает, отмечено ли изделие готовым
+    GET ?status=confirmed — заявки клиентов (статус 'shipped', source='client',
+      archived_at IS NULL); заявка попадает сюда сразу после отправки формы клиентом —
+      отдельного этапа подтверждения менеджером больше нет. ready_at показывает, отмечено ли изделие готовым
       к выдаче, доступно только роли 'vdnh'. Отметка «Готово» (ready_for_pickup) — последнее
       действие администратора по заявке: дальнейших шагов (никакой отдельной «Выдано») нет,
       заявка автоматически архивируется через 3 месяца. При каждом вызове автоматически
@@ -555,13 +535,6 @@ def handler(event: dict, context) -> dict:
       Excel-файла с колонками «Номер посылки», «ФИО клиента», «Телефон клиента», «Email»
       (необязательно), «Дата доставки в Москву», доступно только роли 'suzdal'.
     POST { action: 'issue', id } — пометить посылку выданной, доступно только роли 'vdnh'.
-    POST { action: 'approve_request', id, deliveredAt, requiresPainting } — подтвердить заявку
-      клиента и перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
-      requiresPainting — необязательный булев параметр: клиент указывает тип изделия ещё в форме
-      заявки, но менеджер при подтверждении может его исправить (например, если клиент ошибся
-      при подаче заявки), тогда значение перезаписывается. Если параметр не передан — требование
-      росписи остаётся таким, каким его выбрал клиент.
-    POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
     POST { action: 'update_painting', id, requiresPainting } — изменить тип изделия (с росписью
       или без) у уже подтверждённой заявки (статус 'shipped', ready_at IS NULL), доступно только
       роли 'vdnh'. Нужно, если менеджер ошибся при подтверждении. При переключении в false
@@ -866,100 +839,6 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'ok': True, 'created': created, 'skipped': skipped}, ensure_ascii=False),
                 }
 
-            if action == 'approve_request':
-                if role != 'vdnh':
-                    return {
-                        'statusCode': 403,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Подтверждать заявки может только менеджер ВДНХ'}, ensure_ascii=False),
-                    }
-
-                request_id = body.get('id')
-                delivered_at = body.get('deliveredAt') or datetime.utcnow().date().isoformat()
-                if not request_id:
-                    return {
-                        'statusCode': 400,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
-                    }
-                try:
-                    delivered_date = datetime.strptime(delivered_at[:10], '%Y-%m-%d').date()
-                except ValueError:
-                    return {
-                        'statusCode': 400,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Неверный формат даты'}, ensure_ascii=False),
-                    }
-                return_date = delivered_date + timedelta(days=30)
-
-                # requires_painting по умолчанию выбран клиентом в форме заявки, но менеджер
-                # может исправить его при подтверждении (например, если клиент ошибся при подаче
-                # заявки). confirmed_at нужна для отсчёта 16 дней до автоматического письма
-                # про роспись — при явном requiresPainting также перезаписывается.
-                requires_painting_raw = body.get('requiresPainting')
-                if requires_painting_raw is None:
-                    cur.execute(
-                        f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s, "
-                        f"confirmed_at = NOW() "
-                        f"WHERE id = %s AND status = 'pending_review'",
-                        (delivered_date, return_date, request_id),
-                    )
-                else:
-                    cur.execute(
-                        f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s, "
-                        f"confirmed_at = NOW(), requires_painting = %s "
-                        f"WHERE id = %s AND status = 'pending_review'",
-                        (delivered_date, return_date, bool(requires_painting_raw), request_id),
-                    )
-                if cur.rowcount == 0:
-                    return {
-                        'statusCode': 404,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Заявка не найдена или уже обработана'}, ensure_ascii=False),
-                    }
-                conn.commit()
-
-                return {
-                    'statusCode': 200,
-                    'headers': cors_headers,
-                    'body': json.dumps({'ok': True}, ensure_ascii=False),
-                }
-
-            if action == 'reject_request':
-                if role != 'vdnh':
-                    return {
-                        'statusCode': 403,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Отклонять заявки может только менеджер ВДНХ'}, ensure_ascii=False),
-                    }
-
-                request_id = body.get('id')
-                if not request_id:
-                    return {
-                        'statusCode': 400,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
-                    }
-
-                cur.execute(
-                    f"UPDATE {SCHEMA}.shipments SET status = 'rejected' "
-                    f"WHERE id = %s AND status = 'pending_review'",
-                    (request_id,),
-                )
-                if cur.rowcount == 0:
-                    return {
-                        'statusCode': 404,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Заявка не найдена или уже обработана'}, ensure_ascii=False),
-                    }
-                conn.commit()
-
-                return {
-                    'statusCode': 200,
-                    'headers': cors_headers,
-                    'body': json.dumps({'ok': True}, ensure_ascii=False),
-                }
-
             if action == 'update_painting':
                 if role != 'vdnh':
                     return {
@@ -1112,12 +991,6 @@ def handler(event: dict, context) -> dict:
         status_filter = params.get('status') or 'active'
         export = params.get('export') or ''
 
-        if status_filter == 'requests' and role != 'vdnh':
-            return {
-                'statusCode': 403,
-                'headers': cors_headers,
-                'body': json.dumps({'error': 'Заявки клиентов доступны только менеджеру ВДНХ'}, ensure_ascii=False),
-            }
         if status_filter == 'confirmed' and role != 'vdnh':
             return {
                 'statusCode': 403,
@@ -1135,25 +1008,6 @@ def handler(event: dict, context) -> dict:
                 'statusCode': 403,
                 'headers': cors_headers,
                 'body': json.dumps({'error': 'Экспорт доступен только менеджеру ВДНХ'}, ensure_ascii=False),
-            }
-
-        if status_filter == 'requests':
-            cur.execute(
-                f"SELECT s.id, s.tracking_number, s.customer_name, s.customer_phone, s.customer_email, "
-                f"s.photo_url, s.created_at, s.visit_number, s.parent_id, p.tracking_number, s.visit_date, "
-                f"s.requires_painting "
-                f"FROM {SCHEMA}.shipments s LEFT JOIN {SCHEMA}.shipments p ON p.id = s.parent_id "
-                f"WHERE s.status = 'pending_review' ORDER BY s.created_at DESC LIMIT 500",
-            )
-            requests_rows = cur.fetchall()
-            photos_map = _photos_by_shipment(cur, [r[0] for r in requests_rows])
-            return {
-                'statusCode': 200,
-                'headers': cors_headers,
-                'body': json.dumps(
-                    {'requests': [_request_dict(r, photos_map) for r in requests_rows], 'role': role},
-                    ensure_ascii=False,
-                ),
             }
 
         if status_filter == 'confirmed':

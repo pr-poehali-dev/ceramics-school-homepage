@@ -177,9 +177,8 @@ const ShipmentRequestForm = ({
             </>
           ) : (
             <>
-              Ваш временный номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
-              Менеджер проверит фото и подтвердит, после чего вы сможете отслеживать статус заявки
-              по номеру телефона.
+              Ваш номер заявки — <span className="font-semibold text-foreground">№ {done}</span>.
+              Заявка принята — теперь вы можете отслеживать её статус по номеру телефона.
             </>
           )}
         </p>

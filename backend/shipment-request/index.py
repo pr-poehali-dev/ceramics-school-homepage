@@ -47,12 +47,15 @@ def handler(event: dict, context) -> dict:
     город передаётся явно полем city ('moscow' или 'suzdal') — определяется на фронтенде
     автоматически по разделу сайта, без ручного выбора клиентом.
 
-    Для Москвы (city='moscow'): заявка попадает в очередь на подтверждение менеджеру ВДНХ
-    (статус 'pending_review'), после подтверждения (approve_request) становится обычной
-    отслеживаемой посылкой. Клиент сам выбирает в форме тип изделия — requiresPainting=true
-    («Изделие с росписью», ещё не расписано) или false («Изделие без росписи», нужен только
-    обжиг) — этот выбор сохраняется в requires_painting сразу при создании заявки и менеджер
-    ВДНХ при подтверждении его больше не переопределяет.
+    Для Москвы (city='moscow'): заявка сразу становится обычной отслеживаемой посылкой
+    (статус 'shipped') — отдельного этапа подтверждения менеджером ВДНХ больше нет.
+    delivered_at проставляется сегодняшним днём, return_at = delivered_at + 30 дней,
+    confirmed_at = NOW() (нужна для отсчёта 16 дней до автоматического письма про обжиг,
+    см. shipments-admin/_auto_send_painting_reminders). Клиент сам выбирает в форме тип
+    изделия — requiresPainting=true («Изделие с росписью», ещё не расписано) или false
+    («Изделие без росписи», нужен только обжиг) — этот выбор сохраняется в requires_painting.
+    Менеджер ВДНХ может поменять его позже в таблице подтверждённых заявок (см.
+    shipments-admin, action update_painting).
 
     Для Суздаля (city='suzdal'): поле requiresPainting не используется (в Суздале нет
     росписи через эту форму) — ФИО и email всегда обязательны. Заявка сразу видна менеджеру
@@ -178,17 +181,27 @@ def handler(event: dict, context) -> dict:
             # В Суздале нет этапа подтверждения менеджером ВДНХ — заявка сразу видна
             # менеджеру Суздаля со статусом "В работе", он сам решает, когда отправить в Москву.
             status = 'in_progress'
+            cur.execute(
+                f"INSERT INTO {SCHEMA}.shipments "
+                f"(tracking_number, customer_name, customer_phone, customer_email, photo_url, "
+                f"delivered_at, return_at, status, source, city, visit_date, requires_painting) "
+                f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s, %s) RETURNING id",
+                (tracking_number, customer_name, customer_phone, customer_email, photo_urls[0],
+                 today, placeholder_return, status, city, visit_date, requires_painting),
+            )
         else:
-            status = 'pending_review'
-
-        cur.execute(
-            f"INSERT INTO {SCHEMA}.shipments "
-            f"(tracking_number, customer_name, customer_phone, customer_email, photo_url, "
-            f"delivered_at, return_at, status, source, city, visit_date, requires_painting) "
-            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s, %s) RETURNING id",
-            (tracking_number, customer_name, customer_phone, customer_email, photo_urls[0],
-             today, placeholder_return, status, city, visit_date, requires_painting),
-        )
+            # Заявка из Москвы сразу становится обычной отслеживаемой посылкой (без этапа
+            # подтверждения менеджером ВДНХ). confirmed_at = NOW() нужна для отсчёта 16 дней
+            # до автоматического письма про обжиг (см. _auto_send_painting_reminders).
+            status = 'shipped'
+            cur.execute(
+                f"INSERT INTO {SCHEMA}.shipments "
+                f"(tracking_number, customer_name, customer_phone, customer_email, photo_url, "
+                f"delivered_at, return_at, status, source, city, visit_date, requires_painting, confirmed_at) "
+                f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s, %s, NOW()) RETURNING id",
+                (tracking_number, customer_name, customer_phone, customer_email, photo_urls[0],
+                 today, placeholder_return, status, city, visit_date, requires_painting),
+            )
         shipment_id = cur.fetchone()[0]
 
         for idx, url in enumerate(photo_urls):

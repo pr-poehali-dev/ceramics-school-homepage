@@ -75,24 +75,13 @@ const fmtDate = (s: string | null | undefined) => {
   }
 };
 
-const todayISO = () => new Date().toISOString().slice(0, 10);
-
 const AdminShipmentRequests = ({ token }: Props) => {
-  const [view, setView] = useState<'requests' | 'confirmed' | 'archived'>('confirmed');
-  const [requests, setRequests] = useState<ShipmentRequest[]>([]);
+  const [view, setView] = useState<'confirmed' | 'archived'>('confirmed');
   const [confirmed, setConfirmed] = useState<ShipmentRequest[]>([]);
   const [archived, setArchived] = useState<ShipmentRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [galleryPage, setGalleryPage] = useState(1);
-
-  const [approveTarget, setApproveTarget] = useState<ShipmentRequest | null>(null);
-  const [approveDate, setApproveDate] = useState(todayISO());
-  const [approveRequiresPainting, setApproveRequiresPainting] = useState(false);
-  const [approving, setApproving] = useState(false);
-
-  const [rejectTarget, setRejectTarget] = useState<ShipmentRequest | null>(null);
-  const [rejecting, setRejecting] = useState(false);
 
   const [readyTarget, setReadyTarget] = useState<ShipmentRequest | null>(null);
   const [markingReady, setMarkingReady] = useState(false);
@@ -103,7 +92,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const [search, setSearch] = useState('');
   const [galleryMode, setGalleryMode] = useState(false);
 
-  const load = async (v: 'requests' | 'confirmed' | 'archived') => {
+  const load = async (v: 'confirmed' | 'archived') => {
     setLoading(true);
     try {
       const resp = await fetch(`${func2url['shipments-admin']}?status=${v}`, {
@@ -112,13 +101,11 @@ const AdminShipmentRequests = ({ token }: Props) => {
       const data = await resp.json();
       if (!resp.ok) {
         toast({ title: data.error || 'Не удалось загрузить заявки' });
-        if (v === 'requests') setRequests([]);
-        else if (v === 'confirmed') setConfirmed([]);
+        if (v === 'confirmed') setConfirmed([]);
         else setArchived([]);
         return;
       }
-      if (v === 'requests') setRequests(data.requests || []);
-      else if (v === 'confirmed') setConfirmed(data.requests || []);
+      if (v === 'confirmed') setConfirmed(data.requests || []);
       else setArchived(data.requests || []);
       setPage(1);
     } catch {
@@ -132,70 +119,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
     load(view);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view]);
-
-  const openApprove = (r: ShipmentRequest) => {
-    setApproveTarget(r);
-    setApproveDate(todayISO());
-    setApproveRequiresPainting(!!r.requiresPainting);
-  };
-
-  const confirmApprove = async () => {
-    if (!approveTarget) return;
-    setApproving(true);
-    try {
-      const resp = await fetch(func2url['shipments-admin'], {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
-        body: JSON.stringify({
-          action: 'approve_request',
-          id: approveTarget.id,
-          deliveredAt: approveDate,
-          requiresPainting: approveRequiresPainting,
-        }),
-      });
-      const data = await resp.json();
-      if (!resp.ok) {
-        toast({ title: data.error || 'Не удалось подтвердить заявку' });
-        return;
-      }
-      toast({
-        title: 'Заявка подтверждена',
-        description: approveRequiresPainting
-          ? `№ ${approveTarget.trackingNumber} — через 16 дней клиенту автоматически придёт письмо про запись на роспись`
-          : `№ ${approveTarget.trackingNumber} добавлена в подтверждённые`,
-      });
-      setRequests((prev) => prev.filter((r) => r.id !== approveTarget.id));
-      setApproveTarget(null);
-    } catch {
-      toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
-    } finally {
-      setApproving(false);
-    }
-  };
-
-  const confirmReject = async () => {
-    if (!rejectTarget) return;
-    setRejecting(true);
-    try {
-      const resp = await fetch(func2url['shipments-admin'], {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
-        body: JSON.stringify({ action: 'reject_request', id: rejectTarget.id }),
-      });
-      const data = await resp.json();
-      if (!resp.ok) {
-        toast({ title: data.error || 'Не удалось отклонить заявку' });
-        return;
-      }
-      toast({ title: 'Заявка отклонена', description: `№ ${rejectTarget.trackingNumber}` });
-      setRequests((prev) => prev.filter((r) => r.id !== rejectTarget.id));
-      setRejectTarget(null);
-    } catch {
-      toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
-    } finally {
-      setRejecting(false);
-    }
-  };
 
   const confirmReady = async () => {
     if (!readyTarget) return;
@@ -268,12 +191,11 @@ const AdminShipmentRequests = ({ token }: Props) => {
     }
   };
 
-  const baseList = view === 'requests' ? requests : view === 'confirmed' ? confirmed : archived;
+  const baseList = view === 'confirmed' ? confirmed : archived;
   const searchDigits = search.replace(/\D/g, '');
-  const filteredList =
-    view !== 'requests' && searchDigits
-      ? baseList.filter((r) => r.customerPhone.replace(/\D/g, '').includes(searchDigits))
-      : baseList;
+  const filteredList = searchDigits
+    ? baseList.filter((r) => r.customerPhone.replace(/\D/g, '').includes(searchDigits))
+    : baseList;
 
   // Группируем повторные посещения под родительской заявкой (первое изделие -> роспись)
   const byId = new Map(baseList.map((r) => [r.id, r]));
@@ -312,14 +234,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
             Подтверждённые
           </button>
           <button
-            onClick={() => setView('requests')}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-              view === 'requests' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
-            }`}
-          >
-            Требуется подтвердить {requests.length ? `(${requests.length})` : ''}
-          </button>
-          <button
             onClick={() => setView('archived')}
             className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               view === 'archived' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
@@ -334,11 +248,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
       </div>
 
       <p className="mt-3 text-sm text-muted-foreground">
-        {view === 'requests'
-          ? 'Заявки, которые клиенты отправили самостоятельно со страницы отслеживания. Проверьте фото и подтвердите.'
-          : view === 'confirmed'
-            ? 'Заявки клиентов, которые уже подтверждены. Когда изделие пройдёт обжиг, нажмите «Готово» — клиенту придёт письмо с адресом и часами работы для получения.'
-            : 'Заявки, отмеченные готовыми к выдаче более 3 месяцев назад, переносятся сюда автоматически.'}
+        {view === 'confirmed'
+          ? 'Заявки клиентов. Когда изделие пройдёт обжиг, нажмите «Готово» — клиенту придёт письмо с адресом и часами работы для получения.'
+          : 'Заявки, отмеченные готовыми к выдаче более 3 месяцев назад, переносятся сюда автоматически.'}
       </p>
 
       {view === 'confirmed' && (
@@ -361,7 +273,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
         </Button>
       )}
 
-      {!(view === 'confirmed' && galleryMode) && view !== 'requests' && (
+      {!(view === 'confirmed' && galleryMode) && (
         <div className="mt-3 max-w-xs">
           <Input
             value={search}
@@ -470,11 +382,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
         })()
       ) : list.length === 0 ? (
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          {view === 'requests'
-            ? 'Новых заявок нет.'
-            : view === 'confirmed'
-              ? 'Подтверждённых заявок пока нет.'
-              : 'Архив пуст.'}
+          {view === 'confirmed'
+            ? 'Подтверждённых заявок пока нет.'
+            : 'Архив пуст.'}
         </p>
       ) : (
         <div className="mt-4 overflow-hidden rounded-2xl border border-border">
@@ -485,12 +395,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                 <SortableTableHead label="№ заявки" sortKey="trackingNumber" sort={sort} onSort={toggleSort} />
                 <SortableTableHead label="Клиент" sortKey="customerName" sort={sort} onSort={toggleSort} />
                 <TableHead>Контакты</TableHead>
-                {view === 'requests' ? (
-                  <>
-                    <SortableTableHead label="Заявка от" sortKey="createdAt" sort={sort} onSort={toggleSort} />
-                    <TableHead>Дата посещения</TableHead>
-                  </>
-                ) : view === 'confirmed' ? (
+                {view === 'confirmed' ? (
                   <>
                     <SortableTableHead label="Заявка создана" sortKey="createdAt" sort={sort} onSort={toggleSort} />
                     <TableHead>Дата посещения</TableHead>
@@ -547,11 +452,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
                               Посещение {row.visitNumber}
                             </span>
                           )}
-                          {view === 'requests' && row.requiresPainting && (
-                            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                              С росписью
-                            </span>
-                          )}
                         </div>
                       </TableCell>
                       <TableCell>{row.customerName}</TableCell>
@@ -559,14 +459,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                         <p>{row.customerPhone}</p>
                         <p>{row.customerEmail}</p>
                       </TableCell>
-                      {view === 'requests' ? (
-                        <>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {row.createdAt ? fmtDateTime(row.createdAt) : '—'}
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">{fmtDate(row.visitDate)}</TableCell>
-                        </>
-                      ) : view === 'confirmed' ? (
+                      {view === 'confirmed' ? (
                         <>
                           <TableCell className="text-sm text-muted-foreground">
                             {row.createdAt ? fmtDateTime(row.createdAt) : '—'}
@@ -615,21 +508,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                         </>
                       )}
                       <TableCell className="text-right">
-                        {view === 'requests' ? (
-                          <div className="flex justify-end gap-2">
-                            <Button size="sm" className="rounded-full" onClick={() => openApprove(row)}>
-                              <Icon name="Check" size={14} className="mr-1.5" /> Подтвердить
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="rounded-full"
-                              onClick={() => setRejectTarget(row)}
-                            >
-                              <Icon name="X" size={14} className="mr-1.5" /> Отклонить
-                            </Button>
-                          </div>
-                        ) : view === 'confirmed' ? (
+                        {view === 'confirmed' ? (
                           !row.readyAt && row.requiresPainting ? (
                             <Button size="sm" className="rounded-full" onClick={() => setReadyTarget(row)}>
                               <Icon name="Check" size={14} className="mr-1.5" /> Готово
@@ -671,77 +550,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
           </Button>
         </div>
       )}
-
-      {/* ПОДТВЕРЖДЕНИЕ */}
-      <AlertDialog open={!!approveTarget} onOpenChange={(v) => !v && setApproveTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Подтвердить заявку?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Заявка № {approveTarget?.trackingNumber} клиента {approveTarget?.customerName}.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">
-              Клиент выбрал это в заявке. Если он ошибся — поменяйте тип изделия перед подтверждением.
-            </p>
-            <button
-              type="button"
-              onClick={() => setApproveRequiresPainting(false)}
-              className={`w-full rounded-xl border p-3 text-left transition-colors ${
-                !approveRequiresPainting ? 'border-primary bg-primary/5' : 'border-border hover:bg-secondary/40'
-              }`}
-            >
-              <p className="text-sm font-medium text-foreground">Изделие без росписи</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Кнопки «Готово» не будет — через 16 дней после подтверждения клиенту
-                автоматически придёт письмо, что изделие прошло обжиг и можно забрать
-                либо записаться на роспись.
-              </p>
-            </button>
-            <button
-              type="button"
-              onClick={() => setApproveRequiresPainting(true)}
-              className={`w-full rounded-xl border p-3 text-left transition-colors ${
-                approveRequiresPainting ? 'border-primary bg-primary/5' : 'border-border hover:bg-secondary/40'
-              }`}
-            >
-              <p className="text-sm font-medium text-foreground">Изделие с росписью</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Изделие ещё не расписано — появится кнопка «Готово», которую нажмёте
-                после обжига, и клиенту сразу придёт письмо, что изделие готово к выдаче.
-              </p>
-            </button>
-          </div>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmApprove} disabled={approving}>
-              {approving ? 'Подтверждаем…' : 'Подтвердить'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* ОТКЛОНЕНИЕ */}
-      <AlertDialog open={!!rejectTarget} onOpenChange={(v) => !v && setRejectTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Отклонить заявку?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Заявка № {rejectTarget?.trackingNumber} клиента {rejectTarget?.customerName} будет
-              отклонена и не появится в отслеживании. Отменить это действие нельзя.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmReject} disabled={rejecting}>
-              {rejecting ? 'Отклоняем…' : 'Отклонить'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* ГОТОВНОСТЬ К ВЫДАЧЕ */}
       <AlertDialog open={!!readyTarget} onOpenChange={(v) => !v && setReadyTarget(null)}>
