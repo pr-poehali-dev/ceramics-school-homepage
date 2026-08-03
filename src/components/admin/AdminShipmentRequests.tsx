@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import SortableTableHead from './SortableTableHead';
 import PhotoCarousel from './PhotoCarousel';
@@ -93,6 +94,8 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
   const [readyTarget, setReadyTarget] = useState<ShipmentRequest | null>(null);
   const [markingReady, setMarkingReady] = useState(false);
+
+  const [updatingPaintingId, setUpdatingPaintingId] = useState<number | null>(null);
 
   const [photoPreview, setPhotoPreview] = useState<{ photos: string[]; startIndex: number } | null>(null);
   const [search, setSearch] = useState('');
@@ -229,6 +232,37 @@ const AdminShipmentRequests = ({ token }: Props) => {
       toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
     } finally {
       setMarkingReady(false);
+    }
+  };
+
+  const togglePainting = async (row: ShipmentRequest, requiresPainting: boolean) => {
+    setUpdatingPaintingId(row.id);
+    try {
+      const resp = await fetch(func2url['shipments-admin'], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+        body: JSON.stringify({ action: 'update_painting', id: row.id, requiresPainting }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        toast({ title: data.error || 'Не удалось изменить тип изделия' });
+        return;
+      }
+      toast({
+        title: requiresPainting ? 'Изделие переключено на «с росписью»' : 'Изделие переключено на «без росписи»',
+        description: `№ ${row.trackingNumber}`,
+      });
+      setConfirmed((prev) =>
+        prev.map((r) =>
+          r.id === row.id
+            ? { ...r, requiresPainting, paintingReminderSentAt: requiresPainting ? r.paintingReminderSentAt : null }
+            : r,
+        ),
+      );
+    } catch {
+      toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
+    } finally {
+      setUpdatingPaintingId(null);
     }
   };
 
@@ -426,6 +460,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                     <SortableTableHead label="Заявка создана" sortKey="createdAt" sort={sort} onSort={toggleSort} />
                     <TableHead>Дата посещения</TableHead>
                     <SortableTableHead label="Хранение до" sortKey="storageUntil" sort={sort} onSort={toggleSort} />
+                    <TableHead>Роспись</TableHead>
                     <TableHead>Статус</TableHead>
                   </>
                 ) : (
@@ -503,6 +538,19 @@ const AdminShipmentRequests = ({ token }: Props) => {
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">{fmtDate(row.visitDate)}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">{fmtDate(row.storageUntil)}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Switch
+                                checked={!!row.requiresPainting}
+                                disabled={!!row.readyAt || updatingPaintingId === row.id}
+                                onCheckedChange={(checked) => togglePainting(row, checked)}
+                                aria-label="Изделие с росписью"
+                              />
+                              <span className="text-xs text-muted-foreground">
+                                {row.requiresPainting ? 'С росписью' : 'Без росписи'}
+                              </span>
+                            </div>
+                          </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             {row.readyAt
                               ? 'Готово к выдаче'

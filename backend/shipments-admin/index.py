@@ -562,6 +562,13 @@ def handler(event: dict, context) -> dict:
       при подаче заявки), тогда значение перезаписывается. Если параметр не передан — требование
       росписи остаётся таким, каким его выбрал клиент.
     POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
+    POST { action: 'update_painting', id, requiresPainting } — изменить тип изделия (с росписью
+      или без) у уже подтверждённой заявки (статус 'shipped', ready_at IS NULL), доступно только
+      роли 'vdnh'. Нужно, если менеджер ошибся при подтверждении. При переключении в false
+      (без росписи) painting_reminder_sent_at сбрасывается, чтобы автописьмо через 16 дней
+      отправилось корректно от текущего момента (confirmed_at не трогаем — счётчик 16 дней
+      остаётся от даты подтверждения). Менять нельзя, если изделие уже отмечено готовым
+      (ready_at IS NOT NULL) — иначе будет противоречить уже отправленному клиенту письму.
     POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client',
       requires_painting=true) готовой к выдаче после обжига (ready_at=NOW()) и отправить
       клиенту email-уведомление с адресом, часами работы студии и сроком хранения (60
@@ -944,6 +951,57 @@ def handler(event: dict, context) -> dict:
                         'statusCode': 404,
                         'headers': cors_headers,
                         'body': json.dumps({'error': 'Заявка не найдена или уже обработана'}, ensure_ascii=False),
+                    }
+                conn.commit()
+
+                return {
+                    'statusCode': 200,
+                    'headers': cors_headers,
+                    'body': json.dumps({'ok': True}, ensure_ascii=False),
+                }
+
+            if action == 'update_painting':
+                if role != 'vdnh':
+                    return {
+                        'statusCode': 403,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Изменять тип изделия может только менеджер ВДНХ'}, ensure_ascii=False),
+                    }
+
+                request_id = body.get('id')
+                requires_painting_raw = body.get('requiresPainting')
+                if not request_id or requires_painting_raw is None:
+                    return {
+                        'statusCode': 400,
+                        'headers': cors_headers,
+                        'body': json.dumps({'error': 'Не указана заявка или тип изделия'}, ensure_ascii=False),
+                    }
+
+                new_requires_painting = bool(requires_painting_raw)
+
+                if new_requires_painting:
+                    cur.execute(
+                        f"UPDATE {SCHEMA}.shipments SET requires_painting = %s "
+                        f"WHERE id = %s AND source = 'client' AND status = 'shipped' AND ready_at IS NULL",
+                        (new_requires_painting, request_id),
+                    )
+                else:
+                    # Сбрасываем painting_reminder_sent_at, чтобы автописьмо про обжиг
+                    # корректно ушло через 16 дней после confirmed_at, если его ещё не было.
+                    cur.execute(
+                        f"UPDATE {SCHEMA}.shipments SET requires_painting = %s, painting_reminder_sent_at = NULL "
+                        f"WHERE id = %s AND source = 'client' AND status = 'shipped' AND ready_at IS NULL",
+                        (new_requires_painting, request_id),
+                    )
+
+                if cur.rowcount == 0:
+                    return {
+                        'statusCode': 404,
+                        'headers': cors_headers,
+                        'body': json.dumps(
+                            {'error': 'Заявка не найдена, либо изделие уже отмечено готовым'},
+                            ensure_ascii=False,
+                        ),
                     }
                 conn.commit()
 
