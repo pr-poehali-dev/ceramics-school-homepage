@@ -75,7 +75,12 @@ def handler(event: dict, context) -> dict:
     tracking_number генерируется в формате ДДММ-XXXX (дата создания + последние 4 цифры
     телефона клиента, например 3107-9771).
     visitDate — дата посещения мастер-класса/студии, указывается клиентом обязательно.
-    POST { customerName, customerPhone, customerEmail, photoData (base64), contentType,
+    Фото: можно передать несколько (до 10) — массив photos: [{photoData (base64), contentType}].
+    Для обратной совместимости также поддерживается одиночный photoData/contentType на верхнем
+    уровне body (эквивалентно photos с одним элементом). Каждое фото загружается в S3, все URL
+    сохраняются в таблице shipment_photos (shipment_id, photo_url, sort_order) — первое фото
+    также дублируется в shipments.photo_url для обратной совместимости со старым кодом.
+    POST { customerName, customerPhone, customerEmail, photos: [{photoData, contentType}],
            requiresPainting, visitDate, city }
     Args: event с httpMethod, body
           context — объект с request_id
@@ -98,9 +103,23 @@ def handler(event: dict, context) -> dict:
     customer_name = (body.get('customerName') or '').strip()
     customer_phone = (body.get('customerPhone') or '').strip()
     customer_email = (body.get('customerEmail') or '').strip()
-    photo_data = body.get('photoData') or ''
-    content_type = body.get('contentType') or 'image/jpeg'
     visit_date_raw = (body.get('visitDate') or '').strip()
+
+    photos = body.get('photos')
+    if not isinstance(photos, list) or not photos:
+        # Обратная совместимость со старым форматом с одним фото
+        single_photo_data = body.get('photoData') or ''
+        if single_photo_data:
+            photos = [{'photoData': single_photo_data, 'contentType': body.get('contentType') or 'image/jpeg'}]
+        else:
+            photos = []
+
+    if len(photos) > 10:
+        return {
+            'statusCode': 400,
+            'headers': _cors(),
+            'body': json.dumps({'error': 'Можно приложить не более 10 фото'}, ensure_ascii=False),
+        }
 
     if not customer_name or not customer_email:
         return {
@@ -132,41 +151,55 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Укажите корректный номер телефона'}, ensure_ascii=False),
         }
 
-    if not photo_data:
+    if not photos:
         return {
             'statusCode': 400,
             'headers': _cors(),
-            'body': json.dumps({'error': 'Приложите фото изделия'}, ensure_ascii=False),
+            'body': json.dumps({'error': 'Приложите хотя бы одно фото изделия'}, ensure_ascii=False),
         }
 
-    if content_type not in ALLOWED_TYPES:
+    decoded_photos = []
+    for photo in photos:
+        photo_data = (photo.get('photoData') if isinstance(photo, dict) else None) or ''
+        content_type = (photo.get('contentType') if isinstance(photo, dict) else None) or 'image/jpeg'
+
+        if not photo_data:
+            continue
+
+        if content_type not in ALLOWED_TYPES:
+            return {
+                'statusCode': 400,
+                'headers': _cors(),
+                'body': json.dumps({'error': 'Недопустимый формат фото (используйте JPG, PNG или WEBP)'}, ensure_ascii=False),
+            }
+
+        if ',' in photo_data:
+            photo_data = photo_data.split(',', 1)[1]
+
+        try:
+            raw = base64.b64decode(photo_data)
+        except Exception:
+            return {
+                'statusCode': 400,
+                'headers': _cors(),
+                'body': json.dumps({'error': 'Некорректные данные фото'}, ensure_ascii=False),
+            }
+
+        if len(raw) > MAX_SIZE:
+            return {
+                'statusCode': 400,
+                'headers': _cors(),
+                'body': json.dumps({'error': 'Каждое фото должно быть не больше 8МБ'}, ensure_ascii=False),
+            }
+
+        decoded_photos.append((raw, content_type))
+
+    if not decoded_photos:
         return {
             'statusCode': 400,
             'headers': _cors(),
-            'body': json.dumps({'error': 'Недопустимый формат фото (используйте JPG, PNG или WEBP)'}, ensure_ascii=False),
+            'body': json.dumps({'error': 'Приложите хотя бы одно фото изделия'}, ensure_ascii=False),
         }
-
-    if ',' in photo_data:
-        photo_data = photo_data.split(',', 1)[1]
-
-    try:
-        raw = base64.b64decode(photo_data)
-    except Exception:
-        return {
-            'statusCode': 400,
-            'headers': _cors(),
-            'body': json.dumps({'error': 'Некорректные данные фото'}, ensure_ascii=False),
-        }
-
-    if len(raw) > MAX_SIZE:
-        return {
-            'statusCode': 400,
-            'headers': _cors(),
-            'body': json.dumps({'error': 'Фото больше 8МБ'}, ensure_ascii=False),
-        }
-
-    ext = ALLOWED_TYPES[content_type]
-    key = f'shipment-requests/{secrets.token_hex(12)}.{ext}'
 
     access_key = os.environ['AWS_ACCESS_KEY_ID']
     try:
@@ -176,7 +209,6 @@ def handler(event: dict, context) -> dict:
             aws_access_key_id=access_key,
             aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
         )
-        s3.put_object(Bucket='files', Key=key, Body=raw, ContentType=content_type)
     except Exception:
         return {
             'statusCode': 502,
@@ -186,7 +218,23 @@ def handler(event: dict, context) -> dict:
                 ensure_ascii=False,
             ),
         }
-    photo_url = f'https://cdn.poehali.dev/projects/{access_key}/bucket/{key}'
+
+    photo_urls = []
+    for raw, content_type in decoded_photos:
+        ext = ALLOWED_TYPES[content_type]
+        key = f'shipment-requests/{secrets.token_hex(12)}.{ext}'
+        try:
+            s3.put_object(Bucket='files', Key=key, Body=raw, ContentType=content_type)
+        except Exception:
+            return {
+                'statusCode': 502,
+                'headers': _cors(),
+                'body': json.dumps(
+                    {'error': 'Не удалось сохранить фото на сервере. Попробуйте отправить заявку ещё раз через пару минут.'},
+                    ensure_ascii=False,
+                ),
+            }
+        photo_urls.append(f'https://cdn.poehali.dev/projects/{access_key}/bucket/{key}')
 
     today = datetime.utcnow().date()
     placeholder_return = today + timedelta(days=30)
@@ -224,10 +272,18 @@ def handler(event: dict, context) -> dict:
             f"INSERT INTO {SCHEMA}.shipments "
             f"(tracking_number, customer_name, customer_phone, customer_email, photo_url, "
             f"delivered_at, return_at, status, source, city, visit_date, requires_painting) "
-            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s, %s)",
-            (tracking_number, customer_name, customer_phone, customer_email, photo_url,
+            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'client', %s, %s, %s) RETURNING id",
+            (tracking_number, customer_name, customer_phone, customer_email, photo_urls[0],
              today, placeholder_return, status, city, visit_date, requires_painting),
         )
+        shipment_id = cur.fetchone()[0]
+
+        for idx, url in enumerate(photo_urls):
+            cur.execute(
+                f"INSERT INTO {SCHEMA}.shipment_photos (shipment_id, photo_url, sort_order) "
+                f"VALUES (%s, %s, %s)",
+                (shipment_id, url, idx),
+            )
         conn.commit()
 
         return {

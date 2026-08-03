@@ -69,7 +69,24 @@ def _suzdal_shipment_dict(r):
     }
 
 
-def _request_dict(r):
+def _photos_by_shipment(cur, ids):
+    """Возвращает {shipment_id: [photo_url, ...]} отсортированные по sort_order —
+    для отображения нескольких фото одной заявки (до 10 штук)."""
+    if not ids:
+        return {}
+    cur.execute(
+        f"SELECT shipment_id, photo_url FROM {SCHEMA}.shipment_photos "
+        f"WHERE shipment_id = ANY(%s) ORDER BY shipment_id, sort_order",
+        (list(ids),),
+    )
+    result: dict = {}
+    for shipment_id, url in cur.fetchall():
+        result.setdefault(shipment_id, []).append(url)
+    return result
+
+
+def _request_dict(r, photos_map=None):
+    photo_urls = (photos_map or {}).get(r[0]) or ([r[5]] if r[5] else [])
     return {
         'id': r[0],
         'trackingNumber': r[1],
@@ -77,6 +94,7 @@ def _request_dict(r):
         'customerPhone': r[3],
         'customerEmail': r[4],
         'photoUrl': r[5],
+        'photoUrls': photo_urls,
         'createdAt': r[6].isoformat() if r[6] else None,
         'visitNumber': r[7],
         'parentId': r[8],
@@ -86,8 +104,9 @@ def _request_dict(r):
     }
 
 
-def _confirmed_dict(r):
+def _confirmed_dict(r, photos_map=None):
     created_at = r[10]
+    photo_urls = (photos_map or {}).get(r[0]) or ([r[5]] if r[5] else [])
     return {
         'id': r[0],
         'trackingNumber': r[1],
@@ -95,6 +114,7 @@ def _confirmed_dict(r):
         'customerPhone': r[3],
         'customerEmail': r[4],
         'photoUrl': r[5],
+        'photoUrls': photo_urls,
         'deliveredAt': r[6].isoformat() if r[6] else None,
         'returnAt': r[7].isoformat() if r[7] else None,
         'status': r[8],
@@ -110,8 +130,9 @@ def _confirmed_dict(r):
     }
 
 
-def _archived_dict(r):
+def _archived_dict(r, photos_map=None):
     created_at = r[10]
+    photo_urls = (photos_map or {}).get(r[0]) or ([r[5]] if r[5] else [])
     return {
         'id': r[0],
         'trackingNumber': r[1],
@@ -119,6 +140,7 @@ def _archived_dict(r):
         'customerPhone': r[3],
         'customerEmail': r[4],
         'photoUrl': r[5],
+        'photoUrls': photo_urls,
         'deliveredAt': r[6].isoformat() if r[6] else None,
         'returnAt': r[7].isoformat() if r[7] else None,
         'status': r[8],
@@ -1055,10 +1077,14 @@ def handler(event: dict, context) -> dict:
                 f"WHERE s.status = 'pending_review' ORDER BY s.created_at DESC LIMIT 500",
             )
             requests_rows = cur.fetchall()
+            photos_map = _photos_by_shipment(cur, [r[0] for r in requests_rows])
             return {
                 'statusCode': 200,
                 'headers': cors_headers,
-                'body': json.dumps({'requests': [_request_dict(r) for r in requests_rows], 'role': role}, ensure_ascii=False),
+                'body': json.dumps(
+                    {'requests': [_request_dict(r, photos_map) for r in requests_rows], 'role': role},
+                    ensure_ascii=False,
+                ),
             }
 
         if status_filter == 'confirmed':
@@ -1076,10 +1102,14 @@ def handler(event: dict, context) -> dict:
                 f"ORDER BY s.created_at DESC LIMIT 500",
             )
             confirmed_rows = cur.fetchall()
+            photos_map = _photos_by_shipment(cur, [r[0] for r in confirmed_rows])
             return {
                 'statusCode': 200,
                 'headers': cors_headers,
-                'body': json.dumps({'requests': [_confirmed_dict(r) for r in confirmed_rows], 'role': role}, ensure_ascii=False),
+                'body': json.dumps(
+                    {'requests': [_confirmed_dict(r, photos_map) for r in confirmed_rows], 'role': role},
+                    ensure_ascii=False,
+                ),
             }
 
         if status_filter == 'archived':
@@ -1092,10 +1122,14 @@ def handler(event: dict, context) -> dict:
                 f"ORDER BY archived_at DESC LIMIT 500",
             )
             archived_rows = cur.fetchall()
+            photos_map = _photos_by_shipment(cur, [r[0] for r in archived_rows])
             return {
                 'statusCode': 200,
                 'headers': cors_headers,
-                'body': json.dumps({'requests': [_archived_dict(r) for r in archived_rows], 'role': role}, ensure_ascii=False),
+                'body': json.dumps(
+                    {'requests': [_archived_dict(r, photos_map) for r in archived_rows], 'role': role},
+                    ensure_ascii=False,
+                ),
             }
 
         if status_filter == 'closed':

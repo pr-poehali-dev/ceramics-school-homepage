@@ -15,6 +15,7 @@ import {
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import SortableTableHead from './SortableTableHead';
+import PhotoCarousel from './PhotoCarousel';
 import { useSortableData } from '@/hooks/useSortableData';
 import { toast } from '@/hooks/use-toast';
 import func2url from '../../../backend/func2url.json';
@@ -26,6 +27,7 @@ interface ShipmentRequest {
   customerPhone: string;
   customerEmail: string;
   photoUrl: string;
+  photoUrls?: string[];
   createdAt?: string;
   deliveredAt?: string | null;
   returnAt?: string | null;
@@ -92,7 +94,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const [readyTarget, setReadyTarget] = useState<ShipmentRequest | null>(null);
   const [markingReady, setMarkingReady] = useState(false);
 
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<{ photos: string[]; startIndex: number } | null>(null);
   const [search, setSearch] = useState('');
   const [galleryMode, setGalleryMode] = useState(false);
 
@@ -359,17 +361,14 @@ const AdminShipmentRequests = ({ token }: Props) => {
                     key={item.id}
                     className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
                   >
-                    <button
-                      type="button"
-                      onClick={() => setPhotoPreview(item.photoUrl)}
-                      className="block w-full"
-                    >
-                      <img
-                        src={item.photoUrl}
-                        alt="Фото изделия"
-                        className="aspect-square w-full object-cover"
-                      />
-                    </button>
+                    <PhotoCarousel
+                      photos={item.photoUrls?.length ? item.photoUrls : [item.photoUrl]}
+                      className="aspect-square w-full"
+                      onPhotoClick={(url) => {
+                        const photos = item.photoUrls?.length ? item.photoUrls : [item.photoUrl];
+                        setPhotoPreview({ photos, startIndex: Math.max(0, photos.indexOf(url)) });
+                      }}
+                    />
                     <div className="p-3">
                       <p className="font-medium">
                         № {item.trackingNumber}
@@ -449,14 +448,24 @@ const AdminShipmentRequests = ({ token }: Props) => {
                       <TableCell>
                         <button
                           type="button"
-                          onClick={() => setPhotoPreview(row.photoUrl)}
-                          className={`block overflow-hidden rounded-lg border border-border ${isChild ? 'ml-4' : ''}`}
+                          onClick={() =>
+                            setPhotoPreview({
+                              photos: row.photoUrls?.length ? row.photoUrls : [row.photoUrl],
+                              startIndex: 0,
+                            })
+                          }
+                          className={`relative block overflow-hidden rounded-lg border border-border ${isChild ? 'ml-4' : ''}`}
                         >
                           <img
                             src={row.photoUrl}
                             alt="Фото изделия"
                             className="h-14 w-14 object-cover transition-transform hover:scale-105"
                           />
+                          {(row.photoUrls?.length || 0) > 1 && (
+                            <span className="absolute bottom-0 right-0 rounded-tl-md bg-background/90 px-1 text-[10px] font-medium text-foreground">
+                              {row.photoUrls!.length} фото
+                            </span>
+                          )}
                         </button>
                       </TableCell>
                       <TableCell className="font-medium">
@@ -672,10 +681,58 @@ const AdminShipmentRequests = ({ token }: Props) => {
       <Dialog open={!!photoPreview} onOpenChange={(v) => !v && setPhotoPreview(null)}>
         <DialogContent className="max-w-2xl">
           {photoPreview && (
-            <img src={photoPreview} alt="Фото изделия" className="max-h-[80vh] w-full rounded-lg object-contain" />
+            <FullscreenPhotoViewer photos={photoPreview.photos} startIndex={photoPreview.startIndex} />
           )}
         </DialogContent>
       </Dialog>
+    </div>
+  );
+};
+
+const FullscreenPhotoViewer = ({ photos, startIndex }: { photos: string[]; startIndex: number }) => {
+  const [index, setIndex] = useState(startIndex);
+  const safeIndex = Math.min(index, photos.length - 1);
+
+  return (
+    <div className="relative">
+      <img
+        src={photos[safeIndex]}
+        alt="Фото изделия"
+        className="max-h-[80vh] w-full rounded-lg object-contain"
+      />
+      {photos.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={() => setIndex((i) => (i - 1 + photos.length) % photos.length)}
+            className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
+            aria-label="Предыдущее фото"
+          >
+            <Icon name="ChevronLeft" size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIndex((i) => (i + 1) % photos.length)}
+            className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
+            aria-label="Следующее фото"
+          >
+            <Icon name="ChevronRight" size={18} />
+          </button>
+          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
+            {photos.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setIndex(i)}
+                className={`h-2 w-2 rounded-full transition-colors ${
+                  i === safeIndex ? 'bg-white' : 'bg-white/50'
+                }`}
+                aria-label={`Фото ${i + 1}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

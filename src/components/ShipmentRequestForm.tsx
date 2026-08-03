@@ -11,6 +11,12 @@ import func2url from '../../backend/func2url.json';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 const ALLOWED = ['image/png', 'image/jpeg', 'image/webp'];
+const MAX_PHOTOS = 10;
+
+interface PhotoItem {
+  file: File;
+  preview: string;
+}
 
 interface Props {
   photoHint?: string;
@@ -29,8 +35,7 @@ const ShipmentRequestForm = ({
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [visitDate, setVisitDate] = useState('');
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<string | null>(null);
 
@@ -45,41 +50,62 @@ const ShipmentRequestForm = ({
     setPhone('');
     setEmail('');
     setVisitDate('');
-    setPhoto(null);
-    setPhotoPreview(null);
+    setPhotos([]);
     setDone(null);
     setRequiresPainting(false);
   };
 
-  const handlePhotoPick = (file: File | undefined) => {
-    if (!file) return;
-    if (!ALLOWED.includes(file.type)) {
-      toast({ title: 'Неверный формат фото', description: 'Загрузите JPG, PNG или WEBP.' });
+  const handlePhotoPick = (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
+    const files = Array.from(fileList);
+
+    if (photos.length + files.length > MAX_PHOTOS) {
+      toast({
+        title: 'Слишком много фото',
+        description: `Можно приложить не более ${MAX_PHOTOS} фото.`,
+      });
       return;
     }
-    if (file.size > MAX_SIZE) {
-      toast({ title: 'Фото слишком большое', description: 'Максимум 20 МБ.' });
-      return;
+
+    const accepted: PhotoItem[] = [];
+    for (const file of files) {
+      if (!ALLOWED.includes(file.type)) {
+        toast({ title: 'Неверный формат фото', description: 'Загрузите JPG, PNG или WEBP.' });
+        continue;
+      }
+      if (file.size > MAX_SIZE) {
+        toast({ title: 'Фото слишком большое', description: 'Максимум 20 МБ.' });
+        continue;
+      }
+      accepted.push({ file, preview: URL.createObjectURL(file) });
     }
-    setPhoto(file);
-    setPhotoPreview(URL.createObjectURL(file));
+    if (accepted.length) {
+      setPhotos((prev) => [...prev, ...accepted]);
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
   const isValid =
     name.trim().length > 2 &&
     phone.replace(/\D/g, '').length === 11 &&
     /\S+@\S+\.\S+/.test(email) &&
-    !!photo &&
+    photos.length > 0 &&
     !!visitDate;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid || !photo) return;
+    if (!isValid || photos.length === 0) return;
     setSubmitting(true);
     try {
-      let dataUrl: string;
+      const compressed: { photoData: string; contentType: string }[] = [];
       try {
-        ({ dataUrl } = await compressImage(photo));
+        for (const p of photos) {
+          const { dataUrl } = await compressImage(p.file);
+          compressed.push({ photoData: dataUrl, contentType: 'image/jpeg' });
+        }
       } catch (err) {
         toast({ title: 'Не удалось обработать фото', description: describeError(err) });
         return;
@@ -95,8 +121,7 @@ const ShipmentRequestForm = ({
             customerPhone: phone,
             customerEmail: email.trim(),
             visitDate,
-            photoData: dataUrl,
-            contentType: 'image/jpeg',
+            photos: compressed,
             city,
             requiresPainting: !isSuzdal && requiresPainting,
           }),
@@ -237,47 +262,51 @@ const ShipmentRequestForm = ({
       </div>
 
       <div>
-        <Label>Фото изделия *</Label>
+        <Label>Фото изделия * (до {MAX_PHOTOS})</Label>
         <p className="mt-0.5 text-xs text-muted-foreground">{photoHint}</p>
         <input
           ref={fileInputRef}
           type="file"
           accept="image/png,image/jpeg,image/webp"
+          multiple
           className="hidden"
-          onChange={(e) => handlePhotoPick(e.target.files?.[0])}
+          onChange={(e) => {
+            handlePhotoPick(e.target.files);
+            e.target.value = '';
+          }}
         />
 
-        {photoPreview ? (
-          <div className="relative mt-2">
-            <img
-              src={photoPreview}
-              alt="Фото изделия"
-              className="h-48 w-full rounded-xl object-cover"
-            />
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {photos.map((p, i) => (
+            <div key={p.preview} className="relative aspect-square">
+              <img
+                src={p.preview}
+                alt={`Фото изделия ${i + 1}`}
+                className="h-full w-full rounded-xl object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => removePhoto(i)}
+                className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
+                aria-label="Удалить фото"
+              >
+                <Icon name="X" size={14} />
+              </button>
+            </div>
+          ))}
+          {photos.length < MAX_PHOTOS && (
             <button
               type="button"
-              onClick={() => {
-                setPhoto(null);
-                setPhotoPreview(null);
-              }}
-              className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
-              aria-label="Удалить фото"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
             >
-              <Icon name="X" size={16} />
+              <Icon name="Camera" size={22} />
+              <span className="px-2 text-center text-xs font-medium leading-snug">
+                {photos.length === 0 ? 'Добавить фото' : 'Ещё фото'}
+              </span>
             </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="mt-2 flex h-32 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border px-3 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
-          >
-            <Icon name="Camera" size={26} />
-            <span className="text-center text-sm font-medium leading-snug">
-              Сделать фото или выбрать из галереи
-            </span>
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
       <Button
