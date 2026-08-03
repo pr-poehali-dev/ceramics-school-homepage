@@ -83,6 +83,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
   const [approveTarget, setApproveTarget] = useState<ShipmentRequest | null>(null);
   const [approveDate, setApproveDate] = useState(todayISO());
+  const [approveRequiresPainting, setApproveRequiresPainting] = useState(false);
   const [approving, setApproving] = useState(false);
 
   const [rejectTarget, setRejectTarget] = useState<ShipmentRequest | null>(null);
@@ -128,6 +129,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const openApprove = (r: ShipmentRequest) => {
     setApproveTarget(r);
     setApproveDate(todayISO());
+    setApproveRequiresPainting(!!r.requiresPainting);
   };
 
   const confirmApprove = async () => {
@@ -141,6 +143,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
           action: 'approve_request',
           id: approveTarget.id,
           deliveredAt: approveDate,
+          requiresPainting: approveRequiresPainting,
         }),
       });
       const data = await resp.json();
@@ -150,7 +153,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
       }
       toast({
         title: 'Заявка подтверждена',
-        description: approveTarget.requiresPainting
+        description: approveRequiresPainting
           ? `№ ${approveTarget.trackingNumber} — через 16 дней клиенту автоматически придёт письмо про запись на роспись`
           : `№ ${approveTarget.trackingNumber} добавлена в подтверждённые`,
       });
@@ -587,19 +590,35 @@ const AdminShipmentRequests = ({ token }: Props) => {
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          <div
-            className={`rounded-xl border p-3 ${
-              approveTarget?.requiresPainting ? 'border-primary bg-primary/5' : 'border-border bg-secondary/30'
-            }`}
-          >
-            <p className="text-sm font-medium text-foreground">
-              {approveTarget?.requiresPainting ? 'Изделие с росписью' : 'Изделие без росписи'}
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Клиент выбрал это в заявке. Если он ошибся — поменяйте тип изделия перед подтверждением.
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {approveTarget?.requiresPainting
-                ? 'Клиент выбрал это в заявке. Изделие ещё не расписано — кнопки «Готово» не будет, через 16 дней клиенту автоматически придёт письмо с приглашением записаться на роспись.'
-                : 'Клиент выбрал это в заявке. Изделие полностью готово — появится кнопка «Готово», которую нажмёте после обжига.'}
-            </p>
+            <button
+              type="button"
+              onClick={() => setApproveRequiresPainting(false)}
+              className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                !approveRequiresPainting ? 'border-primary bg-primary/5' : 'border-border hover:bg-secondary/40'
+              }`}
+            >
+              <p className="text-sm font-medium text-foreground">Изделие без росписи</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Изделие полностью готово — появится кнопка «Готово», которую нажмёте после обжига.
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setApproveRequiresPainting(true)}
+              className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                approveRequiresPainting ? 'border-primary bg-primary/5' : 'border-border hover:bg-secondary/40'
+              }`}
+            >
+              <p className="text-sm font-medium text-foreground">Изделие с росписью</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Изделие ещё не расписано — кнопки «Готово» не будет, через 16 дней клиенту
+                автоматически придёт письмо с приглашением записаться на роспись.
+              </p>
+            </button>
           </div>
 
           <AlertDialogFooter>

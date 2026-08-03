@@ -529,9 +529,12 @@ def handler(event: dict, context) -> dict:
       Excel-файла с колонками «Номер посылки», «ФИО клиента», «Телефон клиента», «Email»
       (необязательно), «Дата доставки в Москву», доступно только роли 'suzdal'.
     POST { action: 'issue', id } — пометить посылку выданной, доступно только роли 'vdnh'.
-    POST { action: 'approve_request', id, deliveredAt } — подтвердить заявку клиента и перевести
-      её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'. requires_painting
-      здесь не передаётся и не меняется — это выбор клиента, сделанный ещё в форме заявки.
+    POST { action: 'approve_request', id, deliveredAt, requiresPainting } — подтвердить заявку
+      клиента и перевести её в обычную посылку (статус 'shipped'), доступно только роли 'vdnh'.
+      requiresPainting — необязательный булев параметр: клиент указывает тип изделия ещё в форме
+      заявки, но менеджер при подтверждении может его исправить (например, если клиент ошибся
+      при подаче заявки), тогда значение перезаписывается. Если параметр не передан — требование
+      росписи остаётся таким, каким его выбрал клиент.
     POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
     POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client') готовой
       к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом,
@@ -853,15 +856,25 @@ def handler(event: dict, context) -> dict:
                     }
                 return_date = delivered_date + timedelta(days=30)
 
-                # requires_painting уже выбран клиентом в форме заявки — здесь не переопределяем,
-                # только фиксируем дату подтверждения (confirmed_at нужна для отсчёта 16 дней
-                # до автоматического письма-напоминания про роспись).
-                cur.execute(
-                    f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s, "
-                    f"confirmed_at = NOW() "
-                    f"WHERE id = %s AND status = 'pending_review'",
-                    (delivered_date, return_date, request_id),
-                )
+                # requires_painting по умолчанию выбран клиентом в форме заявки, но менеджер
+                # может исправить его при подтверждении (например, если клиент ошибся при подаче
+                # заявки). confirmed_at нужна для отсчёта 16 дней до автоматического письма
+                # про роспись — при явном requiresPainting также перезаписывается.
+                requires_painting_raw = body.get('requiresPainting')
+                if requires_painting_raw is None:
+                    cur.execute(
+                        f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s, "
+                        f"confirmed_at = NOW() "
+                        f"WHERE id = %s AND status = 'pending_review'",
+                        (delivered_date, return_date, request_id),
+                    )
+                else:
+                    cur.execute(
+                        f"UPDATE {SCHEMA}.shipments SET status = 'shipped', delivered_at = %s, return_at = %s, "
+                        f"confirmed_at = NOW(), requires_painting = %s "
+                        f"WHERE id = %s AND status = 'pending_review'",
+                        (delivered_date, return_date, bool(requires_painting_raw), request_id),
+                    )
                 if cur.rowcount == 0:
                     return {
                         'statusCode': 404,
