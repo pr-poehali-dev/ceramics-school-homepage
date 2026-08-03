@@ -91,9 +91,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const [readyTarget, setReadyTarget] = useState<ShipmentRequest | null>(null);
   const [markingReady, setMarkingReady] = useState(false);
 
-  const [issuedTarget, setIssuedTarget] = useState<ShipmentRequest | null>(null);
-  const [markingIssued, setMarkingIssued] = useState(false);
-
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [galleryMode, setGalleryMode] = useState(false);
@@ -230,30 +227,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
     }
   };
 
-  const confirmIssued = async () => {
-    if (!issuedTarget) return;
-    setMarkingIssued(true);
-    try {
-      const resp = await fetch(func2url['shipments-admin'], {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
-        body: JSON.stringify({ action: 'mark_issued', id: issuedTarget.id }),
-      });
-      const data = await resp.json();
-      if (!resp.ok) {
-        toast({ title: data.error || 'Не удалось отметить выдачу' });
-        return;
-      }
-      toast({ title: 'Изделие выдано', description: `№ ${issuedTarget.trackingNumber} перенесено в архив` });
-      setConfirmed((prev) => prev.filter((r) => r.id !== issuedTarget.id));
-      setIssuedTarget(null);
-    } catch {
-      toast({ title: 'Ошибка', description: 'Попробуйте позже.' });
-    } finally {
-      setMarkingIssued(false);
-    }
-  };
-
   const baseList = view === 'requests' ? requests : view === 'confirmed' ? confirmed : archived;
   const searchDigits = search.replace(/\D/g, '');
   const filteredList =
@@ -364,9 +337,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
         </div>
       ) : view === 'confirmed' && galleryMode ? (
         (() => {
-          const galleryItems = confirmed.filter(
-            (r) => !r.readyAt && r.status !== 'issued' && !r.requiresPainting,
-          );
+          const galleryItems = confirmed.filter((r) => !r.readyAt && !r.requiresPainting);
           if (galleryItems.length === 0) {
             return (
               <p className="mt-8 text-center text-sm text-muted-foreground">
@@ -521,17 +492,15 @@ const AdminShipmentRequests = ({ token }: Props) => {
                           <TableCell className="text-sm text-muted-foreground">{fmtDate(row.visitDate)}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">{fmtDate(row.storageUntil)}</TableCell>
                           <TableCell className="text-sm text-muted-foreground">
-                            {row.status === 'issued'
-                              ? 'Выдано'
-                              : row.readyAt
-                                ? 'Готово к выдаче'
-                                : row.requiresPainting
-                                  ? 'Ожидает росписи'
-                                  : 'Идёт обжиг'}
-                            {row.readyAt && row.status !== 'issued' && row.emailSent && (
+                            {row.readyAt
+                              ? 'Готово к выдаче'
+                              : row.requiresPainting
+                                ? 'Ожидает росписи'
+                                : 'Идёт обжиг'}
+                            {row.readyAt && row.emailSent && (
                               <p className="mt-0.5 text-xs text-green-600">Письмо отправлено</p>
                             )}
-                            {row.requiresPainting && !row.readyAt && row.status !== 'issued' && (
+                            {row.requiresPainting && !row.readyAt && (
                               <p className="mt-0.5 text-xs text-muted-foreground">
                                 {row.paintingReminderSentAt
                                   ? 'Письмо про роспись отправлено'
@@ -566,13 +535,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
                             </Button>
                           </div>
                         ) : view === 'confirmed' ? (
-                          !row.readyAt && row.status !== 'issued' && !row.requiresPainting ? (
+                          !row.readyAt && !row.requiresPainting ? (
                             <Button size="sm" className="rounded-full" onClick={() => setReadyTarget(row)}>
                               <Icon name="Check" size={14} className="mr-1.5" /> Готово
-                            </Button>
-                          ) : row.readyAt && row.status !== 'issued' ? (
-                            <Button size="sm" className="rounded-full" onClick={() => setIssuedTarget(row)}>
-                              <Icon name="PackageCheck" size={14} className="mr-1.5" /> Выдано
                             </Button>
                           ) : null
                         ) : null}
@@ -679,25 +644,6 @@ const AdminShipmentRequests = ({ token }: Props) => {
             <AlertDialogCancel>Отмена</AlertDialogCancel>
             <AlertDialogAction onClick={confirmReady} disabled={markingReady}>
               {markingReady ? 'Отправляем…' : 'Готово'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* ВЫДАЧА */}
-      <AlertDialog open={!!issuedTarget} onOpenChange={(v) => !v && setIssuedTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Изделие выдано клиенту?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Заявка № {issuedTarget?.trackingNumber} клиента {issuedTarget?.customerName} будет
-              перенесена в архив.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmIssued} disabled={markingIssued}>
-              {markingIssued ? 'Сохраняем…' : 'Выдано'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

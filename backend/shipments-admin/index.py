@@ -506,9 +506,11 @@ def handler(event: dict, context) -> dict:
       отправки), см. _auto_send_pickup_reminders.
     GET ?status=requests — заявки клиентов на подтверждение (статус 'pending_review'),
       доступно только роли 'vdnh'.
-    GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped'
-      или 'issued', source='client', archived_at IS NULL); ready_at показывает, отмечено ли
-      изделие готовым к выдаче, доступно только роли 'vdnh'. При каждом вызове автоматически
+    GET ?status=confirmed — заявки клиентов, подтверждённые администратором (статус 'shipped',
+      source='client', archived_at IS NULL); ready_at показывает, отмечено ли изделие готовым
+      к выдаче, доступно только роли 'vdnh'. Отметка «Готово» (ready_for_pickup) — последнее
+      действие администратора по заявке: дальнейших шагов (никакой отдельной «Выдано») нет,
+      заявка автоматически архивируется через 3 месяца. При каждом вызове автоматически
       архивирует (archived_at=NOW()) заявки, у которых ready_at был более 3 месяцев назад,
       и отправляет письмо-напоминание про роспись (requires_painting=true, 16 дней после
       confirmed_at, см. _auto_send_painting_reminders).
@@ -534,12 +536,9 @@ def handler(event: dict, context) -> dict:
     POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client') готовой
       к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом,
       часами работы студии и сроком хранения (60 календарных дней с даты оформления заявки),
-      доступно только роли 'vdnh'.
-    POST { action: 'mark_issued', id } — менеджер ВДНХ нажимает «Выдано» на заявке клиента
-      (source='client', status='shipped', ready_at IS NOT NULL — то есть уже отмечена «Готово
-      к выдаче»): статус меняется на 'issued', проставляются issued_at/issued_by, и заявка сразу
-      переносится в архив (archived_at=NOW()), минуя обычное автоматическое архивирование через
-      3 месяца, доступно только роли 'vdnh'.
+      доступно только роли 'vdnh'. Это последнее действие администратора по заявке — дальше
+      никакого отдельного шага «Выдано» нет, заявка просто архивируется автоматически через
+      3 месяца после ready_at (см. _auto_archive).
     POST { action: 'send_to_vdnh', id } — менеджер Суздаля отмечает, что изделие клиента
       (статус 'in_progress', city='suzdal') отправлено в Москву: статус меняется на 'shipped',
       проставляется delivered_at (сегодня — дата отправки в Москву), клиенту отправляется
@@ -989,42 +988,6 @@ def handler(event: dict, context) -> dict:
                         'statusCode': 404,
                         'headers': cors_headers,
                         'body': json.dumps({'error': 'Посылка не найдена или уже выдана'}, ensure_ascii=False),
-                    }
-                conn.commit()
-
-                return {
-                    'statusCode': 200,
-                    'headers': cors_headers,
-                    'body': json.dumps({'ok': True}, ensure_ascii=False),
-                }
-
-            if action == 'mark_issued':
-                if role != 'vdnh':
-                    return {
-                        'statusCode': 403,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Выдавать изделия может только менеджер ВДНХ'}, ensure_ascii=False),
-                    }
-
-                shipment_id = body.get('id')
-                if not shipment_id:
-                    return {
-                        'statusCode': 400,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Не указана заявка'}, ensure_ascii=False),
-                    }
-
-                cur.execute(
-                    f"UPDATE {SCHEMA}.shipments SET status = 'issued', issued_at = NOW(), issued_by = %s, "
-                    f"archived_at = NOW() "
-                    f"WHERE id = %s AND source = 'client' AND status = 'shipped' AND ready_at IS NOT NULL",
-                    (manager_id, shipment_id),
-                )
-                if cur.rowcount == 0:
-                    return {
-                        'statusCode': 404,
-                        'headers': cors_headers,
-                        'body': json.dumps({'error': 'Заявка не найдена или ещё не готова к выдаче'}, ensure_ascii=False),
                     }
                 conn.commit()
 
