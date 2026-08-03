@@ -37,6 +37,7 @@ const ShipmentRequestForm = ({
   const [visitDate, setVisitDate] = useState('');
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ done: number; total: number } | null>(null);
   const [done, setDone] = useState<string | null>(null);
 
   useEffect(() => {
@@ -99,15 +100,29 @@ const ShipmentRequestForm = ({
     e.preventDefault();
     if (!isValid || photos.length === 0) return;
     setSubmitting(true);
+    setUploadProgress({ done: 0, total: photos.length });
     try {
-      const compressed: { photoData: string; contentType: string }[] = [];
+      // Каждое фото сжимается и загружается ОТДЕЛЬНЫМ лёгким запросом — так форма с
+      // несколькими фото не упирается в лимит размера тела HTTP-запроса на прокси (413),
+      // с которым сталкивался один большой запрос со всеми фото в base64 сразу.
+      const photoUrls: string[] = [];
       try {
         for (const p of photos) {
           const { dataUrl } = await compressImage(p.file);
-          compressed.push({ photoData: dataUrl, contentType: 'image/jpeg' });
+          const uploadResp = await fetchWithFriendlyErrors(func2url['shipment-photo-upload'], {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ photoData: dataUrl, contentType: 'image/jpeg' }),
+          });
+          const uploadData = await uploadResp.json().catch(() => ({}));
+          if (!uploadResp.ok) {
+            throw new Error(uploadData.error || `Ошибка сервера (${uploadResp.status})`);
+          }
+          photoUrls.push(uploadData.url);
+          setUploadProgress((prev) => (prev ? { ...prev, done: prev.done + 1 } : prev));
         }
       } catch (err) {
-        toast({ title: 'Не удалось обработать фото', description: describeError(err) });
+        toast({ title: 'Не удалось загрузить фото', description: describeError(err) });
         return;
       }
 
@@ -121,7 +136,7 @@ const ShipmentRequestForm = ({
             customerPhone: phone,
             customerEmail: email.trim(),
             visitDate,
-            photos: compressed,
+            photoUrls,
             city,
             requiresPainting: !isSuzdal && requiresPainting,
           }),
@@ -142,6 +157,7 @@ const ShipmentRequestForm = ({
       setDone(data.trackingNumber);
     } finally {
       setSubmitting(false);
+      setUploadProgress(null);
     }
   };
 
@@ -317,7 +333,10 @@ const ShipmentRequestForm = ({
       >
         {submitting ? (
           <>
-            <Icon name="Loader2" size={18} className="mr-2 animate-spin" /> Отправляем…
+            <Icon name="Loader2" size={18} className="mr-2 animate-spin" />
+            {uploadProgress && uploadProgress.total > 1
+              ? `Загружаем фото ${uploadProgress.done}/${uploadProgress.total}…`
+              : 'Отправляем…'}
           </>
         ) : (
           <>

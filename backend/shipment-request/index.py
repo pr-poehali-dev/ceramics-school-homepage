@@ -1,22 +1,11 @@
-import base64
 import json
 import os
 import re
-import secrets
 from datetime import datetime, timedelta
 
-import boto3
 import psycopg2
 
 SCHEMA = 't_p90609946_ceramics_school_home'
-
-ALLOWED_TYPES = {
-    'image/png': 'png',
-    'image/jpeg': 'jpg',
-    'image/jpg': 'jpg',
-    'image/webp': 'webp',
-}
-MAX_SIZE = 8 * 1024 * 1024
 
 
 def _cors() -> dict:
@@ -75,12 +64,15 @@ def handler(event: dict, context) -> dict:
     tracking_number генерируется в формате ДДММ-XXXX (дата создания + последние 4 цифры
     телефона клиента, например 3107-9771).
     visitDate — дата посещения мастер-класса/студии, указывается клиентом обязательно.
-    Фото: можно передать несколько (до 10) — массив photos: [{photoData (base64), contentType}].
-    Для обратной совместимости также поддерживается одиночный photoData/contentType на верхнем
-    уровне body (эквивалентно photos с одним элементом). Каждое фото загружается в S3, все URL
-    сохраняются в таблице shipment_photos (shipment_id, photo_url, sort_order) — первое фото
+    Фото: клиент передаёт уже готовые CDN-ссылки — массив photoUrls: [url, ...] (до 10 штук).
+    Сами файлы загружаются заранее отдельными запросами через shipment-photo-upload (каждое
+    фото — отдельный лёгкий запрос), это сделано специально, чтобы форма с несколькими фото
+    не упиралась в лимит размера тела HTTP-запроса на прокси (413 Payload Too Large) — раньше
+    все фото в base64 отправлялись одним большим запросом вместе с этой функцией. Для обратной
+    совместимости также поддерживается одиночный photoUrl на верхнем уровне body. Все ссылки
+    сохраняются в таблице shipment_photos (shipment_id, photo_url, sort_order) — первая ссылка
     также дублируется в shipments.photo_url для обратной совместимости со старым кодом.
-    POST { customerName, customerPhone, customerEmail, photos: [{photoData, contentType}],
+    POST { customerName, customerPhone, customerEmail, photoUrls: [url, ...],
            requiresPainting, visitDate, city }
     Args: event с httpMethod, body
           context — объект с request_id
@@ -105,16 +97,15 @@ def handler(event: dict, context) -> dict:
     customer_email = (body.get('customerEmail') or '').strip()
     visit_date_raw = (body.get('visitDate') or '').strip()
 
-    photos = body.get('photos')
-    if not isinstance(photos, list) or not photos:
+    photo_urls_in = body.get('photoUrls')
+    if not isinstance(photo_urls_in, list) or not photo_urls_in:
         # Обратная совместимость со старым форматом с одним фото
-        single_photo_data = body.get('photoData') or ''
-        if single_photo_data:
-            photos = [{'photoData': single_photo_data, 'contentType': body.get('contentType') or 'image/jpeg'}]
-        else:
-            photos = []
+        single_photo_url = body.get('photoUrl') or ''
+        photo_urls_in = [single_photo_url] if single_photo_url else []
 
-    if len(photos) > 10:
+    photo_urls = [u.strip() for u in photo_urls_in if isinstance(u, str) and u.strip()]
+
+    if len(photo_urls) > 10:
         return {
             'statusCode': 400,
             'headers': _cors(),
@@ -151,90 +142,12 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Укажите корректный номер телефона'}, ensure_ascii=False),
         }
 
-    if not photos:
+    if not photo_urls:
         return {
             'statusCode': 400,
             'headers': _cors(),
             'body': json.dumps({'error': 'Приложите хотя бы одно фото изделия'}, ensure_ascii=False),
         }
-
-    decoded_photos = []
-    for photo in photos:
-        photo_data = (photo.get('photoData') if isinstance(photo, dict) else None) or ''
-        content_type = (photo.get('contentType') if isinstance(photo, dict) else None) or 'image/jpeg'
-
-        if not photo_data:
-            continue
-
-        if content_type not in ALLOWED_TYPES:
-            return {
-                'statusCode': 400,
-                'headers': _cors(),
-                'body': json.dumps({'error': 'Недопустимый формат фото (используйте JPG, PNG или WEBP)'}, ensure_ascii=False),
-            }
-
-        if ',' in photo_data:
-            photo_data = photo_data.split(',', 1)[1]
-
-        try:
-            raw = base64.b64decode(photo_data)
-        except Exception:
-            return {
-                'statusCode': 400,
-                'headers': _cors(),
-                'body': json.dumps({'error': 'Некорректные данные фото'}, ensure_ascii=False),
-            }
-
-        if len(raw) > MAX_SIZE:
-            return {
-                'statusCode': 400,
-                'headers': _cors(),
-                'body': json.dumps({'error': 'Каждое фото должно быть не больше 8МБ'}, ensure_ascii=False),
-            }
-
-        decoded_photos.append((raw, content_type))
-
-    if not decoded_photos:
-        return {
-            'statusCode': 400,
-            'headers': _cors(),
-            'body': json.dumps({'error': 'Приложите хотя бы одно фото изделия'}, ensure_ascii=False),
-        }
-
-    access_key = os.environ['AWS_ACCESS_KEY_ID']
-    try:
-        s3 = boto3.client(
-            's3',
-            endpoint_url='https://bucket.poehali.dev',
-            aws_access_key_id=access_key,
-            aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-        )
-    except Exception:
-        return {
-            'statusCode': 502,
-            'headers': _cors(),
-            'body': json.dumps(
-                {'error': 'Не удалось сохранить фото на сервере. Попробуйте отправить заявку ещё раз через пару минут.'},
-                ensure_ascii=False,
-            ),
-        }
-
-    photo_urls = []
-    for raw, content_type in decoded_photos:
-        ext = ALLOWED_TYPES[content_type]
-        key = f'shipment-requests/{secrets.token_hex(12)}.{ext}'
-        try:
-            s3.put_object(Bucket='files', Key=key, Body=raw, ContentType=content_type)
-        except Exception:
-            return {
-                'statusCode': 502,
-                'headers': _cors(),
-                'body': json.dumps(
-                    {'error': 'Не удалось сохранить фото на сервере. Попробуйте отправить заявку ещё раз через пару минут.'},
-                    ensure_ascii=False,
-                ),
-            }
-        photo_urls.append(f'https://cdn.poehali.dev/projects/{access_key}/bucket/{key}')
 
     today = datetime.utcnow().date()
     placeholder_return = today + timedelta(days=30)
