@@ -319,12 +319,15 @@ def _send_painting_reminder_email(cur, customer_email: str, tracking_number: str
 
 
 def _auto_send_painting_reminders(cur):
-    """Отправляет письмо «изделие прошло обжиг, запишитесь на роспись» по заявкам,
-    подтверждённым как «требует росписи» (requires_painting=true), у которых прошло
-    16 дней с момента подтверждения (confirmed_at) и письмо ещё не отправлялось."""
+    """Отправляет письмо «изделие прошло обжиг, можно забирать или записаться на роспись»
+    по заявкам БЕЗ росписи (requires_painting=false) — такие изделия не требуют участия
+    менеджера после обжига, поэтому письмо уходит автоматически через 16 дней с момента
+    подтверждения (confirmed_at), если оно ещё не отправлялось. Изделия С росписью
+    (requires_painting=true) обрабатываются иначе — по ним менеджер вручную нажимает
+    кнопку «Готово» после обжига (см. action ready_for_pickup)."""
     cur.execute(
         f"SELECT id, tracking_number, customer_email FROM {SCHEMA}.shipments "
-        f"WHERE source = 'client' AND requires_painting = true AND status = 'shipped' "
+        f"WHERE source = 'client' AND requires_painting = false AND status = 'shipped' "
         f"AND painting_reminder_sent_at IS NULL "
         f"AND confirmed_at IS NOT NULL AND confirmed_at < NOW() - INTERVAL '16 days'",
     )
@@ -534,12 +537,13 @@ def handler(event: dict, context) -> dict:
       действие администратора по заявке: дальнейших шагов (никакой отдельной «Выдано») нет,
       заявка автоматически архивируется через 3 месяца. При каждом вызове автоматически
       архивирует (archived_at=NOW()) заявки, у которых ready_at был более 3 месяцев назад,
-      и отправляет письмо-напоминание про роспись (requires_painting=true, 16 дней после
-      confirmed_at, см. _auto_send_painting_reminders).
-      requiresPainting=true — заявка на необожжённое изделие под роспись (клиент выбрал
-      «Изделие с росписью» ещё в форме заявки): кнопки «Готово» нет, клиенту автоматически
-      летит письмо с приглашением записаться на роспись через 16 дней. requiresPainting=false —
-      обычная заявка на готовое изделие: доступна кнопка «Готово».
+      и отправляет автоматическое письмо об обжиге по заявкам БЕЗ росписи (requires_painting=
+      false, 16 дней после confirmed_at, см. _auto_send_painting_reminders).
+      requiresPainting=false — обычная заявка на готовое изделие: кнопки «Готово» нет, клиенту
+      автоматически (через 16 дней после подтверждения) летит письмо о том, что изделие прошло
+      обжиг и можно забрать либо записаться на роспись. requiresPainting=true — заявка на
+      изделие с росписью: доступна кнопка «Готово», менеджер нажимает её вручную сразу после
+      обжига изделия, после чего клиенту летит письмо о готовности к выдаче.
     GET ?status=archived — архив заявок клиентов (source='client', archived_at IS NOT NULL) —
       заявки, отмеченные готовыми к выдаче более 3 месяцев назад, доступно только роли 'vdnh'.
     GET ?export=csv&status=... — выгрузка CSV, доступно только роли 'vdnh'.
@@ -558,11 +562,14 @@ def handler(event: dict, context) -> dict:
       при подаче заявки), тогда значение перезаписывается. Если параметр не передан — требование
       росписи остаётся таким, каким его выбрал клиент.
     POST { action: 'reject_request', id } — отклонить заявку клиента, доступно только роли 'vdnh'.
-    POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client') готовой
-      к выдаче после обжига (ready_at=NOW()) и отправить клиенту email-уведомление с адресом,
-      часами работы студии и сроком хранения (60 календарных дней с даты оформления заявки),
-      доступно только роли 'vdnh'. Это последнее действие администратора по заявке — дальше
-      никакого отдельного шага «Выдано» нет, заявка просто архивируется автоматически через
+    POST { action: 'ready_for_pickup', id } — отметить заявку клиента (source='client',
+      requires_painting=true) готовой к выдаче после обжига (ready_at=NOW()) и отправить
+      клиенту email-уведомление с адресом, часами работы студии и сроком хранения (60
+      календарных дней с даты оформления заявки), доступно только роли 'vdnh'. Применимо
+      ТОЛЬКО к заявкам с росписью — для заявок без росписи (requires_painting=false) письмо
+      уходит автоматически через 16 дней (см. _auto_send_painting_reminders), кнопки «Готово»
+      для них нет. Это последнее действие администратора по заявке — дальше никакого
+      отдельного шага «Выдано» нет, заявка просто архивируется автоматически через
       3 месяца после ready_at (см. _auto_archive).
     POST { action: 'send_to_vdnh', id } — менеджер Суздаля отмечает, что изделие клиента
       (статус 'in_progress', city='suzdal') отправлено в Москву: статус меняется на 'shipped',
@@ -964,7 +971,8 @@ def handler(event: dict, context) -> dict:
 
                 cur.execute(
                     f"UPDATE {SCHEMA}.shipments SET ready_at = NOW() "
-                    f"WHERE id = %s AND source = 'client' AND status = 'shipped' AND ready_at IS NULL "
+                    f"WHERE id = %s AND source = 'client' AND status = 'shipped' "
+                    f"AND requires_painting = true AND ready_at IS NULL "
                     f"RETURNING tracking_number, customer_email, created_at",
                     (shipment_id,),
                 )
@@ -973,7 +981,10 @@ def handler(event: dict, context) -> dict:
                     return {
                         'statusCode': 404,
                         'headers': cors_headers,
-                        'body': json.dumps({'error': 'Заявка не найдена или уже отмечена готовой'}, ensure_ascii=False),
+                        'body': json.dumps(
+                            {'error': 'Заявка не найдена, уже отмечена готовой либо не требует росписи'},
+                            ensure_ascii=False,
+                        ),
                     }
                 conn.commit()
 

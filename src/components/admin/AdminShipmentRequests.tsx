@@ -342,11 +342,11 @@ const AdminShipmentRequests = ({ token }: Props) => {
         </div>
       ) : view === 'confirmed' && galleryMode ? (
         (() => {
-          const galleryItems = confirmed.filter((r) => !r.readyAt && !r.requiresPainting);
+          const galleryItems = confirmed.filter((r) => !r.readyAt && r.requiresPainting);
           if (galleryItems.length === 0) {
             return (
               <p className="mt-8 text-center text-sm text-muted-foreground">
-                Изделий, ожидающих обжига, не найдено — все уже готовы или ждут росписи.
+                Изделий с росписью, ожидающих обжига, не найдено.
               </p>
             );
           }
@@ -507,16 +507,16 @@ const AdminShipmentRequests = ({ token }: Props) => {
                             {row.readyAt
                               ? 'Готово к выдаче'
                               : row.requiresPainting
-                                ? 'Ожидает росписи'
+                                ? 'Ожидает обжига'
                                 : 'Идёт обжиг'}
                             {row.readyAt && row.emailSent && (
                               <p className="mt-0.5 text-xs text-green-600">Письмо отправлено</p>
                             )}
-                            {row.requiresPainting && !row.readyAt && (
+                            {!row.requiresPainting && !row.readyAt && (
                               <p className="mt-0.5 text-xs text-muted-foreground">
                                 {row.paintingReminderSentAt
-                                  ? 'Письмо про роспись отправлено'
-                                  : 'Письмо про роспись придёт через 16 дней'}
+                                  ? 'Письмо отправлено'
+                                  : 'Письмо придёт через 16 дней'}
                               </p>
                             )}
                           </TableCell>
@@ -547,7 +547,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
                             </Button>
                           </div>
                         ) : view === 'confirmed' ? (
-                          !row.readyAt && !row.requiresPainting ? (
+                          !row.readyAt && row.requiresPainting ? (
                             <Button size="sm" className="rounded-full" onClick={() => setReadyTarget(row)}>
                               <Icon name="Check" size={14} className="mr-1.5" /> Готово
                             </Button>
@@ -612,7 +612,9 @@ const AdminShipmentRequests = ({ token }: Props) => {
             >
               <p className="text-sm font-medium text-foreground">Изделие без росписи</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                Изделие полностью готово — появится кнопка «Готово», которую нажмёте после обжига.
+                Кнопки «Готово» не будет — через 16 дней после подтверждения клиенту
+                автоматически придёт письмо, что изделие прошло обжиг и можно забрать
+                либо записаться на роспись.
               </p>
             </button>
             <button
@@ -624,8 +626,8 @@ const AdminShipmentRequests = ({ token }: Props) => {
             >
               <p className="text-sm font-medium text-foreground">Изделие с росписью</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                Изделие ещё не расписано — кнопки «Готово» не будет, через 16 дней клиенту
-                автоматически придёт письмо с приглашением записаться на роспись.
+                Изделие ещё не расписано — появится кнопка «Готово», которую нажмёте
+                после обжига, и клиенту сразу придёт письмо, что изделие готово к выдаче.
               </p>
             </button>
           </div>
