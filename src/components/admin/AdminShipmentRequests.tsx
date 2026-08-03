@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -691,49 +691,99 @@ const AdminShipmentRequests = ({ token }: Props) => {
   );
 };
 
+const SWIPE_THRESHOLD = 40;
+
 const FullscreenPhotoViewer = ({ photos, startIndex }: { photos: string[]; startIndex: number }) => {
   const [index, setIndex] = useState(startIndex);
   const safeIndex = Math.min(index, photos.length - 1);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const go = (delta: number) => {
+    setIndex((i) => (i + delta + photos.length) % photos.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start || photos.length < 2) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+      go(dx > 0 ? -1 : 1);
+    }
+  };
 
   return (
-    <div className="relative">
-      <img
-        src={photos[safeIndex]}
-        alt="Фото изделия"
-        className="max-h-[80vh] w-full rounded-lg object-contain"
-      />
+    <div>
+      <div
+        className="relative select-none"
+        style={{ touchAction: 'pan-y' }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <img
+          src={photos[safeIndex]}
+          alt="Фото изделия"
+          className="max-h-[80vh] w-full rounded-lg object-contain"
+          draggable={false}
+        />
+        {photos.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() => go(-1)}
+              className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
+              aria-label="Предыдущее фото"
+            >
+              <Icon name="ChevronLeft" size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => go(1)}
+              className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
+              aria-label="Следующее фото"
+            >
+              <Icon name="ChevronRight" size={18} />
+            </button>
+            <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
+              {photos.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setIndex(i)}
+                  className={`h-2 w-2 rounded-full transition-colors ${
+                    i === safeIndex ? 'bg-white' : 'bg-white/50'
+                  }`}
+                  aria-label={`Фото ${i + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
       {photos.length > 1 && (
-        <>
-          <button
-            type="button"
-            onClick={() => setIndex((i) => (i - 1 + photos.length) % photos.length)}
-            className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
-            aria-label="Предыдущее фото"
-          >
-            <Icon name="ChevronLeft" size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={() => setIndex((i) => (i + 1) % photos.length)}
-            className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
-            aria-label="Следующее фото"
-          >
-            <Icon name="ChevronRight" size={18} />
-          </button>
-          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
-            {photos.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setIndex(i)}
-                className={`h-2 w-2 rounded-full transition-colors ${
-                  i === safeIndex ? 'bg-white' : 'bg-white/50'
-                }`}
-                aria-label={`Фото ${i + 1}`}
-              />
-            ))}
-          </div>
-        </>
+        <div className="mt-2 flex gap-1.5 overflow-x-auto">
+          {photos.map((p, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setIndex(i)}
+              className={`h-12 w-12 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+                i === safeIndex ? 'border-primary' : 'border-transparent opacity-70 hover:opacity-100'
+              }`}
+              aria-label={`Фото ${i + 1}`}
+            >
+              <img src={p} alt="" className="h-full w-full object-cover" draggable={false} />
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
