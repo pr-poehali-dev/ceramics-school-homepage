@@ -50,6 +50,7 @@ interface Props {
 }
 
 const PER_PAGE = 20;
+const GALLERY_PER_PAGE = 100;
 
 const fmtDateTime = (s: string) => {
   try {
@@ -83,6 +84,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
   const [archived, setArchived] = useState<ShipmentRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [galleryPage, setGalleryPage] = useState(1);
 
   const [approveTarget, setApproveTarget] = useState<ShipmentRequest | null>(null);
   const [approveDate, setApproveDate] = useState(todayISO());
@@ -341,7 +343,10 @@ const AdminShipmentRequests = ({ token }: Props) => {
 
       {view === 'confirmed' && (
         <Button
-          onClick={() => setGalleryMode((v) => !v)}
+          onClick={() => {
+            setGalleryMode((v) => !v);
+            setGalleryPage(1);
+          }}
           variant={galleryMode ? 'default' : 'outline'}
           className="mt-4 w-full rounded-xl sm:w-auto"
           size="lg"
@@ -384,13 +389,18 @@ const AdminShipmentRequests = ({ token }: Props) => {
               </p>
             );
           }
+          const galleryTotalPages = Math.max(1, Math.ceil(galleryItems.length / GALLERY_PER_PAGE));
+          const galleryPageItems = galleryItems.slice(
+            (galleryPage - 1) * GALLERY_PER_PAGE,
+            galleryPage * GALLERY_PER_PAGE,
+          );
           return (
             <div className="mt-4">
               <p className="mb-3 text-sm text-muted-foreground">
                 Найдено изделий: {galleryItems.length}. Пролистайте фото и нажмите «Готово» под нужным.
               </p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {galleryItems.map((item) => (
+                {galleryPageItems.map((item) => (
                   <div
                     key={item.id}
                     className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
@@ -430,6 +440,31 @@ const AdminShipmentRequests = ({ token }: Props) => {
                   </div>
                 ))}
               </div>
+              {galleryTotalPages > 1 && (
+                <div className="mt-4 flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => setGalleryPage((p) => Math.max(1, p - 1))}
+                    disabled={galleryPage <= 1}
+                  >
+                    <Icon name="ChevronLeft" size={15} />
+                  </Button>
+                  <span className="px-3 text-sm text-muted-foreground">
+                    Страница {galleryPage} из {galleryTotalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => setGalleryPage((p) => Math.min(galleryTotalPages, p + 1))}
+                    disabled={galleryPage >= galleryTotalPages}
+                  >
+                    <Icon name="ChevronRight" size={15} />
+                  </Button>
+                </div>
+              )}
             </div>
           );
         })()
@@ -611,7 +646,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
         </div>
       )}
 
-      {list.length > PER_PAGE && (
+      {!(view === 'confirmed' && galleryMode) && list.length > PER_PAGE && (
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button
             variant="outline"
