@@ -231,7 +231,7 @@ const AdminShipmentRequests = ({ token }: Props) => {
               view === 'confirmed' ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground'
             }`}
           >
-            Подтверждённые
+            Активные
           </button>
           <button
             onClick={() => setView('archived')}
