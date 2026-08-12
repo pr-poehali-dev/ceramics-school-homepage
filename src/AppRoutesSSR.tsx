@@ -11,7 +11,6 @@ import Suzdal from "./pages/Suzdal";
 import Workshops from "./pages/Workshops";
 import WorkshopDetail from "./pages/WorkshopDetail";
 import Formats from "./pages/Formats";
-import Certificates from "./pages/Certificates";
 import Contacts from "./pages/Contacts";
 import Reviews from "./pages/Reviews";
 import Offer from "./pages/Offer";
@@ -21,7 +20,6 @@ import Cookies from "./pages/Cookies";
 import SuzdalWorkshops from "./pages/SuzdalWorkshops";
 import SuzdalWorkshopDetail from "./pages/SuzdalWorkshopDetail";
 import SuzdalAbout from "./pages/SuzdalAbout";
-import SuzdalCertificates from "./pages/SuzdalCertificates";
 import SuzdalExcursions from "./pages/SuzdalExcursions";
 import SuzdalContacts from "./pages/SuzdalContacts";
 import SuzdalInfo from "./pages/SuzdalInfo";
@@ -38,7 +36,6 @@ const AppRoutesSSR = () => (
     <Route path="/moscow/workshops" element={<Workshops />} />
     <Route path="/moscow/workshops/:slug" element={<WorkshopDetail />} />
     <Route path="/moscow/formats" element={<Formats />} />
-    <Route path="/moscow/certificates" element={<Certificates />} />
     <Route path="/moscow/contacts" element={<Contacts />} />
     <Route path="/moscow/reviews" element={<Reviews />} />
     <Route path="/moscow/offer" element={<Offer />} />
@@ -50,7 +47,6 @@ const AppRoutesSSR = () => (
     <Route path="/suzdal" element={<Suzdal />} />
     <Route path="/suzdal/workshops" element={<SuzdalWorkshops />} />
     <Route path="/suzdal/workshops/:slug" element={<SuzdalWorkshopDetail />} />
-    <Route path="/suzdal/certificates" element={<SuzdalCertificates />} />
     <Route path="/suzdal/excursions" element={<SuzdalExcursions />} />
     <Route path="/suzdal/contacts" element={<SuzdalContacts />} />
     <Route path="/suzdal/info" element={<SuzdalInfo />} />

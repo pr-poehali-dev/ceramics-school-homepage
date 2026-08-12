@@ -41,7 +41,6 @@ export const MOSCOW_WORKSHOP_LINKS: NavLink[] = [
 /** Основные пункты меню для Москвы (без "Мастер-классов", идут отдельным блоком). */
 export const MOSCOW_NAV_LINKS: NavLink[] = [
   { label: 'Форматы', to: '/moscow/formats' },
-  { label: 'Сертификаты', to: '/moscow/certificates' },
   { label: 'Отзывы', to: '/moscow/reviews' },
   { label: 'Контакты', to: '/moscow/contacts' },
 ];
@@ -61,7 +60,6 @@ export const SUZDAL_WORKSHOP_LINKS: NavLink[] = [
 
 /** Основные пункты меню для Суздаля (без "Мастер-классов", идут отдельным блоком). */
 export const SUZDAL_NAV_LINKS: NavLink[] = [
-  { label: 'Сертификаты', to: '/suzdal/certificates' },
   { label: 'Экскурсии', to: '/suzdal/excursions' },
   { label: 'Отзывы', to: '/suzdal/reviews' },
   { label: 'Контакты', to: '/suzdal/contacts' },

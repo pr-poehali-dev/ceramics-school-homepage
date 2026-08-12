@@ -11,9 +11,6 @@ import { localBusinessSchema } from '@/lib/schemaOrg';
 import { ALL_FORMATS } from './formats/formatsData';
 import { REVIEWS, GALLERY } from './reviews/reviewsData';
 
-const CERTIFICATE_IMG =
-  'https://cdn.poehali.dev/projects/b241161a-f0d6-42a2-9d30-83e375a0753b/bucket/858c5def-a2d9-4503-aef3-192e73b205e1.png';
-
 const REVIEW_AVG = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1);
 const HOME_REVIEWS = REVIEWS.slice(0, 3);
 const HOME_GALLERY = GALLERY.slice(0, 6);
@@ -86,15 +83,6 @@ const Index = () => {
               <Button size="lg" onClick={openBooking} className="rounded-full px-8 text-base">
                 <Icon name="CalendarCheck" size={18} className="mr-2" /> Записаться
               </Button>
-              <Link to="/moscow/certificates">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="rounded-full border-white/40 bg-white/10 px-8 text-base text-white backdrop-blur hover:bg-white hover:text-foreground"
-                >
-                  <Icon name="Gift" size={18} className="mr-2" /> Подарить сертификат
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
@@ -266,49 +254,6 @@ const Index = () => {
               <Icon name="ArrowRight" size={18} className="ml-2" />
             </Button>
           </Link>
-        </div>
-      </section>
-
-      {/* CERTIFICATES */}
-      <section id="certificates" className="container py-16 md:py-24">
-        <div className="relative overflow-hidden rounded-[2rem] bg-primary px-8 py-14 text-primary-foreground md:px-16 md:py-20">
-          <Icon
-            name="Gift"
-            size={220}
-            className="pointer-events-none absolute -right-10 -top-10 opacity-10"
-          />
-          <div className="relative grid items-center gap-10 md:grid-cols-2">
-            <div className="max-w-xl">
-              <span className="text-sm font-medium uppercase tracking-[0.2em] text-primary-foreground/70">
-                Подарочные сертификаты
-              </span>
-              <h2 className="mt-4 font-display text-4xl font-semibold md:text-5xl">
-                {c.certificatesTitle}
-              </h2>
-              <p className="mt-4 text-primary-foreground/80">
-                {c.certificatesText}
-              </p>
-              <Link to="/moscow/certificates">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="mt-8 rounded-full px-8 text-base"
-                >
-                  {c.certificatesButtonText}
-                  <Icon name="ArrowRight" size={18} className="ml-2" />
-                </Button>
-              </Link>
-            </div>
-
-            <div className="relative flex justify-center md:justify-end">
-              <div className="absolute inset-0 -rotate-6 rounded-2xl bg-white/10" />
-              <img
-                src={CERTIFICATE_IMG}
-                alt="Подарочный сертификат Дымов Керамика"
-                className="relative w-full max-w-xs rotate-3 rounded-2xl shadow-2xl ring-1 ring-white/20 transition-transform duration-500 hover:rotate-0 md:max-w-sm"
-              />
-            </div>
-          </div>
         </div>
       </section>
 

@@ -7,7 +7,6 @@ import Suzdal from "./pages/Suzdal";
 const Workshops = lazy(() => import("./pages/Workshops"));
 const WorkshopDetail = lazy(() => import("./pages/WorkshopDetail"));
 const Formats = lazy(() => import("./pages/Formats"));
-const Certificates = lazy(() => import("./pages/Certificates"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Checkout = lazy(() => import("./pages/Checkout"));
@@ -21,7 +20,6 @@ const Admin = lazy(() => import("./pages/Admin"));
 const SuzdalWorkshops = lazy(() => import("./pages/SuzdalWorkshops"));
 const SuzdalWorkshopDetail = lazy(() => import("./pages/SuzdalWorkshopDetail"));
 const SuzdalAbout = lazy(() => import("./pages/SuzdalAbout"));
-const SuzdalCertificates = lazy(() => import("./pages/SuzdalCertificates"));
 const SuzdalExcursions = lazy(() => import("./pages/SuzdalExcursions"));
 const SuzdalContacts = lazy(() => import("./pages/SuzdalContacts"));
 const SuzdalInfo = lazy(() => import("./pages/SuzdalInfo"));
@@ -45,7 +43,6 @@ const AppRoutes = () => (
       <Route path="/moscow/workshops" element={<Workshops />} />
       <Route path="/moscow/workshops/:slug" element={<WorkshopDetail />} />
       <Route path="/moscow/formats" element={<Formats />} />
-      <Route path="/moscow/certificates" element={<Certificates />} />
       <Route path="/moscow/contacts" element={<Contacts />} />
       <Route path="/moscow/cart" element={<Cart />} />
       <Route path="/moscow/checkout" element={<Checkout />} />
@@ -61,7 +58,6 @@ const AppRoutes = () => (
       <Route path="/suzdal" element={<Suzdal />} />
       <Route path="/suzdal/workshops" element={<SuzdalWorkshops />} />
       <Route path="/suzdal/workshops/:slug" element={<SuzdalWorkshopDetail />} />
-      <Route path="/suzdal/certificates" element={<SuzdalCertificates />} />
       <Route path="/suzdal/excursions" element={<SuzdalExcursions />} />
       <Route path="/suzdal/contacts" element={<SuzdalContacts />} />
       <Route path="/suzdal/info" element={<SuzdalInfo />} />
